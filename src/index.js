@@ -56,7 +56,7 @@ let status = [
         name: "Mình là một chú bot cu te dễ thương nè",
     }, 
     {
-        name: "Bạn hãy trò chuyện với mình dưới kênh riêng nhe",
+        name: "Bạn hãy trò chuyện với mình dưới kênh riêng của mình nhe",
     },
     {
         
