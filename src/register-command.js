@@ -1,4 +1,4 @@
-require('dotenv').config();
+/**require('dotenv').config();
 const { REST, Routes, ApplicationCommandOptionType } = require('discord.js');
 
 const commands = [
@@ -18,24 +18,7 @@ const commands = [
     name: 'owner',
     description: 'Shows bot owner information.',
   },
-  {
-    name: 'add',
-    description: 'Adds 2 numbers',
-    options: [
-      {
-        name: 'first-number',
-        description: 'The first number.', 
-        type: ApplicationCommandOptionType.Number,
-        required: true, 
-      }, 
-      {
-        name: 'second-number',
-        description: 'The second number.', 
-        type: ApplicationCommandOptionType.Number,
-        required:true,
-      }
-    ]
-  }, 
+  
   {
     name: 'subtract',
     description: 'subtract 2 numbers',
@@ -112,3 +95,4 @@ const rest = new REST({ version: '10' }).setToken(process.env.TOKEN);
   }
 })();
     
+*/

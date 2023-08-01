@@ -12,7 +12,7 @@
   "dependencies": {
     "commandkit": "^0.0.8",
     "discord": "^0.8.2",
-    "discord.js": "^14.11.0",
+    "discord.js": "^14.12.1",
     "dotenv": "^16.3.1",
     "openai": "^3.3.0"
   },

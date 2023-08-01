@@ -1,8 +1,6 @@
 require('dotenv/config'); 
 const { Client, IntentsBitField, ActivityType, EmbedBuilder } = require('discord.js');
 const { Configuration, OpenAIApi} = require('openai'); 
-const { CommandKit } = require('commandkit');
-const path = require('path');
 const eventHandler = require('./handlers/eventHandler'); 
 
 const client = new Client({
@@ -65,60 +63,13 @@ client.on('interactionCreate', (interaction) => {
         return interaction.reply(`Hello, ${interaction.user}, my owner is <@${ownerUserID}>`);
         
     }
-
     if (interaction.commandName === 'hey') {
       return interaction.reply(`Hello, ${interaction.user}!`);
     }
-    if (interaction.commandName === 'add') {
+    if (interaction.commandName === 'square') {
         const num1 = interaction.options.get('first-number').value;;
-        const num2 = interaction.options.get('second-number').value;; 
-        interaction.reply(`The sum result is ${num1 + num2}`); 
+        interaction.reply(`The square of ${num1} is ${num1 * num1}`); 
     }
-    if (interaction.commandName === 'subtract') {
-        const num1 = interaction.options.get('first-number').value;;
-        const num2 = interaction.options.get('second-number').value;; 
-        interaction.reply(`The difference result is ${num1 - num2}`); 
-
-    }
-    if (interaction.commandName === 'multiply') {
-        const num1 = interaction.options.get('first-number').value;;
-        const num2 = interaction.options.get('second-number').value;; 
-        interaction.reply(`The multiplication result is ${num1 * num2}`); 
-    }
-    if (interaction.commandName === 'divide') {
-        const num1 = interaction.options.get('first-number').value;;
-        const num2 = interaction.options.get('second-number').value;; 
-        interaction.reply(`The division result is ${num1 / num2}`); 
-    }
-    if (interaction.commandName === 'help') {
-        const embed = new EmbedBuilder()
-            .setTitle('List of commands')
-            .setColor('FF00FB')
-            .setImage(client.guilds.icon)
-            .setTimestamp(Date.now())
-            .setAuthor({
-                icon: interaction.user.avatar, 
-                name: interaction.user.tag
-            })
-            .setFooter({
-                iconURL: client.user.displayAvatarURL(), 
-                text: client.user.tag
-            })
-            .addFields([
-                {
-                    name: `Moderation`, 
-                    value: `\`\`\`kick, ban, mute, role\`\`\``,
-                    inline: true
-                }, 
-                {
-                    name: `math`, 
-                    value: `\`\`\`add, subtract, multiply, divide\`\`\``, 
-                    inline: true   
-                }
-            ])
-    
-        interaction.reply({ embeds: [embed] });
-      }
 
   });
  

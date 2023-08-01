@@ -21,7 +21,7 @@ module.exports = async (client) => {
                     console.log(`Deleted command "${name}".`); 
                     break; 
                 }
-
+                //if the command already exist, we edit it
                 if(areCommandsDifferent(existingCommand, localCommand)) {
                     await applicationCommands.edit(existingCommand.id, {
                         description, 
