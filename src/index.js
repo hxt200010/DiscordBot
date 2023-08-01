@@ -1,6 +1,9 @@
 require('dotenv/config'); 
-const { Client, IntentsBitField, ActivityType } = require('discord.js');
+const { Client, IntentsBitField, ActivityType, EmbedBuilder } = require('discord.js');
 const { Configuration, OpenAIApi} = require('openai'); 
+const { CommandKit } = require('commandkit');
+const path = require('path');
+const eventHandler = require('./handlers/eventHandler'); 
 
 const client = new Client({
     intents: [
@@ -51,23 +54,73 @@ client.on('messageCreate', async (message) => {
     message.reply(result.data.choices[0].message); 
 }); 
 
-let status = [
-    {
-        name: "Mình là một chú bot cu te dễ thương nè",
-    }, 
-    {
-        name: "Bạn hãy trò chuyện với mình dưới kênh riêng của mình nhe",
-    },
-    {
+client.on('interactionCreate', (interaction) => {
+    if (!interaction.isChatInputCommand()) return;
+
+    if (interaction.commandName === 'owner') {
+        // Replace 'OWNER_USER_ID' with the actual user ID of the bot's owner
+        const ownerUserID = '704744682080567306';
+        console.log('Interaction User ID:', interaction.user.id);
+        console.log('Bot Owner User ID:', ownerUserID);
+        return interaction.reply(`Hello, ${interaction.user}, my owner is <@${ownerUserID}>`);
         
     }
-]
 
-client.on('ready', (c) => {
-    console.log(`${c.user.tag} is online.`);
-    setInterval(() => {
-        let random = Math.floor(Math.random() * status.length); 
-        client.user.setActivity(status[random]); 
-    }, 10000)
-});
+    if (interaction.commandName === 'hey') {
+      return interaction.reply(`Hello, ${interaction.user}!`);
+    }
+    if (interaction.commandName === 'add') {
+        const num1 = interaction.options.get('first-number').value;;
+        const num2 = interaction.options.get('second-number').value;; 
+        interaction.reply(`The sum result is ${num1 + num2}`); 
+    }
+    if (interaction.commandName === 'subtract') {
+        const num1 = interaction.options.get('first-number').value;;
+        const num2 = interaction.options.get('second-number').value;; 
+        interaction.reply(`The difference result is ${num1 - num2}`); 
+
+    }
+    if (interaction.commandName === 'multiply') {
+        const num1 = interaction.options.get('first-number').value;;
+        const num2 = interaction.options.get('second-number').value;; 
+        interaction.reply(`The multiplication result is ${num1 * num2}`); 
+    }
+    if (interaction.commandName === 'divide') {
+        const num1 = interaction.options.get('first-number').value;;
+        const num2 = interaction.options.get('second-number').value;; 
+        interaction.reply(`The division result is ${num1 / num2}`); 
+    }
+    if (interaction.commandName === 'help') {
+        const embed = new EmbedBuilder()
+            .setTitle('List of commands')
+            .setColor('FF00FB')
+            .setImage(client.guilds.icon)
+            .setTimestamp(Date.now())
+            .setAuthor({
+                icon: interaction.user.avatar, 
+                name: interaction.user.tag
+            })
+            .setFooter({
+                iconURL: client.user.displayAvatarURL(), 
+                text: client.user.tag
+            })
+            .addFields([
+                {
+                    name: `Moderation`, 
+                    value: `\`\`\`kick, ban, mute, role\`\`\``,
+                    inline: true
+                }, 
+                {
+                    name: `math`, 
+                    value: `\`\`\`add, subtract, multiply, divide\`\`\``, 
+                    inline: true   
+                }
+            ])
+    
+        interaction.reply({ embeds: [embed] });
+      }
+
+  });
+ 
+  eventHandler(client); 
 client.login(process.env.TOKEN); 
