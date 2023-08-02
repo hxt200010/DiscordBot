@@ -2,7 +2,7 @@ const {Client, Interaction, ApplicationCommandOptionType} = require('discord.js'
 
 module.exports = {
     name: 'subtract',
-    description: 'subtract 2 numbers, module export',
+    description: 'subtract 2 numbers',
     options: [
       {
         name: 'first-number',
@@ -20,7 +20,7 @@ module.exports = {
     callback: async (client, interaction) => {
         const num1 = interaction.options.get('first-number').value;
         const num2 = interaction.options.get('second-number').value;
-        interaction.reply(`The difference is ${num1 - num2}`);
+        interaction.reply(`The difference is \`\`${num1 - num2}\`\``);
     }
 
     

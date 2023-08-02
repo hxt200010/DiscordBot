@@ -2,10 +2,10 @@ const { Client, Interaction, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'help', 
-    description: 'Generate list of commands, new version', 
+    description: 'Generate list of commands', 
     callback: async (client, interaction) => {
         const embed = new EmbedBuilder()
-            .setTitle('List of commands')
+            .setTitle('List of commands')   
             .setColor('Random')
             .setImage(client.guilds.icon)
             .setTimestamp(Date.now())
@@ -20,13 +20,28 @@ module.exports = {
             .addFields([
                 {
                     name: `Moderation`, 
-                    value: `\`\`\`kick, ban, mute, role\`\`\``,
-                    inline: true
+                    value: `\`\`kick, ban\`\``,
+                    inline: false
                 }, 
                 {
-                    name: `math`, 
-                    value: `\`\`\`add, subtract, multiply, divide\`\`\``, 
-                    inline: true   
+                    name: `mathematic`, 
+                    value: `\`\`add, subtract, multiply, divide, sqrt, calculate, log\`\``, 
+                    inline: false  
+                }, 
+                {
+                    name: `misc`, 
+                    value: `\`\`owner, ping, avatar, help\`\``, 
+                    inline: false
+                },
+                {
+                    name: `Algorithm gameplay`, 
+                    value: `\`\`biggest, smallest\`\``, 
+                    inline: false
+                },
+                {
+                    name: `Fun`, 
+                    value: `\`\`meme\`\``, 
+                    inline: false
                 }
             ])
     

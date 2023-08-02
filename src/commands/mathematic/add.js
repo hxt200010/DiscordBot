@@ -2,7 +2,7 @@ const {Client, Interaction, ApplicationCommandOptionType} = require('discord.js'
 
 module.exports = {
     name: 'add',
-    description: 'Adds 2 numbers, using module export',
+    description: 'Adds 2 numbers',
     options: [
       {
         name: 'first-number',
@@ -20,7 +20,7 @@ module.exports = {
     callback: async (client, interaction) => {
         const num1 = interaction.options.get('first-number').value;
         const num2 = interaction.options.get('second-number').value;
-        interaction.reply(`The sum result is ${num1 + num2}`);
+        interaction.reply(`The sum result is \`\`${num1 + num2}\`\``);
     }
 
     

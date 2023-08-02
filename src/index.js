@@ -66,10 +66,6 @@ client.on('interactionCreate', (interaction) => {
     if (interaction.commandName === 'hey') {
       return interaction.reply(`Hello, ${interaction.user}!`);
     }
-    if (interaction.commandName === 'square') {
-        const num1 = interaction.options.get('first-number').value;;
-        interaction.reply(`The square of ${num1} is ${num1 * num1}`); 
-    }
 
   });
  
