@@ -7,7 +7,7 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setTitle('List of commands')   
             .setColor('Random')
-            .setImage(client.guilds.icon)
+            .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp(Date.now())
             .setAuthor({
                 icon: interaction.user.avatar, 
@@ -30,17 +30,22 @@ module.exports = {
                 }, 
                 {
                     name: `misc`, 
-                    value: `\`\`owner, ping, avatar, help\`\``, 
+                    value: `\`\`owner, ping, avatar, weather, translate, userinfo, help\`\``, 
                     inline: false
                 },
                 {
                     name: `Algorithm gameplay`, 
-                    value: `\`\`biggest, smallest\`\``, 
+                    value: `\`\`biggest, smallest, ascending, descending, binarySearch\`\``, 
                     inline: false
                 },
                 {
                     name: `Fun`, 
-                    value: `\`\`meme\`\``, 
+                    value: `\`\`meme, say\`\``, 
+                    inline: false
+                },
+                {
+                    name: `Education`, 
+                    value: `\`\`trivia\`\``, 
                     inline: false
                 }
             ])

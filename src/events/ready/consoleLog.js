@@ -2,9 +2,8 @@ const activities = [
     'Xin chào mọi người ạ',
     'Em là 1 chú bot vừa mới sinh ra, nên em chưa biết nhiều ạ',
     'Mọi người thông cảm cho em nhé',
-    'Nhưng em sẽ cố gắng ạ',
+    'em sẽ cố gắng ạ',
     'Mọi người hãy dùng channel ai của em để nói chuyện trực tiếp với em nhé',
-    // Add more activity options as needed
   ];
   
   module.exports = (client) => {

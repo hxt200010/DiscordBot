@@ -54,20 +54,6 @@ client.on('messageCreate', async (message) => {
 
 client.on('interactionCreate', (interaction) => {
     if (!interaction.isChatInputCommand()) return;
-
-    if (interaction.commandName === 'owner') {
-        // Replace 'OWNER_USER_ID' with the actual user ID of the bot's owner
-        const ownerUserID = '704744682080567306';
-        console.log('Interaction User ID:', interaction.user.id);
-        console.log('Bot Owner User ID:', ownerUserID);
-        return interaction.reply(`Hello, ${interaction.user}, my owner is <@${ownerUserID}>`);
-        
-    }
-    if (interaction.commandName === 'hey') {
-      return interaction.reply(`Hello, ${interaction.user}!`);
-    }
-
   });
- 
-  eventHandler(client); 
+eventHandler(client); 
 client.login(process.env.TOKEN); 
