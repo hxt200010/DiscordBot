@@ -7,6 +7,6 @@ module.exports = {
       const reply = await interaction.fetchReply(); 
       const ping = reply.createdTimesStamp - interaction.createdTimesstamp; 
 
-      interaction.editReply(`Pong! Client ${ping}ms | Websocket: ${client.ws.ping}ms`); 
+      interaction.editReply(`:ping_pong: Pong! Client ${ping}ms | Bot response: ${client.ws.ping}ms`); 
     }
   };

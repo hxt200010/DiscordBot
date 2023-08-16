@@ -1,5 +1,5 @@
 require('dotenv/config'); 
-const { Client, IntentsBitField, ActivityType, EmbedBuilder } = require('discord.js');
+const { Client, IntentsBitField} = require('discord.js');
 const { Configuration, OpenAIApi} = require('openai'); 
 const eventHandler = require('./handlers/eventHandler'); 
 

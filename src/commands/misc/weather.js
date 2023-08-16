@@ -28,7 +28,7 @@ module.exports = {
                 const apiData = response.data;
                  // Convert the timezone offset to a timezone identifier
                  const timezone = tzlookup(apiData.coord.lat, apiData.coord.lon);
-                const currentWeatherTime = moment.unix(apiData.dt).tz(timezone).format('HH:mm:ss,  MM-DD-YYYY');
+                const currentWeatherTime = moment.unix(apiData.dt).tz(timezone).format('HH:mm:ss,  MM/DD/YYYY');
                 const embed = new EmbedBuilder()
                     .setColor('Random')
                     .setThumbnail(`http://openweathermap.org/img/w/${apiData.weather[0].icon}.png`)
