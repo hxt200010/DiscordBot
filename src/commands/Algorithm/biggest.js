@@ -1,5 +1,11 @@
 const {Client, Interaction, ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
-
+const biggest = `
+let biggestNumber = numbers[0]; 
+for (let i = 1; i < numbers.length; i++) {
+     if (numbers[i] > biggestNumber) {
+         biggestNumber = numbers[i]; 
+     }
+}`
 module.exports = {
     name: 'biggest',
     description: 'Find the biggest number in the array',
@@ -43,6 +49,11 @@ module.exports = {
                         name: `Time Taken`,
                         value: `${Date.now() - startTimesstamp} ms`,
                         inline: false
+                    },
+                    {
+                        name: 'Algorithm', 
+                        value: `\`\`\`js\n${biggest}\n\`\`\``,
+                        inline: false,
                     }
                 ])
             interaction.reply({ embeds: [embed] });

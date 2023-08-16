@@ -45,7 +45,13 @@ module.exports = {
                 name: "Joined Discord", 
                 value: `<t:${Math.floor(user.createdTimestamp/ 1000)}:R>`, 
                 inline: true
+            },
+            {
+                name: 'Bot Account',
+                value: user.bot ? 'Yes' : 'No',
+                inline: true,
             }
+            // Add more fields as needed
         )
         
         .setFooter({

@@ -1,5 +1,16 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
-
+const algorithm = `
+// Sorting the numbers in ascending order
+for (let i = 0; i < numbers.length; i++) {
+    for (let j = i + 1; j < numbers.length; j++) {
+        if (numbers[i] > numbers[j]) {
+            // Swap the numbers if the first number is greater than the second number
+            const temp = numbers[i];
+            numbers[i] = numbers[j];
+            numbers[j] = temp;
+        }
+    }
+}`
 module.exports = {
     name: 'sortascending',
     description: 'Sort the numbers in ascending order',
@@ -46,6 +57,11 @@ module.exports = {
                     {
                         name: 'Time Taken',
                         value: `${Date.now() - startTime} ms`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Algorithm',
+                        value: `\`\`\`js\n${algorithm}\n\`\`\``,
                         inline: false,
                     },
                 ]);

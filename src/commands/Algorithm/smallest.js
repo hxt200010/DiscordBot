@@ -1,5 +1,11 @@
 const {Client, Interaction, ApplicationCommandOptionType, EmbedBuilder} = require('discord.js')
-
+const smallest = `
+let smallestNumber = numbers[0]; 
+for (let i = 1; i < numbers.length; i++) {
+     if (numbers[i] < smallestNumber) {
+         smallestNumber = numbers[i]; 
+     }
+}`
 module.exports = {
     name: 'smallest',
     description: 'Find the smallest number in the array',
@@ -43,6 +49,11 @@ module.exports = {
                         name: `Time Taken`,
                         value: `${Date.now() - startTimesstamp} ms`,
                         inline: false
+                    },
+                    {
+                        name: 'Algorithm', 
+                        value: `\`\`\`js\n${smallest}\n\`\`\``,
+                        inline: false,
                     }
                 ])
             interaction.reply({ embeds: [embed] });

@@ -1,5 +1,17 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
-
+const binarySearchCode = `
+while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    if (numbers[mid] === target) {
+        found = true;
+        index = mid;
+        break;
+    } else if (numbers[mid] < target) {
+        left = mid + 1;
+    } else {
+        right = mid - 1;
+    }
+}`;
 module.exports = {
     name: 'binarysearch',
     description: 'Perform binary search on a sorted array',
@@ -30,6 +42,8 @@ module.exports = {
             let found = false;
             let index = -1;
 
+            const algorithmSteps = []; // Initialize an empty array to store algorithm steps
+            let step = 1; // Initialize the step counter
             while (left <= right) {
                 const mid = Math.floor((left + right) / 2);
                 if (numbers[mid] === target) {
@@ -41,6 +55,10 @@ module.exports = {
                 } else {
                     right = mid - 1;
                 }
+
+                // Add the current step to the algorithm steps
+                algorithmSteps.push(`Step ${step}: Left=${left}, Right=${right}`);
+                step++;
             }
 
             const embed = new EmbedBuilder()
@@ -65,6 +83,11 @@ module.exports = {
                     {
                         name: 'Time Taken',
                         value: `${Date.now() - startTimestamp} ms`,
+                        inline: false,
+                    },
+                    {
+                        name: 'Algorithm',
+                        value: `\`\`\`js\n${binarySearchCode}\n\`\`\``,
                         inline: false,
                     },
                 ]);

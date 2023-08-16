@@ -80,6 +80,11 @@ module.exports = {
           value: `${question}\n\n${allAnswers.map((answer) => `- ${answer}`).join('\n')}`,
           inline: false,
         });
+        embed.addFields({
+          name: `Correct Answer for Question ${i + 1}`,
+          value: correctAnswer,
+          inline: false,
+        });
       }
 
       await interaction.reply({ embeds: [embed] });

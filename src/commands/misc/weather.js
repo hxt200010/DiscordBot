@@ -1,5 +1,7 @@
 const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const axios = require('axios');
+const moment = require('moment-timezone'); 
+const tzlookup = require('tz-lookup');
 require('dotenv').config();
 
 const apitoken = process.env.WEATHER_API;
@@ -24,6 +26,9 @@ module.exports = {
             )
             .then(response => {
                 const apiData = response.data;
+                 // Convert the timezone offset to a timezone identifier
+                 const timezone = tzlookup(apiData.coord.lat, apiData.coord.lon);
+                const currentWeatherTime = moment.unix(apiData.dt).tz(timezone).format('HH:mm:ss,  MM-DD-YYYY');
                 const embed = new EmbedBuilder()
                     .setColor('Random')
                     .setThumbnail(`http://openweathermap.org/img/w/${apiData.weather[0].icon}.png`)
@@ -37,7 +42,7 @@ module.exports = {
                         {
                             name: 'Maximum Temperature',
                             value: `${apiData.main.temp_max}°C`,
-                            inline: true,
+                            inline: false,
                         },
                         {
                             name: 'Minimum Temperature',
@@ -53,6 +58,26 @@ module.exports = {
                             name: 'Wind Speed',
                             value: `${apiData.wind.speed} m/s`,
                             inline: true,
+                        },
+                        {
+                            name: 'Weather Conditions',
+                            value: apiData.weather[0].description,
+                            inline: false,
+                        },
+                        {
+                            name: 'Pressure',
+                            value: `${apiData.main.pressure} hPa`,
+                            inline: true,
+                        },
+                        {
+                            name: 'Cloudiness',
+                            value: `${apiData.clouds.all}%`,
+                            inline: true,
+                        },
+                        {
+                            name: `Current Time in __${city}__`,
+                            value: currentWeatherTime,
+                            inline: false,
                         }
                     )
 

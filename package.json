@@ -15,13 +15,18 @@
     "commandkit": "^0.0.8",
     "discord": "^0.8.2",
     "discord.js": "^14.12.1",
+    "discord.js-commando": "^0.12.3",
     "dotenv": "^16.3.1",
     "got": "^13.0.0",
+    "luxon": "^3.3.0",
     "mathjs": "^11.9.1",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "node-fetch": "^3.3.2",
     "openai": "^3.3.0",
     "openweather-apis": "^4.5.0",
     "translate-google": "^1.5.0",
+    "tz-lookup": "^6.1.25",
     "weather-js": "^2.0.0"
   },
   "devDependencies": {

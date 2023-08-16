@@ -15,7 +15,6 @@ module.exports = {
         const message = interaction.options.getString('message');
         // Reply with the user's message
         interaction.reply(message);
-        // Acknowledge the interaction without sending a reply
-        interaction.deferReply();
+        
     },
 };
