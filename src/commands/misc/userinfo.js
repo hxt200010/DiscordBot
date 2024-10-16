@@ -47,7 +47,7 @@ module.exports = {
                 inline: true
             },
             {
-                name: 'Bot Account',
+                name: 'Bot?',
                 value: user.bot ? 'Yes' : 'No',
                 inline: true,
             }

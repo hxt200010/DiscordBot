@@ -22,7 +22,7 @@ const openai = new OpenAIApi(configuration);
 client.on('messageCreate', async (message) => {
     //if the user is the bot, return 
     if (message.author.bot) return; 
-    if (message.channel.id !== process.env.CHANNEL_ID) return; 
+    if (message.channel.id !== process.env.CHANNEL_ID && message.channel.id !== process.env.CHANNEL_ID_2) return; 
     if (message.content.startsWith('!')) return; 
     let conversationLog = [{ role: 'system', content: "You are a Friendly Chatbot"}]; 
     
