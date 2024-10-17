@@ -3,6 +3,11 @@ const { Client, IntentsBitField} = require('discord.js');
 const { Configuration, OpenAIApi} = require('openai'); 
 const eventHandler = require('./handlers/eventHandler'); 
 
+console.log('API Key:', process.env.API_KEY);
+console.log('Token:', process.env.TOKEN);
+console.log('Channel ID:', process.env.CHANNEL_ID);
+console.log('Channel ID 2:', process.env.CHANNEL_ID_2);
+
 const client = new Client({
     intents: [
         IntentsBitField.Flags.Guilds, 
@@ -15,7 +20,7 @@ const client = new Client({
  * Open AI configuration 
  */
 const configuration = new Configuration({
-    apiKey: process.env.API_KEY
+    apiKey: 'sk-VPPFVg6TxBvs7GgX-qVAGQg7ZP050JQLhfliXFC8E4T3BlbkFJvxCZmI9SFplCaKO_8QoKPWa3uFY21vuSVwzmYVIZQA'
 })
 const openai = new OpenAIApi(configuration); 
 
@@ -46,7 +51,7 @@ client.on('messageCreate', async (message) => {
     }); 
     
     const result = await openai.createChatCompletion({
-        model: 'gpt-3.5-turbo', 
+        model: 'gpt-4o-mini', 
         messages: conversationLog,
     })
     message.reply(result.data.choices[0].message); 

@@ -30,7 +30,7 @@ module.exports = {
                 }, 
                 {
                     name: `misc`, 
-                    value: `\`\`owner, ping, avatar, weather, translate, userinfo, help\`\``, 
+                    value: `\`\`owner, ping, avatar, weather, translate, userinfo, help, food\`\``, 
                     inline: false
                 },
                 {
