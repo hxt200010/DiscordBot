@@ -15,6 +15,6 @@ module.exports = {
     callback: (client, interaction) => {
         const expression = interaction.options.getString('expression');
         const result = math.evaluate(expression); 
-        interaction.reply(`Result: ${result}`); 
+        interaction.reply(`${expression}\n Result: ${result}`); 
     },
 };

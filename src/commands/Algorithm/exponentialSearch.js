@@ -38,12 +38,13 @@ module.exports = {
             const arrayInput = interaction.options.getString('array');
             const target = interaction.options.getInteger('target');
             const numbers = arrayInput.split(' ').map(Number);
-
+            // Start high-resolution time
+            const start = process.hrtime();
             // Exponential Search Algorithm
             let bound = 1;
             while (bound < numbers.length && numbers[bound] < target) {
                 bound *= 2;
-            }
+            }   
 
             const startIndex = Math.max(bound / 2, 0);
             const endIndex = Math.min(bound, numbers.length - 1);
@@ -55,7 +56,12 @@ module.exports = {
                     break;
                 }
             }
-            const startTimesstamp = Date.now(); 
+            // End high-resolution time
+            const [seconds, nanoseconds] = process.hrtime(start);
+            const timeTakenMs = (seconds * 1000) + (nanoseconds / 1e6); // Convert to milliseconds
+
+            
+             
             const embed = new EmbedBuilder()
                 .setTitle('Exponential Search Result')
                 .setColor('Random')
@@ -76,9 +82,9 @@ module.exports = {
                         inline: false,
                     },
                     {
-                        name: `Time Taken`,
-                        value: `${Date.now() - startTimesstamp} ms`,
-                        inline: false
+                        name: 'Time Taken',
+                        value: `${timeTakenMs.toFixed(3)} ms`, // Show time taken with 3 decimal places
+                        inline: false,
                     },
                     {
                         name: 'Algorithm',

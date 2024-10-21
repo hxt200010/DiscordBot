@@ -8,7 +8,7 @@ module.exports = {
         try {
             const url = 'https://api.giphy.com/v1/gifs/random';
             const params = new URLSearchParams({
-                api_key: 'y4AfboTBSccXFHfxi1OiQDACI9WD3zdi', // Replace with your Giphy API key
+                api_key: process.env.MEME_API, // Replace with your Giphy API key
                 tag: 'meme',
             });
 

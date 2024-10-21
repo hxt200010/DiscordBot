@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 // Unicode characters for card suits
 const suits = {
@@ -17,69 +17,49 @@ function drawCard() {
     return `${randomCard}${randomSuit}`;
 }
 
-// ... Other parts of the code ...
-
-module.exports = {
-    name: 'blackjack',
-    description: 'Play a game of blackjack against the bot',
-    options: [],
-    callback: async (client, interaction) => {
-        try {
-            // Initial deal
-            const playerHand = [drawCard(), drawCard()];
-            const botHand = [drawCard()];
-
-            const embed = new EmbedBuilder()
-                .setColor('Random')
-                .setTitle('Blackjack')
-                .setDescription(`Your hand: ${playerHand.join(', ')}`)
-                .addFields(
-                    {
-                        name: "Bot's hand",
-                        value: botHand.join('\n'),
-                        inline: true,
-                    },
-                    {
-                        name: 'Your score',
-                        value: calculateScore(playerHand),
-                        inline: true,
-                    }
-                )
-                .setFooter('Type /hit to get another card or /stand to stay.');
-
-            await interaction.reply({ embeds: [embed] });
-        } catch (error) {
-            console.error(error);
-            await interaction.reply('An error occurred while processing the blackjack command.');
-        }
-    },
-};
-
-// ... Other parts of the code ...
-
-
 // Function to calculate the score of a blackjack hand
 function calculateScore(hand) {
     let score = 0;
     let numAces = 0;
 
     for (const card of hand) {
-        const rank = card.slice(0, -1);
+        const rank = card.slice(0, -1); // Remove the suit symbol
         if (rank === 'A') {
             numAces++;
-            score += 11;
+            score += 11; // Aces are worth 11 initially
         } else if (['K', 'Q', 'J'].includes(rank)) {
-            score += 10;
+            score += 10; // Face cards are worth 10
         } else {
-            score += parseInt(rank);
+            score += parseInt(rank); // Number cards are worth their face value
         }
     }
 
-    // Adjust score for aces
+    // Adjust score if aces push the score above 21
     while (score > 21 && numAces > 0) {
-        score -= 10;
+        score -= 10; // Change an Ace from 11 to 1
         numAces--;
     }
 
     return score;
 }
+
+// Function to create buttons (Hit, Stand)
+function createBlackjackButtons() {
+    return new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+            .setCustomId('hit')
+            .setLabel('Hit')
+            .setStyle(ButtonStyle.Primary),
+        new ButtonBuilder()
+            .setCustomId('stand')
+            .setLabel('Stand')
+            .setStyle(ButtonStyle.Secondary)
+    );
+}
+
+// Export the necessary functions to be used in other files
+module.exports = {
+    drawCard,
+    calculateScore,
+    createBlackjackButtons,
+};
