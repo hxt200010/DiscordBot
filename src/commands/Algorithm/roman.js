@@ -1,7 +1,8 @@
 
 const { ApplicationCommandOptionType, EmbedBuilder, Embed } = require('discord.js');
 const { callback } = require('./exponentialSearch');
-const roman_to_integer_algorithm = `# example: IX = X - I = 10 - 1 = 9 
+const roman_to_integer_algorithm = `
+# example: IX = X - I = 10 - 1 = 9 
 # 998 = CMXCVIII = CM + XC + VIII = (-100 + 1000) + (-10+100) + 8 
 class Solution:
     def romanToInt(self, s: str) -> int:

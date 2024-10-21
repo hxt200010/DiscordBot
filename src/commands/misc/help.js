@@ -35,7 +35,7 @@ module.exports = {
                 },
                 {
                     name: `Algorithm gameplay`, 
-                    value: `\`\`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs\`\``, 
+                    value: `\`\`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs, roman, remove\`\``, 
                     inline: false
                 },
                 {
