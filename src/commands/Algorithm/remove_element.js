@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, EmbedBuilder, IntegrationApplication } = require('discord.js');
+const { Client, ApplicationCommandOptionType, EmbedBuilder, IntegrationApplication, Embed } = require('discord.js');
 const algorithm = `
 class Solution:
     def removeElement(self, nums: List[int], val: int) -> int:
@@ -55,6 +55,7 @@ module.exports = {
             const embed = new EmbedBuilder() 
             .setTitle('Remove element from an array')
             .setColor('Random')
+            .setThumbnail(client.user.displayAvatarURL())
             .addFields([
                 {
                     name: 'Array:', 

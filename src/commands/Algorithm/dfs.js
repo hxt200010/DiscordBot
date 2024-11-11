@@ -1,8 +1,6 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 
-
 const algorithm = `
-
 class Graph {
     constructor() {
         this.vertices = new Map();
@@ -38,7 +36,8 @@ class Graph {
         return visitedNodes;
     }
 }
-`
+`;
+
 class Graph {
     constructor() {
         this.vertices = new Map();
@@ -95,7 +94,7 @@ module.exports = {
     callback: async (client, interaction) => {
         try {
             const input = interaction.options.getString('vertices');
-            const start = interaction.options.getString('start');
+            const startVertex = interaction.options.getString('start');
             const vertices = input.split(' ');
 
             const graph = new Graph();
@@ -106,12 +105,22 @@ module.exports = {
             // Add edges as needed
             // graph.addEdge('vertex1', 'vertex2');
 
-            const visitedNodes = graph.dfsRecursive(start);
-            const startTimesstamp = Date.now(); 
+            // Start timing the DFS operation
+            const start = process.hrtime();
+            const visitedNodes = graph.dfsRecursive(startVertex);
+            const [seconds, nanoseconds] = process.hrtime(start);
+            const timeTakens = (seconds * 1000) + (nanoseconds / 1e6); // Convert to milliseconds
+
             const embed = new EmbedBuilder()
                 .setTitle('Depth-First Search Result')
                 .setColor('Random')
+                .setThumbnail(client.user.displayAvatarURL())
                 .addFields([
+                    {
+                        name: 'Description',
+                        value: 'Depth-First Search (DFS) is an algorithm used for traversing or searching tree or graph data structures. Starting from the given vertex, it explores as far as possible along each branch before backtracking, ensuring all vertices are visited.',
+                        inline: false,
+                    },
                     {
                         name: 'Vertices',
                         value: `\`\`${vertices.join(', ')}\`\``,
@@ -119,7 +128,7 @@ module.exports = {
                     },
                     {
                         name: 'Starting Vertex',
-                        value: `\`\`${start}\`\``,
+                        value: `\`\`${startVertex}\`\``,
                         inline: false,
                     },
                     {
@@ -128,12 +137,12 @@ module.exports = {
                         inline: false,
                     },
                     {
-                        name: `Time Taken`,
-                        value: `${Date.now() - startTimesstamp} ms`,
-                        inline: false
+                        name: 'Time Taken',
+                        value: `${timeTakens.toFixed(3)} ms`, // Show time taken with 3 decimal places
+                        inline: false,
                     },
                     {
-                        name: 'Algorithm', 
+                        name: 'Algorithm',
                         value: `\`\`\`js\n${algorithm}\n\`\`\``,
                         inline: false,
                     }

@@ -1,8 +1,6 @@
-
 const { ApplicationCommandOptionType, EmbedBuilder, Embed } = require('discord.js');
 const { callback } = require('./exponentialSearch');
-const roman_to_integer_algorithm = `
-# example: IX = X - I = 10 - 1 = 9 
+const roman_to_integer_algorithm = `# example: IX = X - I = 10 - 1 = 9 
 # 998 = CMXCVIII = CM + XC + VIII = (-100 + 1000) + (-10+100) + 8 
 class Solution:
     def romanToInt(self, s: str) -> int:
@@ -55,21 +53,28 @@ function romanToInt(s) {
     return resultNumber; 
 }
 
-
 module.exports = {
     name: 'romantointeger', 
     description: 'convert from Roman to integer',
     options: [
         {
             name: 'symbols', 
-            description: 'Enter a roman symbol or a list of roman symbol', 
+            description: 'Enter a roman symbol or a list of roman symbol, in capital letter', 
             type: ApplicationCommandOptionType.String, 
             required: true, 
         }
     ], 
     callback: async (client, interaction) => {
         try {
-            const symbol = interaction.options.getString('symbols'); 
+            const symbol = interaction.options.getString('symbols');
+            const validRomanRegex = /^[IVXLCDM]+$/;
+
+            // Validate input for correct Roman numeral format
+            if (!validRomanRegex.test(symbol)) {
+                await interaction.reply('Invalid input. Please enter a valid Roman numeral using only the characters I, V, X, L, C, D, M.');
+                return;
+            }
+
             // Start high-resolution time
             const start = process.hrtime();
             const result = romanToInt(symbol);  // <- Convert roman to integer using string

@@ -25,7 +25,7 @@ module.exports = {
                 }, 
                 {
                     name: `mathematic`, 
-                    value: `\`\`add, subtract, multiply, divide, sqrt, calculate, log\`\``, 
+                    value: `\`\`add, subtract, multiply, divide, sqrt, calculate, log, integrate, sin, cos, tan\`\``, 
                     inline: false  
                 }, 
                 {
@@ -35,7 +35,7 @@ module.exports = {
                 },
                 {
                     name: `Algorithm gameplay`, 
-                    value: `\`\`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs, roman, remove\`\``, 
+                    value: `\`\`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs, roman, remove, duplicate\`\``, 
                     inline: false
                 },
                 {
