@@ -54,7 +54,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle('🎰  High-Stakes Blackjack  🎰')
                 .setColor(gameOver ? (result.includes('Win') ? 0xFFD700 : 0xFF0000) : 0x2F3136) // Gold for win, Red for loss, Dark for ongoing
-                .setThumbnail('https://i.imgur.com/4d1Fh7s.png') // Generic casino chip icon
+                .setThumbnail(client.user.displayAvatarURL())
                 .addFields(
                     { name: '👤 Your Hand', value: `\`${formatHand(playerHand)}\`\nScore: **${calculateScore(playerHand)}**`, inline: true },
                     { name: '🤖 Dealer Hand', value: `\`${formatHand(dealerHand, !gameOver)}\`\nScore: **${gameOver ? calculateScore(dealerHand) : '?'}**`, inline: true },

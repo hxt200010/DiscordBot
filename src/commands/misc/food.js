@@ -1,66 +1,105 @@
 const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const axios = require('axios');
+require('dotenv/config'); 
+const { Configuration, OpenAIApi } = require("openai");
+
+
+const configuration = new Configuration({
+    apiKey: process.env.API_KEY
+});
+const openai = new OpenAIApi(configuration);
 
 module.exports = {
-    name: 'calories',
-    description: 'Recommend a food based on your prompt',
+    name: "calories",
+    description: "Estimate calories & macros using OpenAI",
     options: [
         {
-            name: 'prompt',
-            description: 'enter a query like "1 cup mashed potatoes and 2 tbsp gravy" to see how it works',
+            name: "prompt",
+            description: 'Describe the food (e.g. "1 cup mashed potatoes and gravy")',
             type: ApplicationCommandOptionType.String,
-            required: true,  // Make the prompt required
+            required: true,
         },
     ],
 
     callback: async (client, interaction) => {
         try {
-            // Get the prompt provided by the user
-            const prompt = interaction.options.getString('prompt');
+            const prompt = interaction.options.getString("prompt");
 
-            const apiKey = process.env.FOOD_API;
-            const appId = process.env.FOOD_APPID;
+            await interaction.deferReply(); // prevent timeout
 
-            const url = `https://trackapi.nutritionix.com/v2/natural/nutrients`;
-            const headers = {
-                'x-app-id': appId,
-                'x-app-key': apiKey,
-                'Content-Type': 'application/json',
-            };
+            // --- AI Nutrition Extraction Prompt ---
+            const systemInstruction = `
+You are a nutrition expert AI.
+Given a messy natural-language food description, break it down and estimate calories & macros
+based on USDA data and typical values.
 
-            const payload = { query: prompt };  // Use the user's prompt directly
+Respond ONLY in this strict JSON format:
 
-            console.log('Sending request to API:', payload);  // Log the request
+{
+  "items": [
+    {
+      "name": "",
+      "calories": number,
+      "protein_g": number,
+      "carbs_g": number,
+      "fat_g": number
+    }
+  ],
+  "total_calories": number
+}
 
-            const response = await axios.post(url, payload, { headers });
+If the prompt is unclear, return an empty array.
+            `;
 
-            console.log('API Response:', response.data);  // Log the response
+            const result = await openai.createChatCompletion({
+                model: "gpt-4o-mini",
+                messages: [
+                    { role: "system", content: systemInstruction },
+                    { role: "user", content: `Food description: ${prompt}` }
+                ],
+                temperature: 0.1,
+            });
 
-            const items = response.data.foods;
+            const aiMessage = result.data.choices[0].message.content;
 
-            if (!items || items.length === 0) {
-                interaction.reply('Sorry, I couldn\'t find any food recommendations matching your prompt.');
-                return;
+            let nutrition;
+            try {
+                nutrition = JSON.parse(aiMessage);
+            } catch (e) {
+                console.error("JSON Parse Error:", aiMessage);
+                return interaction.editReply("I couldn't interpret the nutrition info. Try again.");
             }
 
-            // Format the results
-            const foodList = items.map(item => `${item.food_name} (${item.nf_calories} calories)`).join('\n');
+            if (!nutrition.items || nutrition.items.length === 0) {
+                return interaction.editReply("I couldn't understand that food. Try another description.");
+            }
+
+            // --- Format Output ---
+            const fields = nutrition.items.map((item) => ({
+                name: item.name,
+                value:
+                    `Calories: **${item.calories} kcal**\n` +
+                    `Protein: **${item.protein_g}g**\n` +
+                    `Carbs: **${item.carbs_g}g**\n` +
+                    `Fat: **${item.fat_g}g**`,
+                inline: false,
+            }));
+
             const embed = new EmbedBuilder()
-                .setColor('Random')
-                .setTitle(`${interaction.user.username}'s Food Recommendations`)
-                .setDescription(foodList);
+                .setColor("#4CAF50")
+                .setTitle("🍽 Nutrition Estimate")
+                .setDescription(`Analysis for: **"${prompt}"**`)
+                .addFields(fields)
+                .addFields({
+                    name: "🔥 Total Calories",
+                    value: `**${nutrition.total_calories} kcal**`,
+                });
 
-            // Print the user's prompt and respond with the list of ingredients
-            interaction.reply({ content: `"${prompt}"`, embeds: [embed] });
-            
+            return interaction.editReply({ embeds: [embed] });
 
-        } catch (error) {
-            console.error(error);
-            // Extract the error message from the API response
-            const apiErrorMessage = error.response?.data?.message || 'There was an error trying to fetch real-time food recommendations.';
-                        
-            // Send the API error message to the user
-            interaction.reply(`${apiErrorMessage}`);
+        } catch (err) {
+            console.error(err);
+            return interaction.editReply("There was an error with the nutrition request.");
         }
     },
 };
