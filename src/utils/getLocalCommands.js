@@ -15,6 +15,11 @@ module.exports = (exceptions = []) => {
     for (const commandFile of commandFiles) {
       const commandObject = require(commandFile);
 
+      // Skip if not a valid command object
+      if (!commandObject || typeof commandObject !== 'object' || !commandObject.name) {
+        continue;
+      }
+
       if (exceptions.includes(commandObject.name)) {
         continue;
       }

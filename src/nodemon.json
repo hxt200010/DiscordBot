@@ -1,0 +1,12 @@
+{
+  "ignore": [
+    "node_modules",
+    "*.log",
+    "*.json",
+    ".env",
+    "src/data/*",
+    "**/*.cache",
+    ".git",
+    "OneDrive"
+  ]
+}
