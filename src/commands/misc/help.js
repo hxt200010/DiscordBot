@@ -40,7 +40,7 @@ module.exports = {
                 },
                 {
                     name: `Fun`, 
-                    value: `\`\`meme, say\`\``, 
+                    value: `\`\`meme, say, blackjack\`\``, 
                     inline: false
                 },
                 {
