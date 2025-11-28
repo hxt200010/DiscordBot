@@ -62,6 +62,11 @@ module.exports = {
                     name: `User Interaction`,
                     value: `\`\`steal\`\``,
                     inline: false
+                },
+                {
+                    name: `Puzzle / Logic Games`,
+                    value: `\`\`riddle, cipher, sudoku, hangman\`\``,
+                    inline: false
                 }
             ])
     
