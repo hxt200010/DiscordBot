@@ -186,11 +186,10 @@ module.exports = {
             description: 'Choose a topic',
             type: 3, // STRING
             required: true,
-            choices: [
-                { name: 'Food', value: 'food' },
-                { name: 'Anime', value: 'anime' },
-                { name: 'Geography', value: 'geography' }
-            ]
+            choices: Object.keys(wordCategories).map(key => ({
+                name: key.charAt(0).toUpperCase() + key.slice(1),
+                value: key
+            }))
         }
     ],
     /**
