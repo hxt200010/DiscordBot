@@ -1,3 +1,27 @@
 {
-  "704744682080567306": 2765
+  "704744682080567306": {
+    "balance": 3659,
+    "inventory": [
+      {
+        "name": "Gun",
+        "price": 150,
+        "description": "Shoot other users to steal money. Durability: 5 uses.",
+        "durability": 5,
+        "type": "weapon"
+      }
+    ],
+    "dailyGive": {
+      "amount": 0,
+      "date": null
+    }
+  },
+  "1130301590146916435": {
+    "balance": 0,
+    "inventory": [],
+    "dailyGive": {
+      "amount": 0,
+      "date": null
+    },
+    "isShielded": false
+  }
 }

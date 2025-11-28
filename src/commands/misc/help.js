@@ -40,12 +40,27 @@ module.exports = {
                 },
                 {
                     name: `Fun`, 
-                    value: `\`\`meme, say, blackjack\`\``, 
+                    value: `\`\`meme, say, blackjack, mine\`\``, 
                     inline: false
                 },
                 {
                     name: `Education`, 
                     value: `\`\`trivia\`\``, 
+                    inline: false
+                },
+                {
+                    name: `Economy`,
+                    value: `\`\`balance, daily, give\`\``,
+                    inline: false
+                },
+                {
+                    name: `Shop`,
+                    value: `\`\`shop, buy, inventory, shoot, repair, shield\`\``,
+                    inline: false
+                },
+                {
+                    name: `User Interaction`,
+                    value: `\`\`steal\`\``,
                     inline: false
                 }
             ])

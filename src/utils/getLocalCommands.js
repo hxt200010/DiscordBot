@@ -24,6 +24,9 @@ module.exports = (exceptions = []) => {
         continue;
       }
 
+      const category = path.basename(commandCategory);
+      commandObject.category = category;
+      
       localCommands.push(commandObject);
     }
   }
