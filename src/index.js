@@ -49,7 +49,7 @@ client.on('messageCreate', async (message) => {
         model: 'gpt-4o-mini', 
         messages: conversationLog,
     })
-    message.reply(result.data.choices[0].message); 
+    message.reply(result.data.choices[0].message.content); 
 }); 
 
 client.on('interactionCreate', (interaction) => {
