@@ -210,7 +210,7 @@ module.exports = {
         const wrongGuesses = 0;
 
         function getDisplayWord() {
-            return word.split('').map(letter => guessed.includes(letter) ? letter : '_').join(' ');
+            return word.split('').map(letter => guessed.includes(letter) ? letter : '▢').join(' ');
         }
 
         const embed = new EmbedBuilder()
@@ -246,9 +246,9 @@ module.exports = {
             game.guessed.push(letter);
 
             if (game.word.includes(letter)) {
-                const displayWord = game.word.split('').map(l => game.guessed.includes(l) ? l : '_').join(' ');
+                const displayWord = game.word.split('').map(l => game.guessed.includes(l) ? l : '▢').join(' ');
                 
-                if (!displayWord.includes('_')) {
+                if (!displayWord.includes('▢')) {
                     // Won!
                     const reward = 60;
                     economySystem.addBalance(userId, reward);
@@ -270,7 +270,7 @@ module.exports = {
                     activeGames.delete(userId);
                     collector.stop();
                 } else {
-                    const displayWord = game.word.split('').map(l => game.guessed.includes(l) ? l : '_').join(' ');
+                    const displayWord = game.word.split('').map(l => game.guessed.includes(l) ? l : '▢').join(' ');
                     await msg.reply(`❌ Wrong!\n\n${hangmanStages[game.wrongGuesses]}\n\n**Word:** ${displayWord}\n**Wrong:** ${wrongLetters}\n**Attempts left:** ${attemptsLeft}`);
                 }
             }
