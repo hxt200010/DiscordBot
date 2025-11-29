@@ -103,13 +103,21 @@ module.exports = {
                     });
 
                     const selectedIndex = parseInt(confirmation.customId.split('_')[1]);
+                    const correctAnswer = questionData.options[questionData.correctIndex];
+                    const completedCode = questionData.code.replace('____', correctAnswer);
 
                     if (selectedIndex === questionData.correctIndex) {
                         economySystem.addBalance(interaction.user.id, reward);
                         coinsEarned += reward;
-                        await confirmation.update({ content: `✅ **Correct!** You earned ${reward} coins.`, components: [] });
+                        await confirmation.update({ 
+                            content: `✅ **Correct!** You earned ${reward} coins.\n\n**Completed Code:**\n\`\`\`${language.toLowerCase()}\n${completedCode}\n\`\`\``, 
+                            components: [] 
+                        });
                     } else {
-                        await confirmation.update({ content: `❌ **Wrong!** The correct answer was: **${questionData.options[questionData.correctIndex]}**`, components: [] });
+                        await confirmation.update({ 
+                            content: `❌ **Wrong!** The correct answer was: **${correctAnswer}**\n\n**Completed Code:**\n\`\`\`${language.toLowerCase()}\n${completedCode}\n\`\`\``, 
+                            components: [] 
+                        });
                     }
                 } catch (e) {
                     await interaction.editReply({ content: '⏰ Time ran out!', components: [] });
