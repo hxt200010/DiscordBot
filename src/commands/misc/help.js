@@ -30,7 +30,7 @@ module.exports = {
                 },
                 {
                     name: `Education`,
-                    value: `\`\`learn, trivia\`\``,
+                    value: `\`\`learn, trivia, datastructure\`\``,
                     inline: false
                 },
                 {
