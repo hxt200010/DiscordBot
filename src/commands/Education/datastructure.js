@@ -23,6 +23,18 @@ module.exports = {
             type: ApplicationCommandOptionType.String,
             required: false,
         },
+        {
+            name: 'difficulty',
+            description: 'The difficulty level of the content.',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+            choices: [
+                { name: 'Easy', value: 'Easy' },
+                { name: 'Medium', value: 'Medium' },
+                { name: 'Slightly Hard', value: 'Slightly Hard' },
+                { name: 'Hard', value: 'Hard' },
+            ],
+        },
     ],
 
     /**
@@ -32,6 +44,7 @@ module.exports = {
     callback: async (client, interaction) => {
         const option = interaction.options.getString('option');
         const language = interaction.options.getString('language') || 'Python';
+        const difficulty = interaction.options.getString('difficulty') || 'Medium';
 
         await interaction.deferReply();
 
@@ -61,16 +74,16 @@ module.exports = {
 
             } else {
                 // Specific topic mode
-                const prompt = `Teach me about "${option}" in data structures and algorithms using ${language}.
+                const prompt = `Teach me about "${option}" in data structures and algorithms using ${language} at a ${difficulty} level.
                 Provide the response in strict JSON format with the following keys:
                 {
-                    "definition": "High-level definition",
-                    "example": "Simple code example in ${language}",
+                    "definition": "High-level definition suitable for ${difficulty} level",
+                    "example": "Code example in ${language} suitable for ${difficulty} level",
                     "operations": "Common operations list",
                     "time_complexity": "Big-O time complexities",
                     "use_cases": "Real-world use cases",
-                    "practice_question": "A practice question for the user to solve",
-                    "solution": "Step-by-step solution code in ${language} and explanation"
+                    "practice_question": "A practice question for the user to solve (Difficulty: ${difficulty})",
+                    "solution": { "code": "Step-by-step solution code in ${language}", "explanation": "Detailed explanation of the solution" }
                 }
                 Ensure the explanations are detailed but concise enough to fit in a Discord embed.
                 Do not include markdown formatting like \`\`\`json in the wrapper, just the raw JSON string.`;
@@ -93,18 +106,27 @@ module.exports = {
                     return;
                 }
 
+                console.log('OpenAI Response Data:', data); // Debug logging
+
+                const formatField = (content) => {
+                    if (typeof content === 'string') return content;
+                    if (Array.isArray(content)) return content.map(item => typeof item === 'string' ? item : JSON.stringify(item)).join('\n');
+                    if (typeof content === 'object' && content !== null) return JSON.stringify(content, null, 2);
+                    return String(content || 'N/A');
+                };
+
                 const embed = new EmbedBuilder()
-                    .setTitle(`📖 Learn: ${option}`)
-                    .setColor('Blue')
-                    .addFields(
-                        { name: 'Definition', value: data.definition },
-                        { name: 'Example', value: `\`\`\`${language.toLowerCase()}\n${data.example}\n\`\`\`` },
-                        { name: 'Operations', value: data.operations },
-                        { name: 'Time Complexity', value: data.time_complexity },
-                        { name: 'Use Cases', value: data.use_cases },
-                        { name: 'Practice Question', value: data.practice_question }
-                    )
-                    .setFooter({ text: 'Click "Show Solution" to see the answer and earn coins!' });
+                        .setTitle(`📖 Learn: ${option}`)
+                        .setColor('Blue')
+                        .addFields(
+                            { name: 'Definition', value: formatField(data.definition) },
+                            { name: 'Example', value: `\`\`\`${language.toLowerCase()}\n${formatField(data.example)}\n\`\`\`` },
+                            { name: 'Operations', value: formatField(data.operations) },
+                            { name: 'Time Complexity', value: formatField(data.time_complexity) },
+                            { name: 'Use Cases', value: formatField(data.use_cases) },
+                            { name: 'Practice Question', value: formatField(data.practice_question) }
+                        )
+                        .setFooter({ text: 'Click "Show Solution" to see the answer and earn coins!' });
 
                 const button = new ButtonBuilder()
                     .setCustomId('show_solution')
@@ -127,9 +149,20 @@ module.exports = {
                         const reward = 5;
                         economySystem.addBalance(interaction.user.id, reward);
 
+                        let solutionText = '';
+                        if (typeof data.solution === 'object' && data.solution !== null) {
+                            if (data.solution.code && data.solution.explanation) {
+                                solutionText = `${data.solution.explanation}\n\n**Code:**\n\`\`\`${language.toLowerCase()}\n${data.solution.code}\n\`\`\``;
+                            } else {
+                                solutionText = JSON.stringify(data.solution, null, 2);
+                            }
+                        } else {
+                            solutionText = formatField(data.solution);
+                        }
+
                         const finalSolutionEmbed = new EmbedBuilder()
                             .setTitle(`✅ Solution: ${option}`)
-                            .setDescription(`${data.solution}\n\n**Reward:** You earned ${reward} coins!`)
+                            .setDescription(`${solutionText}\n\n**Reward:** You earned ${reward} coins!`)
                             .setColor('Gold');
 
                         await confirmation.update({ embeds: [embed, finalSolutionEmbed], components: [] });
