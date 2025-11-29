@@ -1,7 +1,10 @@
 const activities = [
-    '👋Xin chào mọi người ạ',
-    'Mọi người hãy dùng channel ai của em để nói chuyện trực tiếp với em nhé 😊',
-    '⭐💫⭐',
+    '💨⚡ Gotta Go Fastt⚡️ 💨⚡',
+    '💨⚡ I\'m a hedgehog. I thought that was obvious. 💨⚡',
+    '💨⚡ Nobody\'s gonna take my friends from me. Except me. 💨⚡',
+    '💨⚡ Uh, meow? 💨⚡',
+    '💨⚡ I\'ve been living my best life on Earth! 💨⚡',
+    '💨⚡ This is my power… and I\'m not using it to run away anymore. 💨⚡'
   ];
   
   module.exports = (client) => {
@@ -25,6 +28,6 @@ const activities = [
     // Set a new random activity every 10 seconds (10000 milliseconds)
     setInterval(() => {
       setRandomPresence();
-    }, 10000);
+    }, 20000);
   };
   

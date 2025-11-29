@@ -5,7 +5,7 @@ module.exports = {
     description: 'Generate list of commands',
     callback: async (client, interaction) => {
         const embed = new EmbedBuilder()
-            .setTitle('List of commands')
+            .setTitle('You don’t know what I’m capable of!')
             .setColor('Random')
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp(Date.now())
