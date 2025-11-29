@@ -2,6 +2,8 @@
 
 ## Overview
 
+![Sonic Tail Knuckle](src/images/sonicTailKnuckle.png)
+
 This is a feature-rich Discord bot built with Discord.js that provides a variety of commands including algorithmic operations, mathematical calculations, utility functions, entertainment features, and a complete economy system with casino games. The bot uses slash commands and is organized with a modular architecture for easy maintenance and extensibility.
 
 ## Features
