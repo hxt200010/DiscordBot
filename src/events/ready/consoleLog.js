@@ -1,10 +1,10 @@
 const activities = [
-    '💨⚡ Gotta Go Fastt⚡️ 💨⚡',
-    '💨⚡ I\'m a hedgehog. I thought that was obvious. 💨⚡',
-    '💨⚡ Nobody\'s gonna take my friends from me. Except me. 💨⚡',
-    '💨⚡ Uh, meow? 💨⚡',
-    '💨⚡ I\'ve been living my best life on Earth! 💨⚡',
-    '💨⚡ This is my power… and I\'m not using it to run away anymore. 💨⚡'
+    '⚡ Gotta Go Fastt⚡',
+    '⚡ I\'m a hedgehog. I thought that was obvious.⚡',
+    '⚡ Nobody\'s gonna take my friends from me. Except me.⚡',
+    '⚡ Uh, meow?⚡',
+    '⚡ I\'ve been living my best life on Earth!⚡',
+    '⚡ This is my power… and I\'m not using it to run away anymore.⚡'
   ];
   
   module.exports = (client) => {
