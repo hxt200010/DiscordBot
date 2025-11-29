@@ -99,7 +99,7 @@ module.exports = {
                 try {
                     const confirmation = await msg.awaitMessageComponent({
                         filter: (i) => i.user.id === interaction.user.id,
-                        time: 60000,
+                        time: 100000,
                         componentType: ComponentType.Button
                     });
 
