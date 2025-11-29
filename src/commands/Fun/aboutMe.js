@@ -5,7 +5,7 @@ module.exports = {
     name: 'aboutme',
     description: 'Introduces who Sonic the Hedgehog is!',
     callback: async (client, interaction) => {
-        const videoPath = path.join(__dirname, '..', '..', 'images', 'sonic_jumping.mp4');
+        const videoPath = path.join(__dirname, 'sonic_jumping.mp4');
         const videoAttachment = new AttachmentBuilder(videoPath);
 
         const embed = new EmbedBuilder()
