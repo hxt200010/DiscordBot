@@ -1,13 +1,9 @@
-const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
-const path = require('path');
+const { EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: 'aboutme',
     description: 'Introduces who Sonic the Hedgehog is!',
     callback: async (client, interaction) => {
-        const videoPath = path.join(__dirname, 'sonic_jumping.mp4');
-        const videoAttachment = new AttachmentBuilder(videoPath);
-
         const embed = new EmbedBuilder()
             .setTitle('About Sonic the Hedgehog')
             .setThumbnail(client.user.displayAvatarURL())
@@ -15,6 +11,6 @@ module.exports = {
             .setColor('#0000FF') // Blue color for Sonic
             .setFooter({ text: 'Gotta go fast!' });
 
-        await interaction.reply({ embeds: [embed], files: [videoAttachment] });
+        await interaction.reply({ embeds: [embed] });
     },
 };

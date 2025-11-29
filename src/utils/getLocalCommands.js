@@ -13,6 +13,8 @@ module.exports = (exceptions = []) => {
     const commandFiles = getAllFiles(commandCategory);
 
     for (const commandFile of commandFiles) {
+      if (!commandFile.endsWith('.js')) continue;
+      
       const commandObject = require(commandFile);
 
       // Skip if not a valid command object
