@@ -25,14 +25,16 @@
         activities: [{
           name: 'Sonic the Hedgehog',
           type: 0, // Playing
-          details: 'Sonic the Hedgehog is here!!',
-          state: 'I have a small business to do!', // Static state
+          details: 'Sonic The Hedgehog',
+          state: 'Playing Solo',
           timestamps: {
             start: Date.now() // Shows "elapsed" time since bot started
           },
           assets: {
-            large_image: 'f07219f0-255f-49ff-a0b6-20b51a7ae3e2', // Your Rich Presence asset key
-            large_text: 'Sonic the Hedgehog',
+            large_image: 'sonic_knuckle_tail', // Large image: Sonic, Knuckles, and Tails
+            large_text: 'Numbani',
+            small_image: 'christmas_sonic', // Small image: Christmas Sonic
+            small_text: 'Rogue - Level 100',
           }
         }],
         status: 'online'
@@ -47,3 +49,4 @@
     //   setRichPresence();
     // }, 20000);
   };
+  
