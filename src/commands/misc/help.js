@@ -29,6 +29,11 @@ module.exports = {
                     inline: false
                 },
                 {
+                    name: `Education`,
+                    value: `\`\`learn, trivia\`\``,
+                    inline: false
+                },
+                {
                     name: `mathematic`,
                     value: `\`\`add, subtract, multiply, divide, sqrt, calculate, log, integrate, sin, cos, tan\`\``,
                     inline: false
@@ -46,11 +51,6 @@ module.exports = {
                 {
                     name: `Fun`,
                     value: `\`\`meme, say, blackjack, mine\`\``,
-                    inline: false
-                },
-                {
-                    name: `Education`,
-                    value: `\`\`trivia\`\``,
                     inline: false
                 },
                 {
