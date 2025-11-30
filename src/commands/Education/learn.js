@@ -65,7 +65,7 @@ module.exports = {
                     "options": ["Option A", "Option B", "Option C", "Option D"],
                     "correctIndex": 0 // The index of the correct option (0-3)
                 }
-                Please provide at least 6 lines of code.
+                Please provide at least 6 lines of code, and each time, provide different function and code
                 Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
                 const completion = await openai.createChatCompletion({
