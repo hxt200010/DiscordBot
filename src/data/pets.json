@@ -1,1 +1,17 @@
-{}
+{
+  "704744682080567306": {
+    "petName": "Knuckly",
+    "type": "knuckles",
+    "level": 1,
+    "xp": 3,
+    "stats": {
+      "hunger": 70,
+      "happiness": 50,
+      "affection": 50,
+      "energy": 50
+    },
+    "lastInteraction": 1764463116769,
+    "boostActiveUntil": null,
+    "dailyCoins": 55
+  }
+}

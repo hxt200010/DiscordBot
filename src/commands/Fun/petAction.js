@@ -22,8 +22,10 @@ module.exports = {
         },
     ],
     callback: async (client, interaction) => {
+        await interaction.deferReply();
+
         if (!fs.existsSync(petsFile)) {
-            return interaction.reply({ content: "No pets found! Use /adopt to get one.", ephemeral: true });
+            return interaction.editReply({ content: "No pets found! Use /adopt to get one." });
         }
 
         let pets = {};
@@ -31,13 +33,13 @@ module.exports = {
             pets = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
         } catch (e) {
             console.error(e);
-            return interaction.reply({ content: "Error reading pet data.", ephemeral: true });
+            return interaction.editReply({ content: "Error reading pet data." });
         }
 
         let pet = pets[interaction.user.id];
 
         if (!pet) {
-            return interaction.reply({ content: "You don't have a pet yet! Use /adopt to get one.", ephemeral: true });
+            return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
         }
 
         const action = interaction.options.getString('action');
@@ -120,6 +122,6 @@ module.exports = {
             .setColor('Gold')
             .setDescription(message);
 
-        interaction.reply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed] });
     }
 };

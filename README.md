@@ -4,6 +4,8 @@
 
 <img width="1632" height="640" alt="Image" src="https://github.com/user-attachments/assets/0edd9ffe-557e-4a8e-9d3e-92912d312f52" />
 
+
+
 My name is Sonic, and this is the me version of the bot — fast, fearless, and packed with more features than rings in a bonus stage! This Discord bot is way past cool! Built with Discord.js at lightning speed, it delivers a whole bundle of awesome — algorithm tricks, number-crunching math moves, handy utilities, fun entertainment commands, and even a full-on economy with casino-style games. It’s sleek, speedy, and organized with a modular design that keeps everything running smoother than one of my loop-de-loops. Whether you're sorting data, cracking codes, or rolling dice, this bot’s built for max performance and ultimate extensibility. Just plug in, play, and let the good times zoom! 💙⚡️
 
 ## Features
@@ -289,3 +291,4 @@ ISC
 For issues or questions, please open an issue on the repository.
 
 
+https://github.com/user-attachments/assets/8db0a6f5-c72e-4ecf-b7d0-f9b14050c379

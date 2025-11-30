@@ -28,6 +28,8 @@ module.exports = {
         },
     ],
     callback: async (client, interaction) => {
+        await interaction.deferReply();
+
         let pets = {};
         if (fs.existsSync(petsFile)) {
             try {
@@ -39,9 +41,8 @@ module.exports = {
         }
 
         if (pets[interaction.user.id]) {
-            return interaction.reply({
-                content: "You already have a pet! You can only adopt one.",
-                ephemeral: true
+            return interaction.editReply({
+                content: "You already have a pet! You can only adopt one."
             });
         }
 
@@ -80,10 +81,10 @@ module.exports = {
 
         const imagePath = path.join(__dirname, `../../Images/${character}_pet.png`);
         if (fs.existsSync(imagePath)) {
-             embed.setImage(`attachment://${character}_pet.png`);
-             return interaction.reply({ embeds: [embed], files: [imagePath] });
+             embed.setThumbnail(`attachment://${character}_pet.png`);
+             return interaction.editReply({ embeds: [embed], files: [imagePath] });
         }
 
-        interaction.reply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed] });
     }
 };

@@ -16,8 +16,10 @@ module.exports = {
         },
     ],
     callback: async (client, interaction) => {
+        await interaction.deferReply();
+
         if (!fs.existsSync(petsFile)) {
-            return interaction.reply({ content: "No pets found!", ephemeral: true });
+            return interaction.editReply({ content: "No pets found!" });
         }
 
         let pets = {};
@@ -25,18 +27,18 @@ module.exports = {
             pets = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
         } catch (e) {
             console.error(e);
-            return interaction.reply({ content: "Error reading pet data.", ephemeral: true });
+            return interaction.editReply({ content: "Error reading pet data." });
         }
 
         const pet = pets[interaction.user.id];
 
         if (!pet) {
-            return interaction.reply({ content: "You don't have a pet to sell!", ephemeral: true });
+            return interaction.editReply({ content: "You don't have a pet to sell!" });
         }
 
         const confirmation = interaction.options.getString('confirm');
         if (confirmation.toLowerCase() !== 'confirm') {
-            return interaction.reply({ content: "You must type 'confirm' to sell your pet.", ephemeral: true });
+            return interaction.editReply({ content: "You must type 'confirm' to sell your pet." });
         }
 
         const petName = pet.petName;
@@ -48,6 +50,6 @@ module.exports = {
             .setDescription(`You have sold **${petName}**. We hope they find a good home!`)
             .setColor('Red');
 
-        interaction.reply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed] });
     }
 };

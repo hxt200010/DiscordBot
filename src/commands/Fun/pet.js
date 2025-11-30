@@ -14,8 +14,10 @@ module.exports = {
     name: 'pet',
     description: 'Check your virtual pet status',
     callback: async (client, interaction) => {
+        await interaction.deferReply();
+
         if (!fs.existsSync(petsFile)) {
-            return interaction.reply({ content: "No pets found! Use /adopt to get one.", ephemeral: true });
+            return interaction.editReply({ content: "No pets found! Use /adopt to get one." });
         }
 
         let pets = {};
@@ -23,13 +25,13 @@ module.exports = {
             pets = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
         } catch (e) {
             console.error(e);
-            return interaction.reply({ content: "Error reading pet data.", ephemeral: true });
+            return interaction.editReply({ content: "Error reading pet data." });
         }
 
         const pet = pets[interaction.user.id];
 
         if (!pet) {
-            return interaction.reply({ content: "You don't have a pet yet! Use /adopt to get one.", ephemeral: true });
+            return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
         }
 
         // Ensure stats exist (migration safety)
@@ -56,10 +58,10 @@ module.exports = {
 
         const imagePath = path.join(__dirname, `../../Images/${pet.type}_pet.png`);
         if (fs.existsSync(imagePath)) {
-             embed.setImage(`attachment://${pet.type}_pet.png`);
-             return interaction.reply({ embeds: [embed], files: [imagePath] });
+             embed.setThumbnail(`attachment://${pet.type}_pet.png`);
+             return interaction.editReply({ embeds: [embed], files: [imagePath] });
         }
 
-        interaction.reply({ embeds: [embed] });
+        interaction.editReply({ embeds: [embed] });
     }
 };
