@@ -57,8 +57,10 @@ module.exports = {
             // Generate all questions at once to ensure variety
             const prompt = `Create ${times} unique ${difficulty} difficulty multiple-choice questions for ${language} programming language.
             The questions should be "fill in the blank" style code snippets.
+            For each question, if it's real life application, make sure to write description, the expected input output of it
             Ensure each question covers a different concept or function. Do not repeat the same logic.
             For medium and hard question, print out more than 10 - 20 lines respectively
+            For Hard questions, you may want to give user the real life application using leet code style medium / hard queestion
             Provide the output in strict JSON format as an array of objects with the following structure:
             [
                 {
