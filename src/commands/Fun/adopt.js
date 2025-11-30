@@ -18,6 +18,7 @@ module.exports = {
                 { name: 'Knuckles', value: 'knuckles' },
                 { name: 'Tails', value: 'tails' },
                 { name: 'Shadow', value: 'shadow' },
+                { name: 'Amy Rose', value: 'amy' },
             ],
         },
         {
@@ -79,9 +80,21 @@ module.exports = {
             )
             .setFooter({ text: 'Use /pet to view your pet and /pet-action to care for it!' });
 
-        const imagePath = path.join(__dirname, `../../Images/${character}_pet.png`);
-        if (fs.existsSync(imagePath)) {
-             embed.setThumbnail(`attachment://${character}_pet.png`);
+        const extensions = ['.png', '.jpg', '.jpeg'];
+        let imagePath = null;
+        let fileName = null;
+
+        for (const ext of extensions) {
+            const testPath = path.join(__dirname, `../../Images/${character}_pet${ext}`);
+            if (fs.existsSync(testPath)) {
+                imagePath = testPath;
+                fileName = `${character}_pet${ext}`;
+                break;
+            }
+        }
+
+        if (imagePath) {
+             embed.setThumbnail(`attachment://${fileName}`);
              return interaction.editReply({ embeds: [embed], files: [imagePath] });
         }
 

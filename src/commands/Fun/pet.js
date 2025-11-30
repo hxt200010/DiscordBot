@@ -56,9 +56,21 @@ module.exports = {
             embed.addFields({ name: '🔥 Boost Day Active!', value: 'Rewards increased!', inline: true });
         }
 
-        const imagePath = path.join(__dirname, `../../Images/${pet.type}_pet.png`);
-        if (fs.existsSync(imagePath)) {
-             embed.setThumbnail(`attachment://${pet.type}_pet.png`);
+        const extensions = ['.png', '.jpg', '.jpeg'];
+        let imagePath = null;
+        let fileName = null;
+
+        for (const ext of extensions) {
+            const testPath = path.join(__dirname, `../../Images/${pet.type}_pet${ext}`);
+            if (fs.existsSync(testPath)) {
+                imagePath = testPath;
+                fileName = `${pet.type}_pet${ext}`;
+                break;
+            }
+        }
+
+        if (imagePath) {
+             embed.setThumbnail(`attachment://${fileName}`);
              return interaction.editReply({ embeds: [embed], files: [imagePath] });
         }
 
