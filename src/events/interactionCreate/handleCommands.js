@@ -23,7 +23,7 @@ module.exports = async (client, interaction) => {
         }
       }
 
-      if (commandObject.testOnly) {
+      if (commandObject.testOnly && testServer) {
         if (!(interaction.guild.id === testServer)) {
           interaction.reply({
             content: 'This command cannot be run here.',
