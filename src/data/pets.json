@@ -1,16 +1,16 @@
 {
   "704744682080567306": {
-    "petName": "Amy",
-    "type": "amy",
+    "petName": "Shadow",
+    "type": "shadow",
     "level": 1,
-    "xp": 0,
+    "xp": 4,
     "stats": {
       "hunger": 50,
-      "happiness": 50,
+      "happiness": 65,
       "affection": 50,
       "energy": 50
     },
-    "lastInteraction": 1764464587358,
+    "lastInteraction": 1764465075656,
     "boostActiveUntil": null,
     "dailyCoins": 55
   }
