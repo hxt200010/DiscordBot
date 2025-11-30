@@ -10,10 +10,9 @@ module.exports = async (client, message) => {
     if (message.author.bot) return;
     if (message.content.startsWith('!')) return;
 
-    const isEnvChannel = (message.channel.id === process.env.CHANNEL_ID || message.channel.id === process.env.CHANNEL_ID_2);
     const isConfiguredChannel = message.guild ? guildConfig.isChatbotChannel(message.guild.id, message.channel.id) : false;
 
-    if (!isEnvChannel && !isConfiguredChannel) return;
+    if (!isConfiguredChannel) return;
 
     let conversationLog = [{ role: 'system', content: "You are Sonic the Hedgehog, specifically from the movies. You are super fast, energetic, confident, and a bit cocky but with a heart of gold. You love chili dogs, making pop culture references, and protecting your friends. You often use phrases like 'Gotta go fast!', 'Meow?', and 'Blue Justice'. Keep your responses relatively short and punchy, matching your speed." }];
 

@@ -51,6 +51,11 @@ module.exports = {
 
         const random = Math.random();
 
+        // Reduce durability regardless of outcome
+        const result = economySystem.updateItem(shooterId, 'Gun', (item) => {
+            item.durability -= 1;
+        });
+
         if (random < successChance) {
             // SUCCESS
             const lostAmount = Math.floor(Math.random() * (40 - 20 + 1)) + 20;
@@ -71,16 +76,15 @@ module.exports = {
                     { name: 'They Lost', value: `$${actualLost}`, inline: true },
                     { name: 'You Gained', value: `$${gainedAmount}`, inline: true }
                 );
+            
+            if (result === 'broken') {
+                embed.setFooter({ text: '💥 Your Gun broke after this shot!' });
+            }
 
             await interaction.reply({ embeds: [embed] });
 
         } else {
             // FAILURE
-            // Reduce durability
-            const result = economySystem.updateItem(shooterId, 'Gun', (item) => {
-                item.durability -= 1;
-            });
-
             let msg = `💨 You missed! Your gun lost 1 durability.`;
             if (result === 'broken') {
                 msg += `\n💥 **Your Gun broke!**`;

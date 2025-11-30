@@ -15,7 +15,11 @@ module.exports = {
         for (const pet of petConfig) {
             const embed = new EmbedBuilder()
                 .setTitle(`${pet.emoji} ${pet.name}`)
-                .setDescription(`Type: \`${pet.value}\``)
+                .setDescription(pet.description)
+                .addFields(
+                    { name: 'Type', value: `\`${pet.value}\``, inline: true },
+                    { name: 'Stats', value: `⚔️ Atk: ${pet.stats.attack} | 🛡️ Def: ${pet.stats.defense} | ❤️ HP: ${pet.stats.health}`, inline: true }
+                )
                 .setColor('Blue');
 
             // Find image
