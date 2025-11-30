@@ -272,23 +272,8 @@ Commands are organized by category in separate folders. Create new folders for n
 - The bot uses `deferReply` to prevent most timeout issues
 - If issues persist, check your internet connection and Discord API status
 
-## Contributing
-
-Contributions are welcome. Please follow these guidelines:
-
-- Keep code organized in the appropriate command category folders
-- Use async/await for asynchronous operations
-- Include proper error handling
-- Test commands thoroughly before submitting
-- Follow the existing code style and structure
-
-## License
-
-ISC
-
-## Support
-
-For issues or questions, please open an issue on the repository.
+Invite my bot using this link
+https://discord.com/oauth2/authorize?client_id=1130301590146916435&permissions=8&integration_type=0&scope=bot
 
 
 https://github.com/user-attachments/assets/8db0a6f5-c72e-4ecf-b7d0-f9b14050c379
