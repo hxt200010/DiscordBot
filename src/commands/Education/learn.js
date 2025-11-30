@@ -53,31 +53,46 @@ module.exports = {
         const rewards = { easy: 10, medium: 20, hard: 40 };
         const reward = rewards[difficulty];
 
-        for (let i = 0; i < times; i++) {
-            try {
-                // Generate question
-                const prompt = `Create a ${difficulty} difficulty multiple-choice question for ${language} programming language.
-                The question should be a "fill in the blank" style code snippet.
-                Provide the output in strict JSON format with the following structure:
+        try {
+            // Generate all questions at once to ensure variety
+            const prompt = `Create ${times} unique ${difficulty} difficulty multiple-choice questions for ${language} programming language.
+            The questions should be "fill in the blank" style code snippets.
+            Ensure each question covers a different concept or function. Do not repeat the same logic.
+            For medium and hard question, print out more than 10 - 20 lines respectively
+            Provide the output in strict JSON format as an array of objects with the following structure:
+            [
                 {
                     "question": "The question text describing what to do",
                     "code": "The code snippet with a '____' blank",
                     "options": ["Option A", "Option B", "Option C", "Option D"],
                     "correctIndex": 0 // The index of the correct option (0-3)
                 }
-                Please provide at least 6 lines of code, and each time, provide different function and code
-                Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
+            ]
+            Please provide at least 6 lines of code for each question.
+            Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
-                const completion = await openai.createChatCompletion({
-                    model: 'gpt-4o-mini',
-                    messages: [{ role: 'user', content: prompt }],
-                });
+            const completion = await openai.createChatCompletion({
+                model: 'gpt-4o-mini',
+                messages: [{ role: 'user', content: prompt }],
+            });
 
-                let responseContent = completion.data.choices[0].message.content;
-                // Clean up if the model adds markdown
-                responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
-                
-                const questionData = JSON.parse(responseContent);
+            let responseContent = completion.data.choices[0].message.content;
+            // Clean up if the model adds markdown
+            responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
+            
+            let questions = [];
+            try {
+                questions = JSON.parse(responseContent);
+                if (!Array.isArray(questions)) {
+                    questions = [questions];
+                }
+            } catch (e) {
+                console.error('Failed to parse questions JSON:', e);
+                throw new Error('Failed to generate valid questions.');
+            }
+
+            for (let i = 0; i < questions.length; i++) {
+                const questionData = questions[i];
 
                 const embed = new EmbedBuilder()
                     .setTitle(`📚 Learn ${language} - Question ${i + 1}/${times}`)
@@ -94,12 +109,17 @@ module.exports = {
 
                 const row = new ActionRowBuilder().addComponents(buttons);
 
-                const msg = await interaction.editReply({ embeds: [embed], components: [row] });
+                let msg;
+                if (i === 0) {
+                    msg = await interaction.editReply({ embeds: [embed], components: [row], content: '' });
+                } else {
+                    msg = await interaction.editReply({ embeds: [embed], components: [row], content: '' });
+                }
 
                 try {
                     const confirmation = await msg.awaitMessageComponent({
-                        filter: (i) => i.user.id === interaction.user.id,
-                        time: 100000,
+                        filter: (btnInt) => btnInt.user.id === interaction.user.id,
+                        time: 200000,
                         componentType: ComponentType.Button
                     });
 
@@ -122,19 +142,19 @@ module.exports = {
                     }
                 } catch (e) {
                     await interaction.editReply({ content: '⏰ Time ran out!', components: [] });
+                    break;
                 }
 
-                // Small delay between questions
-                if (i < times - 1) {
+                if (i < questions.length - 1) {
                     await new Promise(resolve => setTimeout(resolve, 2000));
-                    await interaction.followUp({ content: `Generating next question...`, ephemeral: true });
+                    await interaction.editReply({ content: '🔄 Preparing next question...', embeds: [], components: [] });
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
-
-            } catch (error) {
-                console.error('Error generating question:', error);
-                await interaction.editReply({ content: '⚠️ An error occurred while generating the question. Please try again later.', components: [] });
-                break; // Stop loop on error
             }
+
+        } catch (error) {
+            console.error('Error in learn command:', error);
+            await interaction.editReply({ content: '⚠️ An error occurred while generating the questions. Please try again later.', components: [] });
         }
 
         await interaction.followUp(`🎓 **Session Complete!**\nYou earned a total of **${coinsEarned} coins**.`);
