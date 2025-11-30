@@ -2,6 +2,8 @@ const { EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
+const petConfig = require('../../utils/petConfig');
+
 const petsFile = path.join(__dirname, '../../data/pets.json');
 
 function createBar(stat) {
@@ -39,6 +41,9 @@ module.exports = {
             pet.stats = { hunger: 50, happiness: 50, affection: 50, energy: 50 };
         }
 
+        const config = petConfig.find(p => p.value === pet.type);
+        const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
+
         const stats = pet.stats;
         const embed = new EmbedBuilder()
             .setTitle(`🐾 ${pet.petName} (Level ${pet.level})`)
@@ -49,7 +54,7 @@ module.exports = {
                 { name: 'Happiness', value: `${createBar(stats.happiness)} ${stats.happiness}/100`, inline: false },
                 { name: 'Affection', value: `${createBar(stats.affection)} ${stats.affection}/100`, inline: false },
                 { name: 'Energy', value: `${createBar(stats.energy)} ${stats.energy}/100`, inline: false },
-                { name: '⚔️ Combat Stats', value: `**Attack:** ${pet.attack || 10}\n**Defense:** ${pet.defense || 10}\n**HP:** ${pet.hp || 100}`, inline: true },
+                { name: '⚔️ Combat Stats', value: `**Attack:** ${pet.attack || baseStats.attack}\n**Defense:** ${pet.defense || baseStats.defense}\n**HP:** ${pet.hp || baseStats.health}`, inline: true },
                 { name: 'Daily Coins', value: `${pet.dailyCoins || (50 + pet.level * 5)}`, inline: true }
             );
         

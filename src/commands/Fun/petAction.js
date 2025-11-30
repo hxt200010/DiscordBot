@@ -2,6 +2,8 @@ const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
+const petConfig = require('../../utils/petConfig');
+
 const petsFile = path.join(__dirname, '../../data/pets.json');
 
 const cooldowns = new Map();
@@ -58,9 +60,14 @@ module.exports = {
         }
 
         // Initialize combat stats if missing
-        if (!pet.attack) pet.attack = 10;
-        if (!pet.defense) pet.defense = 10;
-        if (!pet.hp) pet.hp = 100;
+        if (!pet.attack || !pet.defense || !pet.hp) {
+            const config = petConfig.find(p => p.value === pet.type);
+            const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
+            
+            if (!pet.attack) pet.attack = baseStats.attack;
+            if (!pet.defense) pet.defense = baseStats.defense;
+            if (!pet.hp) pet.hp = baseStats.health;
+        }
 
         const action = interaction.options.getString('action');
         let message = "";
