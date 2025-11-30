@@ -75,8 +75,8 @@ module.exports = {
                 .setColor(gameOver ? (result.includes('Win') ? 0xFFD700 : 0xFF0000) : 0x2F3136) // Gold for win, Red for loss, Dark for ongoing
                 .setThumbnail(client.user.displayAvatarURL())
                 .addFields(
-                    { name: '👤 Your Hand', value: `${formatHand(playerHand)}\nScore: **${calculateScore(playerHand)}**`, inline: true },
-                    { name: '🤖 Dealer Hand', value: `${formatHand(dealerHand, !gameOver)}\nScore: **${gameOver ? calculateScore(dealerHand) : '?'}**`, inline: true },
+                    { name: '👤 Your Hand', value: `${formatHand(playerHand)}\nScore: **${calculateScore(playerHand)}**`, inline: false },
+                    { name: '🤖 Dealer Hand', value: `${formatHand(dealerHand, !gameOver)}\nScore: **${gameOver ? calculateScore(dealerHand) : '?'}**`, inline: false },
                     { name: '\u200B', value: '\u200B' }, // Spacer
                     { name: '💰 Bet', value: `$${bet}`, inline: true },
                     { name: '💵 Potential Win', value: `$${bet * 2}`, inline: true }
