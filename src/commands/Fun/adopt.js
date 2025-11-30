@@ -4,6 +4,8 @@ const path = require('path');
 
 const petsFile = path.join(__dirname, '../../data/pets.json');
 
+const petConfig = require('../../utils/petConfig');
+
 module.exports = {
     name: 'adopt',
     description: 'Adopt a virtual pet!',
@@ -13,13 +15,7 @@ module.exports = {
             description: 'Choose your pet character',
             type: ApplicationCommandOptionType.String,
             required: true,
-            choices: [
-                { name: 'Sonic', value: 'sonic' },
-                { name: 'Knuckles', value: 'knuckles' },
-                { name: 'Tails', value: 'tails' },
-                { name: 'Shadow', value: 'shadow' },
-                { name: 'Amy Rose', value: 'amy' },
-            ],
+            choices: petConfig.map(pet => ({ name: pet.name, value: pet.value })),
         },
         {
             name: 'name',
