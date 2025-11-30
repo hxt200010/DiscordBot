@@ -49,6 +49,7 @@ module.exports = {
                 { name: 'Happiness', value: `${createBar(stats.happiness)} ${stats.happiness}/100`, inline: false },
                 { name: 'Affection', value: `${createBar(stats.affection)} ${stats.affection}/100`, inline: false },
                 { name: 'Energy', value: `${createBar(stats.energy)} ${stats.energy}/100`, inline: false },
+                { name: '⚔️ Combat Stats', value: `**Attack:** ${pet.attack || 10}\n**Defense:** ${pet.defense || 10}\n**HP:** ${pet.hp || 100}`, inline: true },
                 { name: 'Daily Coins', value: `${pet.dailyCoins || (50 + pet.level * 5)}`, inline: true }
             );
         

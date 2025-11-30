@@ -4,6 +4,8 @@ const path = require('path');
 
 const petsFile = path.join(__dirname, '../../data/pets.json');
 
+const cooldowns = new Map();
+
 module.exports = {
     name: 'pet-action',
     description: 'Interact with your pet',
@@ -22,6 +24,19 @@ module.exports = {
         },
     ],
     callback: async (client, interaction) => {
+        // Cooldown Check
+        const userId = interaction.user.id;
+        if (cooldowns.has(userId)) {
+            const expirationTime = cooldowns.get(userId) + 5000;
+            if (Date.now() < expirationTime) {
+                const timeLeft = ((expirationTime - Date.now()) / 1000).toFixed(1);
+                return interaction.reply({ content: `⏳ Please wait ${timeLeft} seconds before interacting again.`, ephemeral: true });
+            }
+        }
+        
+        cooldowns.set(userId, Date.now());
+        setTimeout(() => cooldowns.delete(userId), 5000);
+
         await interaction.deferReply();
 
         if (!fs.existsSync(petsFile)) {
@@ -41,6 +56,11 @@ module.exports = {
         if (!pet) {
             return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
         }
+
+        // Initialize combat stats if missing
+        if (!pet.attack) pet.attack = 10;
+        if (!pet.defense) pet.defense = 10;
+        if (!pet.hp) pet.hp = 100;
 
         const action = interaction.options.getString('action');
         let message = "";
@@ -95,7 +115,27 @@ module.exports = {
             pet.level += 1;
             pet.xp -= xpThreshold;
             pet.dailyCoins = 50 + (pet.level * 5);
-            message += `\n🎉 **LEVEL UP!** ${pet.petName} is now Level ${pet.level}! Daily earnings increased to ${pet.dailyCoins}.`;
+            
+            // Stat Growth Cycle
+            // Level 2: Attack (0)
+            // Level 3: Defense (1)
+            // Level 4: HP (2)
+            // Level 5: Attack (0) ...
+            const cycleIndex = (pet.level - 2) % 3;
+            let statMsg = "";
+
+            if (cycleIndex === 0) {
+                pet.attack += 10;
+                statMsg = "⚔️ Attack increased by 10!";
+            } else if (cycleIndex === 1) {
+                pet.defense += 10;
+                statMsg = "🛡️ Defense increased by 10!";
+            } else {
+                pet.hp += 50;
+                statMsg = "❤️ Max HP increased by 50!";
+            }
+
+            message += `\n🎉 **LEVEL UP!** ${pet.petName} is now Level ${pet.level}!\n${statMsg}\nDaily earnings increased to ${pet.dailyCoins}.`;
             
             // Visual evolution check (placeholder)
             if (pet.level % 10 === 0) {
