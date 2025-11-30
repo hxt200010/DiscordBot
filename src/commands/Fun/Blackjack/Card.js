@@ -12,6 +12,17 @@ class Card {
     getValue() {
         return this.value;
     }
+    getAscii() {
+        const rank = this.rank.padEnd(2, ' ');
+        const suit = this.suit;
+        return [
+            '┌─────┐',
+            `│ ${rank}  │`,
+            `│  ${suit}  │`,
+            `│   ${rank}│`,
+            '└─────┘'
+        ];
+    }
 }
 
 module.exports = Card;
