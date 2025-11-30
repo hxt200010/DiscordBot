@@ -2,7 +2,7 @@ const { Client, Interaction, EmbedBuilder, AttachmentBuilder } = require('discor
 const path = require('path');
 
 module.exports = {
-    name: 'whoisshadow',
+    name: 'shadow',
     description: 'Introduces the Ultimate Life Form: Shadow the Hedgehog.',
     
     /**

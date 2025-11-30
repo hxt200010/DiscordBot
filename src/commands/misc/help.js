@@ -50,7 +50,7 @@ module.exports = {
                 },
                 {
                     name: `Fun`,
-                    value: `\`\`meme, say, blackjack, mine, adopt, pet, pet-action, sell-pet, pet-list\`\``,
+                    value: `\`\`shadow, meme, say, blackjack, mine, adopt, pet, pet-action, sell-pet, pet-list\`\``,
                     inline: false
                 },
                 {
