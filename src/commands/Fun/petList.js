@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const petConfig = require('../../utils/petConfig');
 
 module.exports = {
@@ -33,8 +33,9 @@ module.exports = {
             }
 
             if (imagePath) {
+                const attachment = new AttachmentBuilder(imagePath, { name: fileName });
                 embed.setThumbnail(`attachment://${fileName}`);
-                files.push(imagePath);
+                files.push(attachment);
             }
             
             embeds.push(embed);
