@@ -3,13 +3,14 @@ const fs = require('fs');
 const path = require('path');
 
 const petConfig = require('../../utils/petConfig');
-
-const petsFile = path.join(__dirname, '../../data/pets.json');
-const economyFile = path.join(__dirname, '../../data/economy.json');
+const economySystem = require('../../utils/EconomySystem');
 const { applyWorkGains } = require('../../utils/petUtils');
 
-function createBar(stat) {
-    const filled = Math.max(0, Math.min(10, Math.floor(stat / 10)));
+const petsFile = path.join(__dirname, '../../data/pets.json');
+
+function createBar(value, max = 100) {
+    const percentage = value / max;
+    const filled = Math.max(0, Math.min(10, Math.floor(percentage * 10)));
     const empty = 10 - filled;
     return "█".repeat(filled) + "░".repeat(empty);
 }
@@ -43,6 +44,11 @@ module.exports = {
             pet.stats = { hunger: 50, happiness: 50, affection: 50, energy: 50 };
         }
 
+        // Initialize MaxHP if missing
+        if (!pet.maxHp) {
+            pet.maxHp = pet.hp || 100;
+        }
+
         const config = petConfig.find(p => p.value === pet.type);
         const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
 
@@ -51,42 +57,38 @@ module.exports = {
         if (pet.isWorking) {
             const gains = applyWorkGains(pet);
             if (gains.coins > 0 || gains.xp > 0) {
-                // Update economy
-                let economy = {};
-                if (fs.existsSync(economyFile)) {
-                    economy = JSON.parse(fs.readFileSync(economyFile, 'utf8'));
-                }
-                if (!economy[interaction.user.id]) {
-                    economy[interaction.user.id] = { balance: 0, inventory: [] };
-                }
-                economy[interaction.user.id].balance += gains.coins;
-                fs.writeFileSync(economyFile, JSON.stringify(economy, null, 2));
-
-                // Save pet (XP updated in applyWorkGains)
-                pets[interaction.user.id] = pet;
-                fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
+                // Update economy with coins
+                economySystem.addBalance(interaction.user.id, gains.coins);
 
                 workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
+                if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${Math.round(gains.hungerLost)} Hunger`;
+                if (gains.hpLost > 0) workMessage += `, -${Math.round(gains.hpLost)} HP`;
             } else {
                 workMessage = "\n⚔️ **Grinding:** Currently grinding...";
             }
         }
 
-        const stats = pet.stats;
+        // Save pet state (applyWorkGains updates pet object)
+        pets[interaction.user.id] = pet;
+        fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
+
         const embed = new EmbedBuilder()
-            .setTitle(`🐾 ${pet.petName} (Level ${pet.level})`)
+            .setColor(pet.isDead ? 'Black' : '#0099ff')
+            .setTitle(`${pet.isDead ? '💀' : '🐾'} ${pet.petName}'s Status`)
             .setDescription(`**Type:** ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}\n**XP:** ${pet.xp.toFixed(1)}/${pet.level * 20}${workMessage}`)
-            .setColor('Blue')
             .addFields(
-                { name: 'Hunger', value: `${createBar(stats.hunger)} ${stats.hunger}/100`, inline: false },
-                { name: 'Happiness', value: `${createBar(stats.happiness)} ${stats.happiness}/100`, inline: false },
-                { name: 'Affection', value: `${createBar(stats.affection)} ${stats.affection}/100`, inline: false },
-                { name: 'Energy', value: `${createBar(stats.energy)} ${stats.energy}/100`, inline: false },
-                { name: '⚔️ Combat Stats', value: `**Attack:** ${pet.attack || baseStats.attack}\n**Defense:** ${pet.defense || baseStats.defense}\n**HP:** ${pet.hp || baseStats.health}`, inline: true },
-                { name: 'Daily Coins', value: `${pet.dailyCoins || (50 + pet.level * 5)}`, inline: true }
+                { name: 'Health ❤️', value: `${createBar(pet.hp, pet.maxHp)} ${Math.round(pet.hp)}/${pet.maxHp}`, inline: true },
+                { name: 'Hunger 🍖', value: `${createBar(pet.stats.hunger)} ${Math.round(pet.stats.hunger)}/100`, inline: true },
+                { name: 'Energy ⚡', value: `${createBar(pet.stats.energy)} ${Math.round(pet.stats.energy)}/100`, inline: true },
+                { name: 'Happiness 🎾', value: `${createBar(pet.stats.happiness)} ${Math.round(pet.stats.happiness)}/100`, inline: true },
+                { name: 'Affection 💖', value: `${createBar(pet.stats.affection)} ${Math.round(pet.stats.affection)}/100`, inline: true },
+                { name: 'Level 🏅', value: `${pet.level}`, inline: true },
+                { name: 'Combat ⚔️', value: `Atk: ${pet.attack || baseStats.attack} | Def: ${pet.defense || baseStats.defense}`, inline: false }
             );
 
-        if (pet.boostActiveUntil && pet.boostActiveUntil > Date.now()) {
+        if (pet.isDead) {
+            embed.addFields({ name: '💀 DECEASED', value: 'This pet has died. Use `/pet-action revive` with a Health Kit to bring them back.', inline: false });
+        } else if (pet.boostActiveUntil && pet.boostActiveUntil > Date.now()) {
             embed.addFields({ name: '🔥 Boost Day Active!', value: 'Rewards increased!', inline: true });
         }
 

@@ -24,5 +24,35 @@ module.exports = [
         price: 80,
         description: '+10% success chance for stealing or shooting. Passive effect.',
         type: 'passive'
+    },
+    {
+        name: 'Pet Food',
+        price: 20,
+        description: 'Restores 20 Hunger for your pet.',
+        type: 'consumable'
+    },
+    {
+        name: 'Health Pack',
+        price: 50,
+        description: 'Restores 50 HP for your pet (or repairs Gun +1).',
+        type: 'consumable'
+    },
+    {
+        name: 'Health Kit',
+        price: 300,
+        description: 'Revives a dead pet with 50% HP.',
+        type: 'consumable'
+    },
+    {
+        name: 'Pet Armor',
+        price: 150,
+        description: 'Reduces HP loss from starvation by 50%. (Passive)',
+        type: 'passive'
+    },
+    {
+        name: 'Pet Weapon',
+        price: 150,
+        description: 'Increases coins earned from grinding by 10%. (Passive)',
+        type: 'passive'
     }
 ];

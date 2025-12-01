@@ -19,6 +19,20 @@ module.exports = {
      * @param {Client} client 
      * @param {Interaction} interaction 
      */
+    autocomplete: async (client, interaction) => {
+        const focusedValue = interaction.options.getFocused();
+        const filtered = shopItems.filter(item => item.name.toLowerCase().includes(focusedValue.toLowerCase()));
+
+        await interaction.respond(
+            filtered.slice(0, 25).map(item => ({ name: `${item.name} ($${item.price})`, value: item.name }))
+        );
+    },
+
+    /**
+     * 
+     * @param {Client} client 
+     * @param {Interaction} interaction 
+     */
     callback: async (client, interaction) => {
         const itemName = interaction.options.getString('item');
         const item = shopItems.find(i => i.name.toLowerCase() === itemName.toLowerCase());
@@ -42,8 +56,8 @@ module.exports = {
         const newItem = { ...item };
         economySystem.addItem(userId, newItem);
 
-        await interaction.reply({ 
-            content: `✅ You bought a **${item.name}** for **$${item.price}**! Check your \`/inventory\`.` 
+        await interaction.reply({
+            content: `✅ You bought a **${item.name}** for **$${item.price}**! Check your \`/inventory\`.`
         });
     }
 };

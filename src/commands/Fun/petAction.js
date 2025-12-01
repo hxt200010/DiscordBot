@@ -4,6 +4,7 @@ const path = require('path');
 
 const petConfig = require('../../utils/petConfig');
 const { applyWorkGains } = require('../../utils/petUtils');
+const economySystem = require('../../utils/EconomySystem');
 
 const petsFile = path.join(__dirname, '../../data/pets.json');
 const economyFile = path.join(__dirname, '../../data/economy.json');
@@ -20,11 +21,13 @@ module.exports = {
             type: ApplicationCommandOptionType.String,
             required: true,
             choices: [
-                { name: 'Feed 🍎', value: 'feed' },
+                { name: 'Feed 🍎 (Needs Pet Food)', value: 'feed' },
                 { name: 'Play 🎾', value: 'play' },
                 { name: 'Pat 👋', value: 'pat' },
                 { name: 'Sleep 💤', value: 'sleep' },
                 { name: 'Grind ⚔️', value: 'grind' },
+                { name: 'Heal 💊 (Needs Health Pack)', value: 'heal' },
+                { name: 'Revive 💖 (Needs Health Kit)', value: 'revive' },
             ],
         },
     ],
@@ -72,34 +75,85 @@ module.exports = {
             if (!pet.hp) pet.hp = baseStats.health;
         }
 
+        // Initialize MaxHP if missing
+        if (!pet.maxHp) {
+            pet.maxHp = pet.hp || 100;
+        }
+
         const action = interaction.options.getString('action');
         let message = "";
         let xpGain = 0;
 
         // Cap stats at 100
         const cap = (val) => Math.min(100, val);
+        // Cap HP at MaxHP
+        const capHp = (val) => Math.min(pet.maxHp, val);
+
+        // Check for Death
+        if (pet.isDead && action !== 'revive') {
+            const embed = new EmbedBuilder()
+                .setColor('Red')
+                .setTitle('💀 Your Pet is Dead')
+                .setDescription(`**${pet.petName}** has passed away.\nYou cannot interact with them until you **Revive** them.\n\nUse \`/pet-action revive\` (Requires a **Health Kit** from \`/shop\`).`);
+            return interaction.editReply({ embeds: [embed] });
+        }
+
+        const inventory = economySystem.getInventory(userId);
+        const hasItem = (itemName) => inventory.some(i => i.name.toLowerCase() === itemName.toLowerCase());
+        const useItem = (itemName) => economySystem.removeItem(userId, itemName);
 
         switch (action) {
             case 'feed':
+                if (!hasItem('Pet Food')) {
+                    return interaction.editReply({ content: "❌ You need **Pet Food** to feed your pet! Buy it from `/shop`." });
+                }
+                useItem('Pet Food');
                 pet.stats.hunger = cap(pet.stats.hunger + 20);
                 xpGain = 3;
                 message = `You fed **${pet.petName}**. Yummy! (+20 Hunger, +3 XP)`;
                 break;
+
             case 'play':
                 pet.stats.happiness = cap(pet.stats.happiness + 15);
                 xpGain = 4;
                 message = `You played with **${pet.petName}**. So fun! (+15 Happiness, +4 XP)`;
                 break;
+
             case 'pat':
                 pet.stats.affection = cap(pet.stats.affection + 15);
                 xpGain = 2;
                 message = `You patted **${pet.petName}**. They look happy! (+15 Affection, +2 XP)`;
                 break;
+
             case 'sleep':
                 pet.stats.energy = cap(pet.stats.energy + 20);
                 xpGain = 3;
                 message = `**${pet.petName}** took a nap. Zzz... (+20 Energy, +3 XP)`;
                 break;
+
+            case 'heal':
+                if (!hasItem('Health Pack')) {
+                    return interaction.editReply({ content: "❌ You need a **Health Pack** to heal your pet! Buy it from `/shop`." });
+                }
+                useItem('Health Pack');
+                pet.hp = capHp(pet.hp + 50);
+                message = `💊 You used a Health Pack on **${pet.petName}**. (+50 HP)`;
+                break;
+
+            case 'revive':
+                if (!pet.isDead) {
+                    return interaction.editReply({ content: "Your pet is already alive!" });
+                }
+                if (!hasItem('Health Kit')) {
+                    return interaction.editReply({ content: "❌ You need a **Health Kit** to revive your pet! Buy it from `/shop`." });
+                }
+                useItem('Health Kit');
+                pet.isDead = false;
+                pet.hp = Math.floor(pet.maxHp * 0.5); // Revive with 50% Max HP
+                pet.stats.hunger = 50; // Reset hunger slightly
+                message = `💖 **${pet.petName}** has been revived! Welcome back!`;
+                break;
+
             case 'grind':
                 // Toggle work/grind state
                 if (pet.isWorking) {
@@ -109,17 +163,9 @@ module.exports = {
                     pet.lastWorkUpdate = null;
 
                     // Add coins to economy
-                    let economy = {};
-                    if (fs.existsSync(economyFile)) {
-                        economy = JSON.parse(fs.readFileSync(economyFile, 'utf8'));
-                    }
-                    if (!economy[interaction.user.id]) {
-                        economy[interaction.user.id] = { balance: 0, inventory: [] };
-                    }
-                    economy[interaction.user.id].balance += gains.coins;
-                    fs.writeFileSync(economyFile, JSON.stringify(economy, null, 2));
+                    economySystem.addBalance(userId, gains.coins);
 
-                    message = `🛑 **${pet.petName}** stopped grinding.\nTime spent: ${(gains.timeWorked / (1000 * 60 * 60)).toFixed(2)} hours.\nEarned: **${gains.coins} coins** and **${gains.xp.toFixed(2)} XP**.`;
+                    message = `🛑 **${pet.petName}** stopped grinding.\nTime spent: ${(gains.timeWorked / (1000 * 60 * 60)).toFixed(2)} hours.\nEarned: **${gains.coins} coins** and **${gains.xp.toFixed(2)} XP**.\nStats: -${Math.round(gains.hungerLost)} Hunger, -${Math.round(gains.hpLost)} HP.`;
 
                     xpGain = 0;
 
@@ -127,7 +173,7 @@ module.exports = {
                     // Start working
                     pet.isWorking = true;
                     pet.lastWorkUpdate = Date.now();
-                    message = `⚔️ **${pet.petName}** started grinding! They will earn coins and XP over time.\nUse \`/pet-action grind\` again to stop.`;
+                    message = `⚔️ **${pet.petName}** started grinding! They will earn coins and XP over time.\nUse \`/pet-action grind\` again to stop.\n⚠️ **Warning:** Grinding consumes Hunger. If Hunger reaches 0, your pet will lose HP and die!`;
 
                     // Save immediately and return
                     pets[interaction.user.id] = pet;
@@ -145,12 +191,12 @@ module.exports = {
         const allStatsAbove70 = Object.values(pet.stats).every(val => val >= 70);
         const allStatsAbove80 = Object.values(pet.stats).every(val => val >= 80);
 
-        if (allStatsAbove70) {
+        if (allStatsAbove70 && !pet.isDead) {
             xpGain += 2;
             message += "\n🌟 Bonus XP for keeping stats high!";
         }
 
-        if (allStatsAbove80) {
+        if (allStatsAbove80 && !pet.isDead) {
             xpGain *= 2; // Double growth speed
             message += "\n🚀 2x Growth Speed active!";
         }
@@ -180,7 +226,8 @@ module.exports = {
                 pet.defense += 10;
                 statMsg = "🛡️ Defense increased by 10!";
             } else {
-                pet.hp += 50;
+                pet.maxHp += 50; // Increase Max HP
+                pet.hp += 50;    // Heal by the amount increased
                 statMsg = "❤️ Max HP increased by 50!";
             }
 
