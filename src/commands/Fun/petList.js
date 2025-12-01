@@ -18,7 +18,7 @@ module.exports = {
                 .setDescription(pet.description)
                 .addFields(
                     { name: 'Type', value: `\`${pet.value}\``, inline: true },
-                    { name: 'Stats', value: `⚔️ Atk: ${pet.stats.attack} | 🛡️ Def: ${pet.stats.defense} | ❤️ HP: ${pet.stats.health}`, inline: true }
+                    { name: 'Stats', value: `⚔️ AP: ${pet.stats.attack} | 🛡️ DP: ${pet.stats.defense} | ❤️ HP: ${pet.stats.health}`, inline: true }
                 )
                 .setColor('Blue');
 
@@ -41,10 +41,10 @@ module.exports = {
                 embed.setThumbnail(`attachment://${fileName}`);
                 files.push(attachment);
             }
-            
+
             embeds.push(embed);
         }
-        
+
         // Add a footer to the last embed
         if (embeds.length > 0) {
             embeds[embeds.length - 1].setFooter({ text: 'Use /adopt <character> to adopt one!' });

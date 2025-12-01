@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,6 +18,35 @@ function createBar(value, max = 100) {
 module.exports = {
     name: 'pet',
     description: 'Check your virtual pet status',
+    options: [
+        {
+            name: 'name',
+            description: 'Name of the pet to view',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+            autocomplete: true
+        }
+    ],
+    autocomplete: async (client, interaction) => {
+        const focusedValue = interaction.options.getFocused();
+        let petsData = {};
+        if (fs.existsSync(petsFile)) {
+            try {
+                petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
+            } catch (e) {
+                return interaction.respond([]);
+            }
+        }
+
+        let userPets = petsData[interaction.user.id];
+        if (!userPets) return interaction.respond([]);
+        if (!Array.isArray(userPets)) userPets = [userPets];
+
+        const filtered = userPets.filter(pet => pet.petName.toLowerCase().includes(focusedValue.toLowerCase()));
+        await interaction.respond(
+            filtered.slice(0, 25).map(pet => ({ name: `${pet.petName} (${pet.type})`, value: pet.petName }))
+        );
+    },
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
@@ -25,18 +54,59 @@ module.exports = {
             return interaction.editReply({ content: "No pets found! Use /adopt to get one." });
         }
 
-        let pets = {};
+        let petsData = {};
         try {
-            pets = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
+            petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
         } catch (e) {
             console.error(e);
             return interaction.editReply({ content: "Error reading pet data." });
         }
 
-        const pet = pets[interaction.user.id];
+        let userPets = petsData[interaction.user.id];
 
-        if (!pet) {
+        if (!userPets) {
             return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
+        }
+
+        // Migration check
+        if (!Array.isArray(userPets)) {
+            userPets = [userPets];
+            // We don't save here to avoid side effects during read, but adopt/action will fix it.
+            // Actually, let's fix it here for consistency if we are going to use it.
+            petsData[interaction.user.id] = userPets;
+            fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
+        }
+
+        const targetPetName = interaction.options.getString('name');
+        let pet;
+
+        if (targetPetName) {
+            pet = userPets.find(p => p.petName.toLowerCase() === targetPetName.toLowerCase());
+            if (!pet) {
+                return interaction.editReply({ content: `❌ You don't have a pet named **${targetPetName}**.` });
+            }
+        } else {
+            // If no specific pet requested
+            if (userPets.length > 1) {
+                // Show list
+                const embed = new EmbedBuilder()
+                    .setTitle('🐾 Your Pets')
+                    .setColor('Blue')
+                    .setDescription('You have multiple pets! Use `/pet name:<name>` to see details.');
+
+                userPets.forEach(p => {
+                    embed.addFields({
+                        name: `${p.isDead ? '💀' : '❤️'} ${p.petName} (${p.type})`,
+                        value: `Lvl ${p.level} | HP: ${Math.round(p.hp)}/${p.maxHp || 100} | ${p.isWorking ? '⚔️ Grinding' : '💤 Idle'}`,
+                        inline: false
+                    });
+                });
+
+                return interaction.editReply({ embeds: [embed] });
+            } else {
+                // Only 1 pet, show details
+                pet = userPets[0];
+            }
         }
 
         // Ensure stats exist (migration safety)
@@ -69,8 +139,12 @@ module.exports = {
         }
 
         // Save pet state (applyWorkGains updates pet object)
-        pets[interaction.user.id] = pet;
-        fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
+        // We need to update the specific pet in the array
+        // Since 'pet' is a reference to the object in 'userPets' array (which is in petsData), 
+        // modifying 'pet' modifies 'petsData' structure? 
+        // Yes, in JS objects are references.
+
+        fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
 
         const embed = new EmbedBuilder()
             .setColor(pet.isDead ? 'Black' : '#0099ff')
@@ -83,7 +157,7 @@ module.exports = {
                 { name: 'Happiness 🎾', value: `${createBar(pet.stats.happiness)} ${Math.round(pet.stats.happiness)}/100`, inline: true },
                 { name: 'Affection 💖', value: `${createBar(pet.stats.affection)} ${Math.round(pet.stats.affection)}/100`, inline: true },
                 { name: 'Level 🏅', value: `${pet.level}`, inline: true },
-                { name: 'Combat ⚔️', value: `Atk: ${pet.attack || baseStats.attack} | Def: ${pet.defense || baseStats.defense}`, inline: false }
+                { name: 'Combat ⚔️', value: `AP: ${pet.attack || baseStats.attack} | DP: ${pet.defense || baseStats.defense}`, inline: false }
             );
 
         if (pet.isDead) {

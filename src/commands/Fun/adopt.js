@@ -27,26 +27,51 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        let pets = {};
+        let petsData = {};
         if (fs.existsSync(petsFile)) {
             try {
-                pets = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
+                petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
             } catch (e) {
                 console.error("Error reading pets.json", e);
-                pets = {};
+                petsData = {};
             }
         }
 
-        if (pets[interaction.user.id]) {
+        // Migration: Ensure user's data is an array
+        let userPets = petsData[interaction.user.id];
+        if (!userPets) {
+            userPets = [];
+        } else if (!Array.isArray(userPets)) {
+            // Migrate single object to array
+            userPets = [userPets];
+        }
+
+        // Calculate Price
+        // 1st pet (index 0) = Free
+        // 2nd pet (index 1) = 1000
+        // 3rd pet (index 2) = 2000
+        const petCount = userPets.length;
+        const price = petCount * 1000;
+
+        const economySystem = require('../../utils/EconomySystem');
+        const balance = economySystem.getBalance(interaction.user.id);
+
+        if (price > 0 && balance < price) {
             return interaction.editReply({
-                content: "You already have a pet! You can only adopt one."
+                content: `❌ You need **$${price}** to adopt your ${petCount + 1}th pet! You currently have **$${balance}**.`
             });
         }
 
         const character = interaction.options.getString('character');
         const petName = interaction.options.getString('name');
 
+        // Deduct money if applicable
+        if (price > 0) {
+            economySystem.removeBalance(interaction.user.id, price);
+        }
+
         const newPet = {
+            id: Date.now().toString(), // Unique ID for the pet
             petName: petName,
             type: character,
             level: 1,
@@ -64,19 +89,20 @@ module.exports = {
             lastWorkUpdate: null
         };
 
-        pets[interaction.user.id] = newPet;
+        userPets.push(newPet);
+        petsData[interaction.user.id] = userPets;
 
-        fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
+        fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
 
         const embed = new EmbedBuilder()
             .setTitle('🎉 Adoption Successful!')
             .setDescription(`You have adopted **${petName}** the ${character}!`)
             .setColor('Green')
             .addFields(
-                { name: 'Level', value: '1', inline: true },
-                { name: 'Stats', value: 'All stats start at 50/100', inline: true }
+                { name: 'Cost', value: price === 0 ? 'Free' : `$${price}`, inline: true },
+                { name: 'Total Pets', value: `${userPets.length}`, inline: true }
             )
-            .setFooter({ text: 'Use /pet to view your pet and /pet-action to care for it!' });
+            .setFooter({ text: 'Use /pet to view your pets and /pet-action to care for them!' });
 
         const extensions = ['.png', '.jpg', '.jpeg'];
         let imagePath = null;
