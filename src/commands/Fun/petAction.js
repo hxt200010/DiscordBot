@@ -3,14 +3,16 @@ const fs = require('fs');
 const path = require('path');
 
 const petConfig = require('../../utils/petConfig');
+const { applyWorkGains } = require('../../utils/petUtils');
 
 const petsFile = path.join(__dirname, '../../data/pets.json');
+const economyFile = path.join(__dirname, '../../data/economy.json');
 
 const cooldowns = new Map();
 
 module.exports = {
     name: 'pet-action',
-    description: 'Interact with your pet',
+    description: 'Interact with your pet (Feed, Play, Work, etc.)',
     options: [
         {
             name: 'action',
@@ -22,6 +24,7 @@ module.exports = {
                 { name: 'Play 🎾', value: 'play' },
                 { name: 'Pat 👋', value: 'pat' },
                 { name: 'Sleep 💤', value: 'sleep' },
+                { name: 'Grind ⚔️', value: 'grind' },
             ],
         },
     ],
@@ -35,7 +38,7 @@ module.exports = {
                 return interaction.reply({ content: `⏳ Please wait ${timeLeft} seconds before interacting again.`, ephemeral: true });
             }
         }
-        
+
         cooldowns.set(userId, Date.now());
         setTimeout(() => cooldowns.delete(userId), 5000);
 
@@ -63,7 +66,7 @@ module.exports = {
         if (!pet.attack || !pet.defense || !pet.hp) {
             const config = petConfig.find(p => p.value === pet.type);
             const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
-            
+
             if (!pet.attack) pet.attack = baseStats.attack;
             if (!pet.defense) pet.defense = baseStats.defense;
             if (!pet.hp) pet.hp = baseStats.health;
@@ -97,6 +100,45 @@ module.exports = {
                 xpGain = 3;
                 message = `**${pet.petName}** took a nap. Zzz... (+20 Energy, +3 XP)`;
                 break;
+            case 'grind':
+                // Toggle work/grind state
+                if (pet.isWorking) {
+                    // Stop working
+                    const gains = applyWorkGains(pet);
+                    pet.isWorking = false;
+                    pet.lastWorkUpdate = null;
+
+                    // Add coins to economy
+                    let economy = {};
+                    if (fs.existsSync(economyFile)) {
+                        economy = JSON.parse(fs.readFileSync(economyFile, 'utf8'));
+                    }
+                    if (!economy[interaction.user.id]) {
+                        economy[interaction.user.id] = { balance: 0, inventory: [] };
+                    }
+                    economy[interaction.user.id].balance += gains.coins;
+                    fs.writeFileSync(economyFile, JSON.stringify(economy, null, 2));
+
+                    message = `🛑 **${pet.petName}** stopped grinding.\nTime spent: ${(gains.timeWorked / (1000 * 60 * 60)).toFixed(2)} hours.\nEarned: **${gains.coins} coins** and **${gains.xp.toFixed(2)} XP**.`;
+
+                    xpGain = 0;
+
+                } else {
+                    // Start working
+                    pet.isWorking = true;
+                    pet.lastWorkUpdate = Date.now();
+                    message = `⚔️ **${pet.petName}** started grinding! They will earn coins and XP over time.\nUse \`/pet-action grind\` again to stop.`;
+
+                    // Save immediately and return
+                    pets[interaction.user.id] = pet;
+                    fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
+
+                    const embed = new EmbedBuilder()
+                        .setColor('Red')
+                        .setDescription(message);
+                    return interaction.editReply({ embeds: [embed] });
+                }
+                break;
         }
 
         // Bonus XP if stats are high
@@ -107,7 +149,7 @@ module.exports = {
             xpGain += 2;
             message += "\n🌟 Bonus XP for keeping stats high!";
         }
-        
+
         if (allStatsAbove80) {
             xpGain *= 2; // Double growth speed
             message += "\n🚀 2x Growth Speed active!";
@@ -122,7 +164,7 @@ module.exports = {
             pet.level += 1;
             pet.xp -= xpThreshold;
             pet.dailyCoins = 50 + (pet.level * 5);
-            
+
             // Stat Growth Cycle
             // Level 2: Attack (0)
             // Level 3: Defense (1)
@@ -143,10 +185,10 @@ module.exports = {
             }
 
             message += `\n🎉 **LEVEL UP!** ${pet.petName} is now Level ${pet.level}!\n${statMsg}\nDaily earnings increased to ${pet.dailyCoins}.`;
-            
+
             // Visual evolution check (placeholder)
             if (pet.level % 10 === 0) {
-                 message += `\n✨ **EVOLUTION!** ${pet.petName} looks stronger!`;
+                message += `\n✨ **EVOLUTION!** ${pet.petName} looks stronger!`;
             }
         }
 
@@ -156,7 +198,7 @@ module.exports = {
             const isBoostActive = pet.boostActiveUntil && pet.boostActiveUntil > Date.now();
             if (!isBoostActive) {
                 // 20-50% increase
-                const boostPercent = Math.floor(Math.random() * 31) + 20; 
+                const boostPercent = Math.floor(Math.random() * 31) + 20;
                 pet.boostActiveUntil = Date.now() + (24 * 60 * 60 * 1000); // 24 hours
                 message += `\n🔥 **BOOST DAY UNLOCKED!** Daily rewards increased by ${boostPercent}% for 24 hours!`;
             }

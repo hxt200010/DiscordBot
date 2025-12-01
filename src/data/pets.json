@@ -3,7 +3,7 @@
     "petName": "Shadow",
     "type": "shadow",
     "level": 1,
-    "xp": 4,
+    "xp": 4.0012952777777775,
     "stats": {
       "hunger": 50,
       "happiness": 65,
@@ -12,6 +12,11 @@
     },
     "lastInteraction": 1764465075656,
     "boostActiveUntil": null,
-    "dailyCoins": 55
+    "dailyCoins": 55,
+    "attack": 130,
+    "defense": 65,
+    "hp": 1200,
+    "isWorking": true,
+    "lastWorkUpdate": 1764618154030
   }
 }

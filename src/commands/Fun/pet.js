@@ -66,9 +66,9 @@ module.exports = {
                 pets[interaction.user.id] = pet;
                 fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
 
-                workMessage = `\n💼 **Working:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
+                workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
             } else {
-                workMessage = "\n💼 **Working:** Currently working...";
+                workMessage = "\n⚔️ **Grinding:** Currently grinding...";
             }
         }
 
