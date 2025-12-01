@@ -59,7 +59,9 @@ module.exports = {
             },
             lastInteraction: Date.now(),
             boostActiveUntil: null,
-            dailyCoins: 50 + (1 * 5) // Initial daily coins
+            dailyCoins: 50 + (1 * 5), // Initial daily coins
+            isWorking: false,
+            lastWorkUpdate: null
         };
 
         pets[interaction.user.id] = newPet;
@@ -90,8 +92,8 @@ module.exports = {
         }
 
         if (imagePath) {
-             embed.setThumbnail(`attachment://${fileName}`);
-             return interaction.editReply({ embeds: [embed], files: [imagePath] });
+            embed.setThumbnail(`attachment://${fileName}`);
+            return interaction.editReply({ embeds: [embed], files: [imagePath] });
         }
 
         interaction.editReply({ embeds: [embed] });

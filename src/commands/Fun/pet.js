@@ -5,6 +5,8 @@ const path = require('path');
 const petConfig = require('../../utils/petConfig');
 
 const petsFile = path.join(__dirname, '../../data/pets.json');
+const economyFile = path.join(__dirname, '../../data/economy.json');
+const { applyWorkGains } = require('../../utils/petUtils');
 
 function createBar(stat) {
     const filled = Math.max(0, Math.min(10, Math.floor(stat / 10)));
@@ -44,10 +46,36 @@ module.exports = {
         const config = petConfig.find(p => p.value === pet.type);
         const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
 
+        // Apply pending work gains
+        let workMessage = "";
+        if (pet.isWorking) {
+            const gains = applyWorkGains(pet);
+            if (gains.coins > 0 || gains.xp > 0) {
+                // Update economy
+                let economy = {};
+                if (fs.existsSync(economyFile)) {
+                    economy = JSON.parse(fs.readFileSync(economyFile, 'utf8'));
+                }
+                if (!economy[interaction.user.id]) {
+                    economy[interaction.user.id] = { balance: 0, inventory: [] };
+                }
+                economy[interaction.user.id].balance += gains.coins;
+                fs.writeFileSync(economyFile, JSON.stringify(economy, null, 2));
+
+                // Save pet (XP updated in applyWorkGains)
+                pets[interaction.user.id] = pet;
+                fs.writeFileSync(petsFile, JSON.stringify(pets, null, 2));
+
+                workMessage = `\n💼 **Working:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
+            } else {
+                workMessage = "\n💼 **Working:** Currently working...";
+            }
+        }
+
         const stats = pet.stats;
         const embed = new EmbedBuilder()
             .setTitle(`🐾 ${pet.petName} (Level ${pet.level})`)
-            .setDescription(`**Type:** ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}\n**XP:** ${pet.xp}/${pet.level * 20}`)
+            .setDescription(`**Type:** ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}\n**XP:** ${pet.xp.toFixed(1)}/${pet.level * 20}${workMessage}`)
             .setColor('Blue')
             .addFields(
                 { name: 'Hunger', value: `${createBar(stats.hunger)} ${stats.hunger}/100`, inline: false },
@@ -57,7 +85,7 @@ module.exports = {
                 { name: '⚔️ Combat Stats', value: `**Attack:** ${pet.attack || baseStats.attack}\n**Defense:** ${pet.defense || baseStats.defense}\n**HP:** ${pet.hp || baseStats.health}`, inline: true },
                 { name: 'Daily Coins', value: `${pet.dailyCoins || (50 + pet.level * 5)}`, inline: true }
             );
-        
+
         if (pet.boostActiveUntil && pet.boostActiveUntil > Date.now()) {
             embed.addFields({ name: '🔥 Boost Day Active!', value: 'Rewards increased!', inline: true });
         }
@@ -76,8 +104,8 @@ module.exports = {
         }
 
         if (imagePath) {
-             embed.setThumbnail(`attachment://${fileName}`);
-             return interaction.editReply({ embeds: [embed], files: [imagePath] });
+            embed.setThumbnail(`attachment://${fileName}`);
+            return interaction.editReply({ embeds: [embed], files: [imagePath] });
         }
 
         interaction.editReply({ embeds: [embed] });
