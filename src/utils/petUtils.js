@@ -10,23 +10,23 @@ const calculateWorkGains = (pet) => {
     if (hoursWorked <= 0) return { coins: 0, xp: 0, timeWorked: 0, hungerLost: 0, hpLost: 0, isDead: false };
 
     // Formulas:
-    // Coins = Level * Hours
-    // XP = 0.5 * Hours
-    // Hunger Loss = 5 per hour
+    // Coins = 10 per hour
+    // XP = 2.5 per hour
+    // Hunger Loss = 1 per hour
     // HP Loss (if Hunger <= 0) = 10 per hour
 
-    const coinsEarned = Math.floor(pet.level * hoursWorked);
-    const xpEarned = 0.5 * hoursWorked;
+    const coinsEarned = Math.floor(10 * hoursWorked);
+    const xpEarned = 2.5 * hoursWorked;
 
-    const hungerLost = 5 * hoursWorked;
+    const hungerLost = 1 * hoursWorked;
     let hpLost = 0;
 
     // Check if hunger will drop to 0
     // We need to calculate how much time was spent at 0 hunger
     // Initial Hunger: pet.stats.hunger
-    // Time until 0 hunger: pet.stats.hunger / 5 (hours)
+    // Time until 0 hunger: pet.stats.hunger / 1 (hours)
 
-    const timeToStarve = pet.stats.hunger / 5;
+    const timeToStarve = pet.stats.hunger / 1;
 
     if (hoursWorked > timeToStarve) {
         // Time spent starving
