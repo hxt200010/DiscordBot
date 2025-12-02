@@ -178,6 +178,9 @@ DiscordBot/
 ---
 
 <div align="center">
-  <img src="src/Images/shadow.png" width="150" />
+  <img src="src/Images/shadow.png" width="400" />
   <p>Made with 🌭 and Chili Dogs</p>
 </div>
+
+
+https://github.com/user-attachments/assets/8db0a6f5-c72e-4ecf-b7d0-f9b14050c379
