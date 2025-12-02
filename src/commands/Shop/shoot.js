@@ -19,7 +19,7 @@ module.exports = {
      */
     callback: async (client, interaction) => {
         // Offset the global +1 currency reward for this command
-        economySystem.removeBalance(interaction.user.id, 1);
+        await economySystem.removeBalance(interaction.user.id, 1);
 
         const targetUser = interaction.options.getUser('target');
         const shooterId = interaction.user.id;
@@ -29,7 +29,7 @@ module.exports = {
             return interaction.reply({ content: "🚫 You can't shoot yourself!", ephemeral: true });
         }
 
-        const shooterInventory = economySystem.getInventory(shooterId);
+        const shooterInventory = await economySystem.getInventory(shooterId);
         const gun = shooterInventory.find(i => i.name === 'Gun');
 
         if (!gun) {
@@ -37,9 +37,9 @@ module.exports = {
         }
 
         // Check Shield
-        if (economySystem.getShield(targetId)) {
-            economySystem.setShield(targetId, false);
-            return interaction.reply({ 
+        if (await economySystem.getShield(targetId)) {
+            await economySystem.setShield(targetId, false);
+            return interaction.reply({
                 content: `🛡️ **BLOCKED!** <@${targetId}> blocked your shot with a Shield!`,
             });
         }
@@ -52,7 +52,7 @@ module.exports = {
         const random = Math.random();
 
         // Reduce durability regardless of outcome
-        const result = economySystem.updateItem(shooterId, 'Gun', (item) => {
+        const result = await economySystem.updateItem(shooterId, 'Gun', (item) => {
             item.durability -= 1;
         });
 
@@ -62,11 +62,11 @@ module.exports = {
             const gainedAmount = Math.floor(Math.random() * (25 - 15 + 1)) + 15;
 
             // Ensure target has enough
-            const targetBalance = economySystem.getBalance(targetId);
+            const targetBalance = await economySystem.getBalance(targetId);
             const actualLost = Math.min(targetBalance, lostAmount);
 
-            economySystem.removeBalance(targetId, actualLost);
-            economySystem.addBalance(shooterId, gainedAmount);
+            await economySystem.removeBalance(targetId, actualLost);
+            await economySystem.addBalance(shooterId, gainedAmount);
 
             const embed = new EmbedBuilder()
                 .setTitle('🔫 BANG! Shot Fired!')
@@ -76,7 +76,7 @@ module.exports = {
                     { name: 'They Lost', value: `$${actualLost}`, inline: true },
                     { name: 'You Gained', value: `$${gainedAmount}`, inline: true }
                 );
-            
+
             if (result === 'broken') {
                 embed.setFooter({ text: '💥 Your Gun broke after this shot!' });
             }

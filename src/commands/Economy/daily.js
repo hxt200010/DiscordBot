@@ -14,8 +14,8 @@ module.exports = {
             return interaction.editReply({ content: 'You have already collected your daily reward today. Come back tomorrow!' });
         }
 
-        const newBalance = economy.addBalance(interaction.user.id, dailyAmount);
-        
+        const newBalance = await economy.addBalance(interaction.user.id, dailyAmount);
+
         // Simple daily cooldown (reset on bot restart for now, ideally use DB or timestamp)
         cooldowns.add(interaction.user.id);
         setTimeout(() => cooldowns.delete(interaction.user.id), 24 * 60 * 60 * 1000);

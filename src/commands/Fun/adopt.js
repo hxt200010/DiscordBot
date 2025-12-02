@@ -27,13 +27,13 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        const userPets = PetSystem.getUserPets(interaction.user.id);
+        const userPets = await PetSystem.getUserPets(interaction.user.id);
 
         // Calculate Price
         const petCount = userPets.length;
         const price = petCount * 1000;
 
-        const balance = EconomySystem.getBalance(interaction.user.id);
+        const balance = await EconomySystem.getBalance(interaction.user.id);
 
         if (price > 0 && balance < price) {
             return interaction.editReply({
@@ -79,7 +79,7 @@ module.exports = {
 
             if (i.customId === 'confirm_adopt') {
                 // Re-check balance in case it changed
-                const currentBalance = EconomySystem.getBalance(interaction.user.id);
+                const currentBalance = await EconomySystem.getBalance(interaction.user.id);
                 if (price > 0 && currentBalance < price) {
                     return i.update({
                         content: `❌ Transaction failed. You need **$${price}** but have **$${currentBalance}**.`,
@@ -90,23 +90,24 @@ module.exports = {
 
                 // Deduct money
                 if (price > 0) {
-                    EconomySystem.removeBalance(interaction.user.id, price);
+                    await EconomySystem.removeBalance(interaction.user.id, price);
                 }
 
                 const config = petConfig.find(p => p.value === character);
                 const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
 
                 const newPet = {
-                    id: Date.now().toString(),
+                    // id: Date.now().toString(), // Mongoose will generate ID
                     petName: petName,
                     type: character,
                     level: 1,
                     xp: 0,
                     stats: {
-                        hunger: 50,
+                        hunger: 100,
                         happiness: 50,
                         affection: 50,
-                        energy: 50
+                        energy: 50,
+                        cleanliness: 50
                     },
                     lastInteraction: Date.now(),
                     boostActiveUntil: null,
@@ -120,10 +121,10 @@ module.exports = {
                     purchaseCost: price
                 };
 
-                PetSystem.addPet(interaction.user.id, newPet);
+                await PetSystem.addPet(interaction.user.id, newPet);
 
                 // Re-fetch pets to get accurate total count
-                const updatedUserPets = PetSystem.getUserPets(interaction.user.id);
+                const updatedUserPets = await PetSystem.getUserPets(interaction.user.id);
 
                 const embed = new EmbedBuilder()
                     .setTitle('🎉 Adoption Successful!')

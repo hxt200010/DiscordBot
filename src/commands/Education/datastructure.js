@@ -116,17 +116,17 @@ module.exports = {
                 };
 
                 const embed = new EmbedBuilder()
-                        .setTitle(`📖 Learn: ${option}`)
-                        .setColor('Blue')
-                        .addFields(
-                            { name: 'Definition', value: formatField(data.definition) },
-                            { name: 'Example', value: `\`\`\`${language.toLowerCase()}\n${formatField(data.example)}\n\`\`\`` },
-                            { name: 'Operations', value: formatField(data.operations) },
-                            { name: 'Time Complexity', value: formatField(data.time_complexity) },
-                            { name: 'Use Cases', value: formatField(data.use_cases) },
-                            { name: 'Practice Question', value: formatField(data.practice_question) }
-                        )
-                        .setFooter({ text: 'Click "Show Solution" to see the answer and earn coins!' });
+                    .setTitle(`📖 Learn: ${option}`)
+                    .setColor('Blue')
+                    .addFields(
+                        { name: 'Definition', value: formatField(data.definition) },
+                        { name: 'Example', value: `\`\`\`${language.toLowerCase()}\n${formatField(data.example)}\n\`\`\`` },
+                        { name: 'Operations', value: formatField(data.operations) },
+                        { name: 'Time Complexity', value: formatField(data.time_complexity) },
+                        { name: 'Use Cases', value: formatField(data.use_cases) },
+                        { name: 'Practice Question', value: formatField(data.practice_question) }
+                    )
+                    .setFooter({ text: 'Click "Show Solution" to see the answer and earn coins!' });
 
                 const button = new ButtonBuilder()
                     .setCustomId('show_solution')
@@ -147,7 +147,7 @@ module.exports = {
 
                     if (confirmation.customId === 'show_solution') {
                         const reward = 5;
-                        economySystem.addBalance(interaction.user.id, reward);
+                        await economySystem.addBalance(interaction.user.id, reward);
 
                         let solutionText = '';
                         if (typeof data.solution === 'object' && data.solution !== null) {

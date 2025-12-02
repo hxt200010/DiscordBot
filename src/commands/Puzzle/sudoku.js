@@ -4,16 +4,16 @@ const economySystem = require('../../utils/EconomySystem');
 function generateMiniSudoku() {
     // Generate a simple 4x4 sudoku
     const solutions = [
-        [[1,2,3,4],[3,4,1,2],[2,3,4,1],[4,1,2,3]],
-        [[2,1,4,3],[4,3,2,1],[1,4,3,2],[3,2,1,4]],
-        [[3,4,1,2],[1,2,3,4],[4,3,2,1],[2,1,4,3]],
-        [[4,3,2,1],[2,1,4,3],[3,4,1,2],[1,2,3,4]],
-        [[1,3,2,4],[2,4,3,1],[4,2,1,3],[3,1,4,2]]
+        [[1, 2, 3, 4], [3, 4, 1, 2], [2, 3, 4, 1], [4, 1, 2, 3]],
+        [[2, 1, 4, 3], [4, 3, 2, 1], [1, 4, 3, 2], [3, 2, 1, 4]],
+        [[3, 4, 1, 2], [1, 2, 3, 4], [4, 3, 2, 1], [2, 1, 4, 3]],
+        [[4, 3, 2, 1], [2, 1, 4, 3], [3, 4, 1, 2], [1, 2, 3, 4]],
+        [[1, 3, 2, 4], [2, 4, 3, 1], [4, 2, 1, 3], [3, 1, 4, 2]]
     ];
-    
+
     const solution = solutions[Math.floor(Math.random() * solutions.length)];
     const puzzle = solution.map(row => [...row]);
-    
+
     // Remove 6-8 numbers
     const cellsToRemove = 6 + Math.floor(Math.random() * 3);
     for (let i = 0; i < cellsToRemove; i++) {
@@ -21,7 +21,7 @@ function generateMiniSudoku() {
         const col = Math.floor(Math.random() * 4);
         puzzle[row][col] = 0;
     }
-    
+
     return { puzzle, solution };
 }
 
@@ -83,7 +83,7 @@ module.exports = {
             if (!game) return;
 
             const input = msg.content.trim().toLowerCase();
-            
+
             if (input === 'solve' || input === 'show') {
                 await msg.reply(`Here's the current state:\n${formatSudoku(game.puzzle)}`);
                 return;
@@ -97,17 +97,17 @@ module.exports = {
 
                 if (row >= 0 && row < 4 && col >= 0 && col < 4 && num >= 1 && num <= 4) {
                     game.puzzle[row][col] = num;
-                    
+
                     // Check if solved
-                    const isSolved = game.puzzle.every((row, i) => 
+                    const isSolved = game.puzzle.every((row, i) =>
                         row.every((cell, j) => cell === game.solution[i][j])
                     );
 
                     if (isSolved) {
                         const reward = 100;
-                        economySystem.addBalance(userId, reward);
-                        
-                        await msg.reply(`✅ **Solved!** You earned **$${reward}**! Your balance: **$${economySystem.getBalance(userId)}**`);
+                        await economySystem.addBalance(userId, reward);
+
+                        await msg.reply(`✅ **Solved!** You earned **$${reward}**! Your balance: **$${await economySystem.getBalance(userId)}**`);
                         activeGames.delete(userId);
                         collector.stop();
                     } else {

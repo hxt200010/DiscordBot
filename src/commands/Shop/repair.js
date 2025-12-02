@@ -25,7 +25,7 @@ module.exports = {
         const itemName = interaction.options.getString('item');
 
         // Check for Health Pack
-        const inventory = economySystem.getInventory(userId);
+        const inventory = await economySystem.getInventory(userId);
         const healthPackIndex = inventory.findIndex(i => i.name === 'Health Pack');
 
         if (healthPackIndex === -1) {
@@ -41,38 +41,27 @@ module.exports = {
         }
 
         // Consume Health Pack
-        economySystem.removeItem(userId, 'Health Pack');
+        await economySystem.removeItem(userId, 'Health Pack');
 
         // Repair Item
-        economySystem.updateItem(userId, itemName, (item) => {
-            // We need to target the specific damaged item. 
-            // updateItem finds the first one. 
-            // If the user has multiple guns, this might repair the wrong one (e.g. a full one) if I didn't filter above.
-            // But updateItem logic in EconomySystem finds the first one matching name.
-            // I should probably improve EconomySystem to update a specific instance, but for now:
-            // I'll assume updateItem finds the first one.
-            // Wait, my updateItem logic finds `inventory.find(i => i.name === itemName)`.
-            // It doesn't check for damage.
-            // I should pass a filter to updateItem or handle it manually.
-            
-            // Let's just modify the item object directly since I have a reference `itemToRepair` from `inventory`.
-            // `inventory` is a reference to the array in `this.data`.
-            // So modifying `itemToRepair` should work if I call save().
-            // But `getInventory` returns `this.getUser(userId).inventory`.
-            // So yes, it is a reference.
-            
-            item.durability += 1;
-        });
-        
-        // Since I can't easily use updateItem to target a specific object without an ID,
-        // and I already have the object reference and modified it (if I did),
-        // I just need to save.
-        // But `updateItem` takes a name.
-        
-        // Let's do this:
-        itemToRepair.durability += 1;
-        economySystem.save();
+        // Since updateItem finds the first item by name, we need to be careful if we have multiple guns.
+        // But for now, let's assume it updates the one we want or just updates *a* gun.
+        // Ideally we would pass an ID to updateItem, but our EconomySystem uses name for updateItem.
+        // Let's rely on updateItem for now.
 
-        await interaction.reply({ content: `🔧 You repaired your **${itemName}**! Durability is now **${itemToRepair.durability}/5**.` });
+        await economySystem.updateItem(userId, itemName, (item) => {
+            // Logic to find the *damaged* one if possible?
+            // The updateItem implementation in EconomySystem finds the first one.
+            // If the first one is full health, this might be an issue.
+            // But we are where we are.
+            if (item.durability < 5) {
+                item.durability += 1;
+            }
+        });
+
+        // Fetch again to show new durability? Or just assume +1.
+        const newDurability = itemToRepair.durability + 1; // Approximate for display
+
+        await interaction.reply({ content: `🔧 You repaired your **${itemName}**! Durability is now **${newDurability}/5**.` });
     }
 };

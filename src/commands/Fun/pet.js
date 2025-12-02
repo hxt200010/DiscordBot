@@ -9,12 +9,12 @@ const { applyWorkGains } = require('../../utils/petUtils');
 
 function createBar(value, max = 100) {
     const percentage = value / max;
-    const filled = Math.max(0, Math.min(10, Math.floor(percentage * 10)));
+    const filled = Math.max(0, Math.min(10, Math.round(percentage * 10)));
     const empty = 10 - filled;
     return "█".repeat(filled) + "░".repeat(empty);
 }
 
-function generatePetEmbed(pet, userId, interaction) {
+async function generatePetEmbed(pet, userId, interaction) {
     // Ensure stats exist (migration safety)
     if (!pet.stats) {
         pet.stats = { hunger: 50, happiness: 50, affection: 50, energy: 50 };
@@ -39,10 +39,10 @@ function generatePetEmbed(pet, userId, interaction) {
         const gains = applyWorkGains(pet);
         if (gains.coins > 0 || gains.xp > 0) {
             // Update economy with coins
-            EconomySystem.addBalance(userId, gains.coins);
+            await EconomySystem.addBalance(userId, gains.coins);
 
             // Update pet stats in DB
-            PetSystem.updatePet(pet.id, (p) => {
+            await PetSystem.updatePet(pet.id, (p) => {
                 p.xp = (p.xp || 0) + gains.xp;
                 p.stats.hunger = Math.max(0, (p.stats.hunger || 50) - gains.hungerLost);
                 p.hp = Math.max(0, (p.hp || p.maxHp) - gains.hpLost);
@@ -55,8 +55,8 @@ function generatePetEmbed(pet, userId, interaction) {
             pet.hp = Math.max(0, (pet.hp || pet.maxHp) - gains.hpLost);
 
             workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
-            if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${Math.round(gains.hungerLost)} Hunger`;
-            if (gains.hpLost > 0) workMessage += `, -${Math.round(gains.hpLost)} HP`;
+            if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${gains.hungerLost.toFixed(1)} Hunger`;
+            if (gains.hpLost > 0) workMessage += `, -${gains.hpLost.toFixed(1)} HP`;
         } else {
             workMessage = "\n⚔️ **Grinding:** Currently grinding...";
         }
@@ -117,7 +117,7 @@ module.exports = {
     ],
     autocomplete: async (client, interaction) => {
         const focusedValue = interaction.options.getFocused();
-        const userPets = PetSystem.getUserPets(interaction.user.id);
+        const userPets = await PetSystem.getUserPets(interaction.user.id);
 
         if (!userPets || userPets.length === 0) return interaction.respond([]);
 
@@ -129,7 +129,7 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        const userPets = PetSystem.getUserPets(interaction.user.id);
+        const userPets = await PetSystem.getUserPets(interaction.user.id);
 
         if (!userPets || userPets.length === 0) {
             return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
@@ -156,7 +156,7 @@ module.exports = {
         const displayTargets = targets.slice(0, 10);
 
         for (const pet of displayTargets) {
-            const { embed, file } = generatePetEmbed(pet, interaction.user.id, interaction);
+            const { embed, file } = await generatePetEmbed(pet, interaction.user.id, interaction);
             embeds.push(embed);
             if (file) {
                 const ext = path.extname(file.name);

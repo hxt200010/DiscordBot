@@ -81,7 +81,7 @@ module.exports = {
             let responseContent = completion.data.choices[0].message.content;
             // Clean up if the model adds markdown
             responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
-            
+
             let questions = [];
             try {
                 questions = JSON.parse(responseContent);
@@ -102,7 +102,7 @@ module.exports = {
                     .setColor('Blue')
                     .setFooter({ text: `Difficulty: ${difficulty} | Reward: ${reward} coins` });
 
-                const buttons = questionData.options.map((opt, index) => 
+                const buttons = questionData.options.map((opt, index) =>
                     new ButtonBuilder()
                         .setCustomId(`learn_${index}`)
                         .setLabel(opt)
@@ -130,16 +130,16 @@ module.exports = {
                     const completedCode = questionData.code.replace('____', correctAnswer);
 
                     if (selectedIndex === questionData.correctIndex) {
-                        economySystem.addBalance(interaction.user.id, reward);
+                        await economySystem.addBalance(interaction.user.id, reward);
                         coinsEarned += reward;
-                        await confirmation.update({ 
-                            content: `✅ **Correct!** You earned ${reward} coins.\n\n**Completed Code:**\n\`\`\`${language.toLowerCase()}\n${completedCode}\n\`\`\``, 
-                            components: [] 
+                        await confirmation.update({
+                            content: `✅ **Correct!** You earned ${reward} coins.\n\n**Completed Code:**\n\`\`\`${language.toLowerCase()}\n${completedCode}\n\`\`\``,
+                            components: []
                         });
                     } else {
-                        await confirmation.update({ 
-                            content: `❌ **Wrong!** The correct answer was: **${correctAnswer}**\n\n**Completed Code:**\n\`\`\`${language.toLowerCase()}\n${completedCode}\n\`\`\``, 
-                            components: [] 
+                        await confirmation.update({
+                            content: `❌ **Wrong!** The correct answer was: **${correctAnswer}**\n\n**Completed Code:**\n\`\`\`${language.toLowerCase()}\n${completedCode}\n\`\`\``,
+                            components: []
                         });
                     }
                 } catch (e) {

@@ -36,7 +36,7 @@ module.exports = {
     ],
     autocomplete: async (client, interaction) => {
         const focusedValue = interaction.options.getFocused();
-        const userPets = PetSystem.getUserPets(interaction.user.id);
+        const userPets = await PetSystem.getUserPets(interaction.user.id);
 
         if (!userPets || userPets.length === 0) return interaction.respond([]);
 
@@ -66,7 +66,7 @@ module.exports = {
 
         await interaction.deferReply();
 
-        const userPets = PetSystem.getUserPets(userId);
+        const userPets = await PetSystem.getUserPets(userId);
 
         if (!userPets || userPets.length === 0) {
             return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
@@ -91,10 +91,10 @@ module.exports = {
             }
         }
 
-        const inventory = EconomySystem.getInventory(userId);
+        const inventory = await EconomySystem.getInventory(userId);
         // Helper to check item count (simple version, assumes inventory is array of objects)
         const countItem = (itemName) => inventory.filter(i => i.name.toLowerCase() === itemName.toLowerCase()).length;
-        const useItem = (itemName) => EconomySystem.removeItem(userId, itemName);
+        const useItem = async (itemName) => await EconomySystem.removeItem(userId, itemName);
 
         let results = [];
 
@@ -127,7 +127,7 @@ module.exports = {
             switch (action) {
                 case 'feed':
                     if (countItem('Pet Food') > 0) {
-                        useItem('Pet Food');
+                        await useItem('Pet Food');
                         pet.stats.hunger = cap(pet.stats.hunger + 20);
                         xpGain = 3;
                         actionResult = `Fed (+20 Hunger)`;
@@ -157,7 +157,7 @@ module.exports = {
 
                 case 'heal':
                     if (countItem('Health Pack') > 0) {
-                        useItem('Health Pack');
+                        await useItem('Health Pack');
                         pet.hp = capHp(pet.hp + 50);
                         actionResult = `Healed (+50 HP)`;
                         itemUsed = true;
@@ -170,7 +170,7 @@ module.exports = {
                     if (!pet.isDead) {
                         actionResult = `Already alive`;
                     } else if (countItem('Health Kit') > 0) {
-                        useItem('Health Kit');
+                        await useItem('Health Kit');
                         pet.isDead = false;
                         pet.hp = Math.floor(pet.maxHp * 0.5);
                         pet.stats.hunger = 50;
@@ -186,7 +186,7 @@ module.exports = {
                         const gains = applyWorkGains(pet);
                         pet.isWorking = false;
                         pet.lastWorkUpdate = null;
-                        EconomySystem.addBalance(userId, gains.coins);
+                        await EconomySystem.addBalance(userId, gains.coins);
                         actionResult = `Stopped Grinding (+${gains.coins} coins)`;
                     } else {
                         pet.isWorking = true;
@@ -229,7 +229,7 @@ module.exports = {
             results.push(`**${pet.petName}**: ${actionResult}`);
 
             // Update DB
-            PetSystem.updatePet(pet.id, (p) => {
+            await PetSystem.updatePet(pet.id, (p) => {
                 p.stats = pet.stats;
                 p.hp = pet.hp;
                 p.isDead = pet.isDead;

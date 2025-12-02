@@ -19,7 +19,7 @@ module.exports = {
             const focusedValue = interaction.options.getFocused();
             console.log(`[SellPet] Autocomplete focused: "${focusedValue}"`);
 
-            const userPets = PetSystem.getUserPets(interaction.user.id);
+            const userPets = await PetSystem.getUserPets(interaction.user.id);
             console.log(`[SellPet] User pets found: ${userPets ? userPets.length : 'null'}`);
 
             if (!userPets || userPets.length === 0) return interaction.respond([]);
@@ -58,7 +58,7 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        const userPets = PetSystem.getUserPets(interaction.user.id);
+        const userPets = await PetSystem.getUserPets(interaction.user.id);
 
         if (!userPets || userPets.length === 0) {
             return interaction.editReply({ content: "You don't have a pet to sell!" });
@@ -133,7 +133,7 @@ module.exports = {
 
             if (i.customId === 'confirm_sell') {
                 // Verify pet still exists
-                if (!PetSystem.getPet(soldPet.id)) {
+                if (!await PetSystem.getPet(soldPet.id)) {
                     return i.update({
                         content: '❌ Pet not found. It may have been sold already.',
                         embeds: [],
@@ -141,8 +141,8 @@ module.exports = {
                     });
                 }
 
-                PetSystem.removePet(soldPet.id);
-                EconomySystem.addBalance(interaction.user.id, refundAmount);
+                await PetSystem.removePet(soldPet.id);
+                await EconomySystem.addBalance(interaction.user.id, refundAmount);
 
                 const embed = new EmbedBuilder()
                     .setTitle('👋 Goodbye!')

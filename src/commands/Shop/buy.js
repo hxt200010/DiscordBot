@@ -42,19 +42,19 @@ module.exports = {
         }
 
         const userId = interaction.user.id;
-        const balance = economySystem.getBalance(userId);
+        const balance = await economySystem.getBalance(userId);
 
         if (balance < item.price) {
             return interaction.reply({ content: `❌ You don't have enough money! You need **$${item.price}** but have **$${balance}**.`, ephemeral: true });
         }
 
         // Deduct money
-        economySystem.removeBalance(userId, item.price);
+        await economySystem.removeBalance(userId, item.price);
 
         // Add to inventory
         // Create a new instance of the item to track individual durability
         const newItem = { ...item };
-        economySystem.addItem(userId, newItem);
+        await economySystem.addItem(userId, newItem);
 
         await interaction.reply({
             content: `✅ You bought a **${item.name}** for **$${item.price}**! Check your \`/inventory\`.`

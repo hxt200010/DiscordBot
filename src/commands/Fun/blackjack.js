@@ -19,11 +19,11 @@ module.exports = {
         const bet = interaction.options.getInteger('bet');
         const userId = interaction.user.id;
 
-        if (economy.getBalance(userId) < bet) {
-            return interaction.reply({ content: `You don't have enough money! Your balance is $${economy.getBalance(userId)}.`, ephemeral: true });
+        if (await economy.getBalance(userId) < bet) {
+            return interaction.reply({ content: `You don't have enough money! Your balance is $${await economy.getBalance(userId)}.`, ephemeral: true });
         }
 
-        economy.removeBalance(userId, bet);
+        await economy.removeBalance(userId, bet);
 
         const deck = new Deck();
         const playerHand = [deck.draw(), deck.draw()];
@@ -69,7 +69,8 @@ module.exports = {
             return `\`\`\`text\n${combinedAscii.join('\n')}\n\`\`\``;
         };
 
-        const generateEmbed = (gameOver = false, result = '', winAmount = 0) => {
+        const generateEmbed = async (gameOver = false, result = '', winAmount = 0) => {
+            const balance = await economy.getBalance(userId);
             const embed = new EmbedBuilder()
                 .setTitle('🎰  High-Stakes Blackjack  🎰')
                 .setColor(gameOver ? (result.includes('Win') ? 0xFFD700 : 0xFF0000) : 0x2F3136) // Gold for win, Red for loss, Dark for ongoing
@@ -81,7 +82,7 @@ module.exports = {
                     { name: '💰 Bet', value: `$${bet}`, inline: true },
                     { name: '💵 Potential Win', value: `$${bet * 2}`, inline: true }
                 )
-                .setFooter({ text: `Balance: $${economy.getBalance(userId).toLocaleString()}` });
+                .setFooter({ text: `Balance: $${balance.toLocaleString()}` });
 
             if (gameOver) {
                 embed.setDescription(`## ${result}\n${winAmount > 0 ? `You won **$${winAmount}**!` : 'Better luck next time!'}`);
@@ -111,11 +112,11 @@ module.exports = {
         // Check for natural Blackjack
         const playerScore = calculateScore(playerHand);
         const dealerScore = calculateScore(dealerHand);
-        
+
         if (playerScore === 21) {
             let result = '';
             let winAmount = 0;
-            
+
             if (dealerScore === 21) {
                 result = 'Push (Both have Blackjack)!';
                 winAmount = bet;
@@ -123,15 +124,15 @@ module.exports = {
                 result = 'Blackjack! You Win!';
                 winAmount = Math.ceil(bet * 2.5); // 3:2 payout usually, but 2.5x total return (1.5x profit)
             }
-            
-            economy.addBalance(userId, winAmount);
-            
-            const embed = generateEmbed(true, result, winAmount);
+
+            await economy.addBalance(userId, winAmount);
+
+            const embed = await generateEmbed(true, result, winAmount);
             return interaction.editReply({ embeds: [embed], components: [] });
         }
 
         const reply = await interaction.editReply({
-            embeds: [generateEmbed()],
+            embeds: [await generateEmbed()],
             components: [row],
             fetchReply: true
         });
@@ -152,13 +153,13 @@ module.exports = {
 
                 if (score > 21) {
                     await i.update({
-                        embeds: [generateEmbed(true, 'BUST! You Lose.', 0)],
+                        embeds: [await generateEmbed(true, 'BUST! You Lose.', 0)],
                         components: []
                     });
                     collector.stop();
                 } else {
                     await i.update({
-                        embeds: [generateEmbed()],
+                        embeds: [await generateEmbed()],
                         components: [row]
                     });
                 }
@@ -187,11 +188,11 @@ module.exports = {
                 }
 
                 if (winAmount > 0) {
-                    economy.addBalance(userId, winAmount);
+                    await economy.addBalance(userId, winAmount);
                 }
 
                 await i.update({
-                    embeds: [generateEmbed(true, result, winAmount)],
+                    embeds: [await generateEmbed(true, result, winAmount)],
                     components: []
                 });
                 collector.stop();

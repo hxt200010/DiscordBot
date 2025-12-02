@@ -11,7 +11,7 @@ module.exports = {
      */
     callback: async (client, interaction) => {
         const userId = interaction.user.id;
-        const inventory = economySystem.getInventory(userId);
+        const inventory = await economySystem.getInventory(userId);
 
         if (inventory.length === 0) {
             return interaction.reply({ content: "🎒 Your inventory is empty! Go buy something with `/shop`.", ephemeral: true });
@@ -36,7 +36,7 @@ module.exports = {
         for (const [name, items] of Object.entries(counts)) {
             const count = items.length;
             let details = '';
-            
+
             if (items[0].durability !== undefined) {
                 // Show durability for each instance or average?
                 // "Gun (x2) - Durability: 5/5, 2/5"

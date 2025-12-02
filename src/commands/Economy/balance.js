@@ -15,7 +15,7 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
         const targetUser = interaction.options.getUser('user') || interaction.user;
-        const balance = economy.getBalance(targetUser.id);
+        const balance = await economy.getBalance(targetUser.id);
 
         const embed = new EmbedBuilder()
             .setColor(0xFFD700) // Gold

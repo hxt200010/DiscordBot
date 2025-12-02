@@ -33,9 +33,9 @@ module.exports = {
 
         // Perform mining
         const result = engine.mine();
-        
+
         // Update balance
-        const newBalance = economySystem.addBalance(userId, result.value);
+        const newBalance = await economySystem.addBalance(userId, result.value);
 
         // Set cooldown
         cooldowns.set(userId, Date.now());

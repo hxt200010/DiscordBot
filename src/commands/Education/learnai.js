@@ -98,7 +98,7 @@ module.exports = {
                 .setFooter({ text: 'You earned 3 coins for learning!' });
 
             // Reward user
-            economySystem.addBalance(interaction.user.id, 3);
+            await economySystem.addBalance(interaction.user.id, 3);
 
             await interaction.editReply({ embeds: [embed] });
 

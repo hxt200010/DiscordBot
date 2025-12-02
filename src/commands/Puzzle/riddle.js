@@ -34,7 +34,7 @@ async function generateRiddle() {
         if (jsonMatch) {
             return JSON.parse(jsonMatch[0]);
         }
-        
+
         // Fallback to hardcoded riddle if parsing fails
         return {
             question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
@@ -120,7 +120,7 @@ module.exports = {
         await interaction.reply({ content: "**AI is generating a unique riddle for you...**" });
 
         const riddle = await generateRiddle();
-        
+
         const embed = new EmbedBuilder()
             .setTitle('🧩 AI-Generated Riddle Challenge')
             .setDescription(riddle.question)
@@ -160,15 +160,15 @@ module.exports = {
 
             if (isCorrect) {
                 const reward = 50;
-                economySystem.addBalance(userId, reward);
-                
-                await message.reply(`✅ **Correct!** The answer was: **${game.answer}**\nYou earned **$${reward}**! Your balance: **$${economySystem.getBalance(userId)}**`);
+                await economySystem.addBalance(userId, reward);
+
+                await message.reply(`✅ **Correct!** The answer was: **${game.answer}**\nYou earned **$${reward}**! Your balance: **$${await economySystem.getBalance(userId)}**`);
                 activeGames.delete(userId);
                 collector.stop();
             } else {
                 game.attempts--;
                 game.wrongGuesses.push(userInput);
-                
+
                 if (game.attempts > 0) {
                     // Get AI feedback on wrong answer
                     await message.react('❌');
