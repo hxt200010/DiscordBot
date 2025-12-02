@@ -122,13 +122,16 @@ module.exports = {
 
                 PetSystem.addPet(interaction.user.id, newPet);
 
+                // Re-fetch pets to get accurate total count
+                const updatedUserPets = PetSystem.getUserPets(interaction.user.id);
+
                 const embed = new EmbedBuilder()
                     .setTitle('🎉 Adoption Successful!')
                     .setDescription(`You have adopted **${petName}** the ${character}!`)
                     .setColor('Green')
                     .addFields(
                         { name: 'Cost', value: price === 0 ? 'Free' : `$${price}`, inline: true },
-                        { name: 'Total Pets', value: `${userPets.length + 1}`, inline: true }
+                        { name: 'Total Pets', value: `${updatedUserPets.length}`, inline: true }
                     )
                     .setFooter({ text: 'Use /pet to view your pets and /pet-action to care for them!' });
 
