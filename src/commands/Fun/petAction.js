@@ -191,6 +191,7 @@ module.exports = {
                     } else {
                         pet.isWorking = true;
                         pet.lastWorkUpdate = Date.now();
+                        pet.currentWorkCoins = 0;
                         actionResult = `Started Grinding`;
                     }
                     break;
@@ -230,17 +231,24 @@ module.exports = {
 
             // Update DB
             await PetSystem.updatePet(pet.id, (p) => {
-                p.stats = pet.stats;
-                p.hp = pet.hp;
+                // Map local pet properties back to Mongoose document structure
+                p.stats.health = pet.hp;
+                p.stats.hunger = pet.stats.hunger;
+                p.stats.happiness = pet.stats.happiness;
+                p.stats.affection = pet.stats.affection;
+                p.stats.energy = pet.stats.energy;
+                p.stats.cleanliness = pet.stats.cleanliness || 100;
+                p.stats.attack = pet.attack;
+                p.stats.defense = pet.defense;
+
                 p.isDead = pet.isDead;
                 p.isWorking = pet.isWorking;
                 p.lastWorkUpdate = pet.lastWorkUpdate;
+                p.currentWorkCoins = pet.currentWorkCoins;
                 p.xp = pet.xp;
                 p.level = pet.level;
                 p.lastInteraction = pet.lastInteraction;
                 p.dailyCoins = pet.dailyCoins;
-                p.attack = pet.attack;
-                p.defense = pet.defense;
                 p.maxHp = pet.maxHp;
             });
         }

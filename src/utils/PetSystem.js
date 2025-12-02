@@ -150,9 +150,12 @@ class PetSystem {
             level: petDoc.level,
             isWorking: petDoc.isWorking,
             lastWorkUpdate: petDoc.lastWorkUpdate,
+            currentWorkCoins: petDoc.currentWorkCoins || 0,
             isDead: petDoc.isDead,
             hp: petDoc.stats.health,
-            maxHp: petDoc.maxHp || 100
+            maxHp: petDoc.maxHp || 100,
+            attack: petDoc.stats.attack,
+            defense: petDoc.stats.defense
         };
     }
 }

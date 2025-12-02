@@ -112,6 +112,7 @@ Become the richest hedgehog in the server!
 ### Prerequisites
 - Node.js version 20.17.0 or higher
 - A Discord Bot Token
+- A MongoDB Atlas Connection String
 
 ### Setup Steps
 
@@ -130,6 +131,7 @@ Become the richest hedgehog in the server!
    Create a `.env` file in the `src` directory:
    ```
    TOKEN=your_discord_bot_token
+   MONGODB_URI=your_mongodb_connection_string
    API_KEY=your_openai_api_key
    MEME_API=your_giphy_api_key
    WEATHER_API=your_openweather_api_key
@@ -145,6 +147,14 @@ Become the richest hedgehog in the server!
      "devs": ["your_discord_user_id"]
    }
    ```
+
+### Database Integration
+This bot uses **MongoDB** to store all user data, including:
+- **Economy**: Balances, inventory, and daily claim timers.
+- **Pets**: Pet stats, ownership, and health status.
+- **Settings**: User-specific configurations.
+
+The `src/utils/Database.js` file handles the connection. Ensure your IP is whitelisted in your MongoDB Atlas cluster settings.
 
 ## Running the Bot
 
@@ -170,7 +180,7 @@ DiscordBot/
 │   ├── data/           # Backup JSON files (migrated to SQLite)
 │   ├── Images/         # Assets
 │   └── index.js        # Entry point
-├── database.sqlite     # SQLite Database (Users, Economy, Pets)
+├── database.sqlite     # Legacy SQLite Database (Migrated to MongoDB)
 ├── config.json         # Configuration
 └── README.md           # Documentation
 ```

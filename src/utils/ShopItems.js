@@ -27,7 +27,7 @@ module.exports = [
     },
     {
         name: 'Pet Food',
-        price: 20,
+        price: 5,
         description: 'Restores 20 Hunger for your pet.',
         type: 'consumable'
     },

@@ -1,63 +1,235 @@
-const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 const shopItems = require('../../utils/ShopItems');
 const economySystem = require('../../utils/EconomySystem');
 
 module.exports = {
     name: 'buy',
-    description: 'Buy an item from the shop',
+    description: 'Buy items from the shop (up to 5 different items)',
     options: [
         {
-            name: 'item',
-            description: 'The name of the item to buy',
+            name: 'item1',
+            description: 'First item to buy',
             type: ApplicationCommandOptionType.String,
             required: true,
-            autocomplete: true // We can implement autocomplete later, but for now string is fine
+            autocomplete: true
+        },
+        {
+            name: 'quantity1',
+            description: 'Quantity for first item',
+            type: ApplicationCommandOptionType.Integer,
+            required: true,
+            minValue: 1
+        },
+        {
+            name: 'item2',
+            description: 'Second item to buy (Optional)',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+            autocomplete: true
+        },
+        {
+            name: 'quantity2',
+            description: 'Quantity for second item',
+            type: ApplicationCommandOptionType.Integer,
+            required: false,
+            minValue: 1
+        },
+        {
+            name: 'item3',
+            description: 'Third item to buy (Optional)',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+            autocomplete: true
+        },
+        {
+            name: 'quantity3',
+            description: 'Quantity for third item',
+            type: ApplicationCommandOptionType.Integer,
+            required: false,
+            minValue: 1
+        },
+        {
+            name: 'item4',
+            description: 'Fourth item to buy (Optional)',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+            autocomplete: true
+        },
+        {
+            name: 'quantity4',
+            description: 'Quantity for fourth item',
+            type: ApplicationCommandOptionType.Integer,
+            required: false,
+            minValue: 1
+        },
+        {
+            name: 'item5',
+            description: 'Fifth item to buy (Optional)',
+            type: ApplicationCommandOptionType.String,
+            required: false,
+            autocomplete: true
+        },
+        {
+            name: 'quantity5',
+            description: 'Quantity for fifth item',
+            type: ApplicationCommandOptionType.Integer,
+            required: false,
+            minValue: 1
         }
     ],
+
     /**
      * 
      * @param {Client} client 
      * @param {Interaction} interaction 
      */
     autocomplete: async (client, interaction) => {
-        const focusedValue = interaction.options.getFocused();
-        const filtered = shopItems.filter(item => item.name.toLowerCase().includes(focusedValue.toLowerCase()));
+        const focusedOption = interaction.options.getFocused(true);
+        const focusedValue = focusedOption.value.toLowerCase();
 
-        await interaction.respond(
-            filtered.slice(0, 25).map(item => ({ name: `${item.name} ($${item.price})`, value: item.name }))
-        );
+        if (focusedOption.name.startsWith('item')) {
+            const filtered = shopItems.filter(item =>
+                item.name.toLowerCase().includes(focusedValue)
+            );
+
+            // Limit to 25 choices
+            await interaction.respond(
+                filtered.slice(0, 25).map(item => ({ name: `${item.name} ($${item.price})`, value: item.name }))
+            );
+        }
     },
 
-    /**
-     * 
-     * @param {Client} client 
-     * @param {Interaction} interaction 
-     */
     callback: async (client, interaction) => {
-        const itemName = interaction.options.getString('item');
-        const item = shopItems.find(i => i.name.toLowerCase() === itemName.toLowerCase());
+        const userId = interaction.user.id;
+        const requestedItems = [];
 
-        if (!item) {
-            return interaction.reply({ content: "❌ Item not found! Check `/shop` for the list.", ephemeral: true });
+        // Collect all items
+        for (let i = 1; i <= 5; i++) {
+            const itemName = interaction.options.getString(`item${i}`);
+            let quantity = interaction.options.getInteger(`quantity${i}`);
+
+            if (itemName) {
+                // Find item in shop
+                const shopItem = shopItems.find(si => si.name.toLowerCase() === itemName.toLowerCase());
+
+                if (!shopItem) {
+                    return interaction.reply({
+                        content: `❌ Item **${itemName}** (in slot ${i}) not found in the shop.`,
+                        ephemeral: true
+                    });
+                }
+
+                // Default quantity to 1 if not specified for optional items
+                if (!quantity) quantity = 1;
+
+                requestedItems.push({ item: shopItem, quantity });
+            }
         }
 
-        const userId = interaction.user.id;
+        if (requestedItems.length === 0) {
+            return interaction.reply({ content: "❌ You didn't select any items to buy.", ephemeral: true });
+        }
+
+        // Merge duplicates
+        const mergedItems = [];
+        requestedItems.forEach(req => {
+            const existing = mergedItems.find(i => i.item.name === req.item.name);
+            if (existing) {
+                existing.quantity += req.quantity;
+            } else {
+                mergedItems.push({ ...req }); // Clone to avoid reference issues
+            }
+        });
+
+        // Calculate total
+        let totalCost = 0;
+        let summary = "";
+
+        mergedItems.forEach(req => {
+            const cost = req.item.price * req.quantity;
+            totalCost += cost;
+            summary += `• **${req.quantity}x ${req.item.name}** - $${cost}\n`;
+        });
+
         const balance = await economySystem.getBalance(userId);
 
-        if (balance < item.price) {
-            return interaction.reply({ content: `❌ You don't have enough money! You need **$${item.price}** but have **$${balance}**.`, ephemeral: true });
+        if (balance < totalCost) {
+            return interaction.reply({
+                content: `❌ You don't have enough money! Total cost is **$${totalCost}**, but you only have **$${balance}**.`,
+                ephemeral: true
+            });
         }
 
-        // Deduct money
-        await economySystem.removeBalance(userId, item.price);
+        // Confirmation Embed
+        const confirmEmbed = new EmbedBuilder()
+            .setTitle('🛒 Confirm Purchase')
+            .setDescription(`You are about to buy:\n\n${summary}\n**Total: $${totalCost}**`)
+            .setColor('#FFA500')
+            .setFooter({ text: `Current Balance: $${balance} | Remaining after: $${balance - totalCost}` });
 
-        // Add to inventory
-        // Create a new instance of the item to track individual durability
-        const newItem = { ...item };
-        await economySystem.addItem(userId, newItem);
+        const confirmButton = new ButtonBuilder()
+            .setCustomId('confirm_buy')
+            .setLabel('Confirm Purchase')
+            .setStyle(ButtonStyle.Success);
 
-        await interaction.reply({
-            content: `✅ You bought a **${item.name}** for **$${item.price}**! Check your \`/inventory\`.`
+        const cancelButton = new ButtonBuilder()
+            .setCustomId('cancel_buy')
+            .setLabel('Cancel')
+            .setStyle(ButtonStyle.Danger);
+
+        const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
+
+        const response = await interaction.reply({
+            embeds: [confirmEmbed],
+            components: [row],
+            fetchReply: true
+        });
+
+        const collector = response.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 15000
+        });
+
+        collector.on('collect', async i => {
+            if (i.user.id !== interaction.user.id) {
+                return i.reply({ content: "This isn't your purchase!", ephemeral: true });
+            }
+
+            if (i.customId === 'confirm_buy') {
+                // Re-check balance just in case
+                const currentBalance = await economySystem.getBalance(userId);
+                if (currentBalance < totalCost) {
+                    return i.update({ content: "❌ Transaction failed: Insufficient funds.", embeds: [], components: [] });
+                }
+
+                // Process transaction
+                const success = await economySystem.removeBalance(userId, totalCost);
+                if (!success) {
+                    return i.update({ content: "❌ Transaction failed: Error processing payment.", embeds: [], components: [] });
+                }
+
+                // Add items
+                for (const req of mergedItems) {
+                    for (let k = 0; k < req.quantity; k++) {
+                        // Create new instance for each item (important for durability items)
+                        await economySystem.addItem(userId, { ...req.item });
+                    }
+                }
+
+                await i.update({
+                    content: `✅ Purchase successful! You spent **$${totalCost}**.\nItems added to your inventory.`,
+                    embeds: [],
+                    components: []
+                });
+            } else if (i.customId === 'cancel_buy') {
+                await i.update({ content: "❌ Purchase cancelled.", embeds: [], components: [] });
+            }
+        });
+
+        collector.on('end', collected => {
+            if (collected.size === 0) {
+                interaction.editReply({ content: "❌ Purchase timed out.", embeds: [], components: [] });
+            }
         });
     }
 };

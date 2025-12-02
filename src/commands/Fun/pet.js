@@ -47,18 +47,20 @@ async function generatePetEmbed(pet, userId, interaction) {
                 p.stats.hunger = Math.max(0, (p.stats.hunger || 50) - gains.hungerLost);
                 p.hp = Math.max(0, (p.hp || p.maxHp) - gains.hpLost);
                 p.lastWorkUpdate = Date.now();
+                p.currentWorkCoins = (p.currentWorkCoins || 0) + gains.coins;
             });
 
             // Update local pet object for display
             pet.xp = (pet.xp || 0) + gains.xp;
             pet.stats.hunger = Math.max(0, (pet.stats.hunger || 50) - gains.hungerLost);
             pet.hp = Math.max(0, (pet.hp || pet.maxHp) - gains.hpLost);
+            pet.currentWorkCoins = (pet.currentWorkCoins || 0) + gains.coins;
 
-            workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
+            workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check. (Total this session: **${pet.currentWorkCoins} coins**)`;
             if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${gains.hungerLost.toFixed(1)} Hunger`;
             if (gains.hpLost > 0) workMessage += `, -${gains.hpLost.toFixed(1)} HP`;
         } else {
-            workMessage = "\n⚔️ **Grinding:** Currently grinding...";
+            workMessage = `\n⚔️ **Grinding:** Currently grinding... (Total this session: **${pet.currentWorkCoins || 0} coins**)`;
         }
     }
 

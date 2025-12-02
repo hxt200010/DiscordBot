@@ -18,6 +18,7 @@ const petSchema = new mongoose.Schema({
     level: { type: Number, default: 1 },
     isWorking: { type: Boolean, default: false },
     lastWorkUpdate: { type: Number, default: null },
+    currentWorkCoins: { type: Number, default: 0 },
     isDead: { type: Boolean, default: false },
     maxHp: { type: Number, default: 100 },
     createdAt: { type: Date, default: Date.now }
