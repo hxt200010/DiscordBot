@@ -1,0 +1,3 @@
+URI: mongodb+srv://anthony01:Pirates10000000@discordcluster.5odgcpk.mongodb.net/?appName=DiscordCluster
+CWD: C:\Users\trahu\OneDrive\Desktop\Coding\DiscordBot\src
+DOTENV: C:\Users\trahu\OneDrive\Desktop\Coding\DiscordBot\.env
