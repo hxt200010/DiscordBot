@@ -1,2 +1,10 @@
 .env
 /node_modules
+
+# Database
+database.sqlite
+*.sqlite
+*.db
+
+# Backups
+*.bak
