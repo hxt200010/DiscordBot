@@ -1,13 +1,9 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
 
 const petConfig = require('../../utils/petConfig');
 const { applyWorkGains } = require('../../utils/petUtils');
-const economySystem = require('../../utils/EconomySystem');
-
-const petsFile = path.join(__dirname, '../../data/pets.json');
-const economyFile = path.join(__dirname, '../../data/economy.json');
+const EconomySystem = require('../../utils/EconomySystem');
+const PetSystem = require('../../utils/PetSystem');
 
 const cooldowns = new Map();
 
@@ -40,18 +36,9 @@ module.exports = {
     ],
     autocomplete: async (client, interaction) => {
         const focusedValue = interaction.options.getFocused();
-        let petsData = {};
-        if (fs.existsSync(petsFile)) {
-            try {
-                petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-            } catch (e) {
-                return interaction.respond([]);
-            }
-        }
+        const userPets = PetSystem.getUserPets(interaction.user.id);
 
-        let userPets = petsData[interaction.user.id];
-        if (!userPets) return interaction.respond([]);
-        if (!Array.isArray(userPets)) userPets = [userPets];
+        if (!userPets || userPets.length === 0) return interaction.respond([]);
 
         const options = userPets.map(pet => ({ name: `${pet.petName} (${pet.type})`, value: pet.petName }));
 
@@ -79,27 +66,10 @@ module.exports = {
 
         await interaction.deferReply();
 
-        if (!fs.existsSync(petsFile)) {
-            return interaction.editReply({ content: "No pets found! Use /adopt to get one." });
-        }
+        const userPets = PetSystem.getUserPets(userId);
 
-        let petsData = {};
-        try {
-            petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-        } catch (e) {
-            console.error(e);
-            return interaction.editReply({ content: "Error reading pet data." });
-        }
-
-        let userPets = petsData[interaction.user.id];
-
-        if (!userPets) {
+        if (!userPets || userPets.length === 0) {
             return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
-        }
-
-        if (!Array.isArray(userPets)) {
-            userPets = [userPets];
-            petsData[interaction.user.id] = userPets; // Update reference for saving
         }
 
         const action = interaction.options.getString('action');
@@ -121,10 +91,10 @@ module.exports = {
             }
         }
 
-        const inventory = economySystem.getInventory(userId);
+        const inventory = EconomySystem.getInventory(userId);
         // Helper to check item count (simple version, assumes inventory is array of objects)
         const countItem = (itemName) => inventory.filter(i => i.name.toLowerCase() === itemName.toLowerCase()).length;
-        const useItem = (itemName) => economySystem.removeItem(userId, itemName);
+        const useItem = (itemName) => EconomySystem.removeItem(userId, itemName);
 
         let results = [];
 
@@ -152,6 +122,7 @@ module.exports = {
 
             let xpGain = 0;
             let actionResult = "";
+            let itemUsed = false;
 
             switch (action) {
                 case 'feed':
@@ -160,6 +131,7 @@ module.exports = {
                         pet.stats.hunger = cap(pet.stats.hunger + 20);
                         xpGain = 3;
                         actionResult = `Fed (+20 Hunger)`;
+                        itemUsed = true;
                     } else {
                         actionResult = `❌ No Food`;
                     }
@@ -188,6 +160,7 @@ module.exports = {
                         useItem('Health Pack');
                         pet.hp = capHp(pet.hp + 50);
                         actionResult = `Healed (+50 HP)`;
+                        itemUsed = true;
                     } else {
                         actionResult = `❌ No Health Pack`;
                     }
@@ -202,6 +175,7 @@ module.exports = {
                         pet.hp = Math.floor(pet.maxHp * 0.5);
                         pet.stats.hunger = 50;
                         actionResult = `Revived!`;
+                        itemUsed = true;
                     } else {
                         actionResult = `❌ No Health Kit`;
                     }
@@ -212,7 +186,7 @@ module.exports = {
                         const gains = applyWorkGains(pet);
                         pet.isWorking = false;
                         pet.lastWorkUpdate = null;
-                        economySystem.addBalance(userId, gains.coins);
+                        EconomySystem.addBalance(userId, gains.coins);
                         actionResult = `Stopped Grinding (+${gains.coins} coins)`;
                     } else {
                         pet.isWorking = true;
@@ -253,10 +227,23 @@ module.exports = {
             }
 
             results.push(`**${pet.petName}**: ${actionResult}`);
-        }
 
-        // Save
-        fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
+            // Update DB
+            PetSystem.updatePet(pet.id, (p) => {
+                p.stats = pet.stats;
+                p.hp = pet.hp;
+                p.isDead = pet.isDead;
+                p.isWorking = pet.isWorking;
+                p.lastWorkUpdate = pet.lastWorkUpdate;
+                p.xp = pet.xp;
+                p.level = pet.level;
+                p.lastInteraction = pet.lastInteraction;
+                p.dailyCoins = pet.dailyCoins;
+                p.attack = pet.attack;
+                p.defense = pet.defense;
+                p.maxHp = pet.maxHp;
+            });
+        }
 
         const embed = new EmbedBuilder()
             .setTitle(`Pet Action: ${action.charAt(0).toUpperCase() + action.slice(1)}`)

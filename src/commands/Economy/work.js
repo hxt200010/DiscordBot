@@ -1,9 +1,6 @@
 const { ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
 const { Configuration, OpenAIApi } = require("openai");
-const fs = require('fs');
-const path = require('path');
-
-const economyFile = path.join(__dirname, '../../data/economy.json');
+const EconomySystem = require('../../utils/EconomySystem');
 
 // OpenAI Setup
 const configuration = new Configuration({
@@ -178,17 +175,7 @@ async function handleQuiz(interaction, quizData, titleSuffix) {
         const isCorrect = selectedIndex === quizData.correctIndex;
 
         if (isCorrect) {
-            let economy = {};
-            if (fs.existsSync(economyFile)) {
-                economy = JSON.parse(fs.readFileSync(economyFile, 'utf8'));
-            }
-
-            if (!economy[interaction.user.id]) {
-                economy[interaction.user.id] = { balance: 0, inventory: [] };
-            }
-
-            economy[interaction.user.id].balance += 10;
-            fs.writeFileSync(economyFile, JSON.stringify(economy, null, 2));
+            EconomySystem.addBalance(interaction.user.id, 10);
 
             await i.update({
                 content: `✅ **Correct!** You earned **10 coins**.`,

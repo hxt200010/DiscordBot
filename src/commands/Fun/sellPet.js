@@ -1,8 +1,6 @@
 const { ApplicationCommandOptionType, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
-
-const petsFile = path.join(__dirname, '../../data/pets.json');
+const PetSystem = require('../../utils/PetSystem');
+const EconomySystem = require('../../utils/EconomySystem');
 
 module.exports = {
     name: 'sell-pet',
@@ -17,68 +15,77 @@ module.exports = {
         }
     ],
     autocomplete: async (client, interaction) => {
-        const focusedValue = interaction.options.getFocused();
-        let petsData = {};
-        if (fs.existsSync(petsFile)) {
-            try {
-                petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-            } catch (e) {
-                return interaction.respond([]);
-            }
+        try {
+            const focusedValue = interaction.options.getFocused();
+            console.log(`[SellPet] Autocomplete focused: "${focusedValue}"`);
+
+            const userPets = PetSystem.getUserPets(interaction.user.id);
+            console.log(`[SellPet] User pets found: ${userPets ? userPets.length : 'null'}`);
+
+            if (!userPets || userPets.length === 0) return interaction.respond([]);
+
+            // Filter pets by name
+            const filtered = userPets.filter(pet => pet.petName.toLowerCase().includes(focusedValue.toLowerCase()));
+
+            // Create options with unique values (IDs) and descriptive names
+            const options = filtered.slice(0, 25).map(pet => {
+                // Check if there are multiple pets with the same name to decide if we need extra info in the label
+                const isDuplicateName = userPets.filter(p => p.petName === pet.petName).length > 1;
+
+                let label = `${pet.petName} (${pet.type})`;
+                if (isDuplicateName) {
+                    // Add the last 4 digits of ID to distinguish
+                    label += ` #${pet.id.slice(-4)}`;
+                }
+
+                // Truncate label to 100 chars to satisfy Discord API limits
+                if (label.length > 100) label = label.substring(0, 97) + '...';
+
+                return {
+                    name: label,
+                    value: pet.id // Use ID as the value
+                };
+            });
+
+            console.log(`[SellPet] Responding with ${options.length} options`);
+            await interaction.respond(options);
+        } catch (error) {
+            console.error('[SellPet] Autocomplete Error:', error);
+            // Try to respond with empty to stop loading spinner if possible, though error might prevent it
+            try { await interaction.respond([]); } catch (e) { }
         }
-
-        let userPets = petsData[interaction.user.id];
-        if (!userPets) return interaction.respond([]);
-        if (!Array.isArray(userPets)) userPets = [userPets];
-
-        const filtered = userPets.filter(pet => pet.petName.toLowerCase().includes(focusedValue.toLowerCase()));
-        await interaction.respond(
-            filtered.slice(0, 25).map(pet => ({ name: `${pet.petName} (${pet.type})`, value: pet.petName }))
-        );
     },
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        if (!fs.existsSync(petsFile)) {
-            return interaction.editReply({ content: "No pets found!" });
-        }
+        const userPets = PetSystem.getUserPets(interaction.user.id);
 
-        let petsData = {};
-        try {
-            petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-        } catch (e) {
-            console.error(e);
-            return interaction.editReply({ content: "Error reading pet data." });
-        }
-
-        let userPets = petsData[interaction.user.id];
-
-        if (!userPets) {
+        if (!userPets || userPets.length === 0) {
             return interaction.editReply({ content: "You don't have a pet to sell!" });
         }
 
-        if (!Array.isArray(userPets)) {
-            userPets = [userPets];
-            petsData[interaction.user.id] = userPets;
-        }
+        const targetPetId = interaction.options.getString('pet');
+        let soldPet = null;
 
-        const targetPetName = interaction.options.getString('pet');
-        let petIndex = -1;
+        if (targetPetId) {
+            // Try to find by ID first (from autocomplete)
+            soldPet = userPets.find(p => p.id === targetPetId);
 
-        if (targetPetName) {
-            petIndex = userPets.findIndex(p => p.petName === targetPetName);
-            if (petIndex === -1) {
-                return interaction.editReply({ content: `❌ You don't have a pet named **${targetPetName}**.` });
+            // Fallback: Try to find by name (if user typed manually)
+            if (!soldPet) {
+                soldPet = userPets.find(p => p.petName === targetPetId);
+            }
+
+            if (!soldPet) {
+                return interaction.editReply({ content: `❌ You don't have a pet with that ID or name.` });
             }
         } else {
             if (userPets.length === 1) {
-                petIndex = 0;
+                soldPet = userPets[0];
             } else {
                 return interaction.editReply({ content: "❌ You have multiple pets! Please select which one to sell." });
             }
         }
-
-        const soldPet = userPets[petIndex];
 
         // Calculate Refund
         let originalCost = 0;
@@ -86,7 +93,7 @@ module.exports = {
             originalCost = soldPet.purchaseCost;
         } else {
             // Fallback for old pets
-            originalCost = petIndex * 1000;
+            originalCost = 1000;
         }
 
         const refundAmount = originalCost * 0.5;
@@ -125,18 +132,8 @@ module.exports = {
             }
 
             if (i.customId === 'confirm_sell') {
-                // Re-read data to ensure consistency (race conditions)
-                if (fs.existsSync(petsFile)) {
-                    try {
-                        petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-                    } catch (e) { petsData = {}; }
-                }
-                userPets = petsData[interaction.user.id] || [];
-                if (!Array.isArray(userPets)) userPets = [userPets];
-
-                // Find index again in case it changed
-                const currentIndex = userPets.findIndex(p => p.petName === soldPet.petName);
-                if (currentIndex === -1) {
+                // Verify pet still exists
+                if (!PetSystem.getPet(soldPet.id)) {
                     return i.update({
                         content: '❌ Pet not found. It may have been sold already.',
                         embeds: [],
@@ -144,19 +141,8 @@ module.exports = {
                     });
                 }
 
-                userPets.splice(currentIndex, 1);
-
-                if (userPets.length === 0) {
-                    delete petsData[interaction.user.id];
-                } else {
-                    petsData[interaction.user.id] = userPets;
-                }
-
-                fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
-
-                // Add refund to balance
-                const economySystem = require('../../utils/EconomySystem');
-                economySystem.addBalance(interaction.user.id, refundAmount);
+                PetSystem.removePet(soldPet.id);
+                EconomySystem.addBalance(interaction.user.id, refundAmount);
 
                 const embed = new EmbedBuilder()
                     .setTitle('👋 Goodbye!')

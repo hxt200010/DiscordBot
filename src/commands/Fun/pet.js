@@ -3,10 +3,9 @@ const fs = require('fs');
 const path = require('path');
 
 const petConfig = require('../../utils/petConfig');
-const economySystem = require('../../utils/EconomySystem');
+const EconomySystem = require('../../utils/EconomySystem');
+const PetSystem = require('../../utils/PetSystem');
 const { applyWorkGains } = require('../../utils/petUtils');
-
-const petsFile = path.join(__dirname, '../../data/pets.json');
 
 function createBar(value, max = 100) {
     const percentage = value / max;
@@ -40,7 +39,20 @@ function generatePetEmbed(pet, userId, interaction) {
         const gains = applyWorkGains(pet);
         if (gains.coins > 0 || gains.xp > 0) {
             // Update economy with coins
-            economySystem.addBalance(userId, gains.coins);
+            EconomySystem.addBalance(userId, gains.coins);
+
+            // Update pet stats in DB
+            PetSystem.updatePet(pet.id, (p) => {
+                p.xp = (p.xp || 0) + gains.xp;
+                p.stats.hunger = Math.max(0, (p.stats.hunger || 50) - gains.hungerLost);
+                p.hp = Math.max(0, (p.hp || p.maxHp) - gains.hpLost);
+                p.lastWorkUpdate = Date.now();
+            });
+
+            // Update local pet object for display
+            pet.xp = (pet.xp || 0) + gains.xp;
+            pet.stats.hunger = Math.max(0, (pet.stats.hunger || 50) - gains.hungerLost);
+            pet.hp = Math.max(0, (pet.hp || pet.maxHp) - gains.hpLost);
 
             workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check.`;
             if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${Math.round(gains.hungerLost)} Hunger`;
@@ -105,18 +117,9 @@ module.exports = {
     ],
     autocomplete: async (client, interaction) => {
         const focusedValue = interaction.options.getFocused();
-        let petsData = {};
-        if (fs.existsSync(petsFile)) {
-            try {
-                petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-            } catch (e) {
-                return interaction.respond([]);
-            }
-        }
+        const userPets = PetSystem.getUserPets(interaction.user.id);
 
-        let userPets = petsData[interaction.user.id];
-        if (!userPets) return interaction.respond([]);
-        if (!Array.isArray(userPets)) userPets = [userPets];
+        if (!userPets || userPets.length === 0) return interaction.respond([]);
 
         const filtered = userPets.filter(pet => pet.petName.toLowerCase().includes(focusedValue.toLowerCase()));
         await interaction.respond(
@@ -126,29 +129,10 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        if (!fs.existsSync(petsFile)) {
-            return interaction.editReply({ content: "No pets found! Use /adopt to get one." });
-        }
+        const userPets = PetSystem.getUserPets(interaction.user.id);
 
-        let petsData = {};
-        try {
-            petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
-        } catch (e) {
-            console.error(e);
-            return interaction.editReply({ content: "Error reading pet data." });
-        }
-
-        let userPets = petsData[interaction.user.id];
-
-        if (!userPets) {
+        if (!userPets || userPets.length === 0) {
             return interaction.editReply({ content: "You don't have a pet yet! Use /adopt to get one." });
-        }
-
-        // Migration check
-        if (!Array.isArray(userPets)) {
-            userPets = [userPets];
-            petsData[interaction.user.id] = userPets;
-            fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
         }
 
         const targetPetName = interaction.options.getString('name');
@@ -175,12 +159,6 @@ module.exports = {
             const { embed, file } = generatePetEmbed(pet, interaction.user.id, interaction);
             embeds.push(embed);
             if (file) {
-                // To avoid duplicate filenames causing issues with attachments in same message
-                // We might need unique names if multiple pets have same type.
-                // Discord.js handles this usually if we pass separate AttachmentBuilders.
-                // But let's check if we need to rename.
-                // Actually, if we use attachment://filename, and multiple files have same name, it might be ambiguous.
-                // Let's append index to filename.
                 const ext = path.extname(file.name);
                 const name = path.basename(file.name, ext);
                 const uniqueName = `${name}_${pet.petName.replace(/\s+/g, '')}${ext}`;
@@ -196,9 +174,6 @@ module.exports = {
                 .setColor('Grey');
             embeds.push(footerEmbed);
         }
-
-        // Save updated state (work gains applied in generatePetEmbed)
-        fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
 
         interaction.editReply({ embeds: embeds, files: files });
     }
