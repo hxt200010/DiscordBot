@@ -1,1 +1,74 @@
-{}
+{
+  "test_user_confirm": [
+    {
+      "id": "1764624140553",
+      "petName": "SonicConfirm",
+      "type": "sonic",
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hunger": 50,
+        "happiness": 50,
+        "affection": 50,
+        "energy": 50
+      },
+      "lastInteraction": 1764624140553,
+      "boostActiveUntil": null,
+      "dailyCoins": 55,
+      "isWorking": false,
+      "lastWorkUpdate": null,
+      "maxHp": 1500,
+      "hp": 1500,
+      "attack": 100,
+      "defense": 100
+    }
+  ],
+  "704744682080567306": [
+    {
+      "id": "1764624917158",
+      "petName": "Shadow",
+      "type": "shadow",
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hunger": 50,
+        "happiness": 50,
+        "affection": 50,
+        "energy": 50
+      },
+      "lastInteraction": 1764624917158,
+      "boostActiveUntil": null,
+      "dailyCoins": 55,
+      "isWorking": false,
+      "lastWorkUpdate": null,
+      "maxHp": 1300,
+      "hp": 1300,
+      "attack": 160,
+      "defense": 70,
+      "purchaseCost": 0
+    },
+    {
+      "id": "1764624925077",
+      "petName": "Shadow",
+      "type": "shadow",
+      "level": 1,
+      "xp": 0,
+      "stats": {
+        "hunger": 50,
+        "happiness": 50,
+        "affection": 50,
+        "energy": 50
+      },
+      "lastInteraction": 1764624925077,
+      "boostActiveUntil": null,
+      "dailyCoins": 55,
+      "isWorking": false,
+      "lastWorkUpdate": null,
+      "maxHp": 1300,
+      "hp": 1300,
+      "attack": 160,
+      "defense": 70,
+      "purchaseCost": 1000
+    }
+  ]
+}

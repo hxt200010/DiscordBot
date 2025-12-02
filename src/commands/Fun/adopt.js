@@ -1,4 +1,4 @@
-const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
+const { ApplicationCommandOptionType, EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, ComponentType } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -47,9 +47,6 @@ module.exports = {
         }
 
         // Calculate Price
-        // 1st pet (index 0) = Free
-        // 2nd pet (index 1) = 1000
-        // 3rd pet (index 2) = 2000
         const petCount = userPets.length;
         const price = petCount * 1000;
 
@@ -65,63 +62,144 @@ module.exports = {
         const character = interaction.options.getString('character');
         const petName = interaction.options.getString('name');
 
-        // Deduct money if applicable
-        if (price > 0) {
-            economySystem.removeBalance(interaction.user.id, price);
-        }
+        // Confirmation Step
+        const confirmEmbed = new EmbedBuilder()
+            .setTitle('🐾 Confirm Adoption')
+            .setDescription(`Are you sure you want to adopt **${petName}** the ${character}?\n\n💰 **Cost:** ${price === 0 ? 'Free' : `$${price}`}`)
+            .setColor('Yellow');
 
-        const newPet = {
-            id: Date.now().toString(), // Unique ID for the pet
-            petName: petName,
-            type: character,
-            level: 1,
-            xp: 0,
-            stats: {
-                hunger: 50,
-                happiness: 50,
-                affection: 50,
-                energy: 50
-            },
-            lastInteraction: Date.now(),
-            boostActiveUntil: null,
-            dailyCoins: 50 + (1 * 5), // Initial daily coins
-            isWorking: false,
-            lastWorkUpdate: null
-        };
+        const confirmButton = new ButtonBuilder()
+            .setCustomId('confirm_adopt')
+            .setLabel('Confirm')
+            .setStyle(ButtonStyle.Success);
 
-        userPets.push(newPet);
-        petsData[interaction.user.id] = userPets;
+        const cancelButton = new ButtonBuilder()
+            .setCustomId('cancel_adopt')
+            .setLabel('Cancel')
+            .setStyle(ButtonStyle.Danger);
 
-        fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
+        const row = new ActionRowBuilder().addComponents(confirmButton, cancelButton);
 
-        const embed = new EmbedBuilder()
-            .setTitle('🎉 Adoption Successful!')
-            .setDescription(`You have adopted **${petName}** the ${character}!`)
-            .setColor('Green')
-            .addFields(
-                { name: 'Cost', value: price === 0 ? 'Free' : `$${price}`, inline: true },
-                { name: 'Total Pets', value: `${userPets.length}`, inline: true }
-            )
-            .setFooter({ text: 'Use /pet to view your pets and /pet-action to care for them!' });
+        const response = await interaction.editReply({
+            embeds: [confirmEmbed],
+            components: [row]
+        });
 
-        const extensions = ['.png', '.jpg', '.jpeg'];
-        let imagePath = null;
-        let fileName = null;
+        const collector = response.createMessageComponentCollector({
+            componentType: ComponentType.Button,
+            time: 30000
+        });
 
-        for (const ext of extensions) {
-            const testPath = path.join(__dirname, `../../Images/${character}_pet${ext}`);
-            if (fs.existsSync(testPath)) {
-                imagePath = testPath;
-                fileName = `${character}_pet${ext}`;
-                break;
+        collector.on('collect', async i => {
+            if (i.user.id !== interaction.user.id) {
+                return i.reply({ content: 'This confirmation is not for you.', ephemeral: true });
             }
-        }
 
-        if (imagePath) {
-            embed.setThumbnail(`attachment://${fileName}`);
-            return interaction.editReply({ embeds: [embed], files: [imagePath] });
-        }
+            if (i.customId === 'confirm_adopt') {
+                // Re-check balance in case it changed
+                const currentBalance = economySystem.getBalance(interaction.user.id);
+                if (price > 0 && currentBalance < price) {
+                    return i.update({
+                        content: `❌ Transaction failed. You need **$${price}** but have **$${currentBalance}**.`,
+                        embeds: [],
+                        components: []
+                    });
+                }
 
-        interaction.editReply({ embeds: [embed] });
+                // Deduct money
+                if (price > 0) {
+                    economySystem.removeBalance(interaction.user.id, price);
+                }
+
+                const config = petConfig.find(p => p.value === character);
+                const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
+
+                const newPet = {
+                    id: Date.now().toString(),
+                    petName: petName,
+                    type: character,
+                    level: 1,
+                    xp: 0,
+                    stats: {
+                        hunger: 50,
+                        happiness: 50,
+                        affection: 50,
+                        energy: 50
+                    },
+                    lastInteraction: Date.now(),
+                    boostActiveUntil: null,
+                    dailyCoins: 50 + (1 * 5),
+                    isWorking: false,
+                    lastWorkUpdate: null,
+                    maxHp: baseStats.health,
+                    hp: baseStats.health,
+                    attack: baseStats.attack,
+                    defense: baseStats.defense,
+                    purchaseCost: price
+                };
+
+                // Refresh data to be safe
+                if (fs.existsSync(petsFile)) {
+                    try {
+                        petsData = JSON.parse(fs.readFileSync(petsFile, 'utf8'));
+                    } catch (e) { petsData = {}; }
+                }
+                userPets = petsData[interaction.user.id] || [];
+                if (!Array.isArray(userPets)) userPets = [userPets];
+
+                userPets.push(newPet);
+                petsData[interaction.user.id] = userPets;
+
+                fs.writeFileSync(petsFile, JSON.stringify(petsData, null, 2));
+
+                const embed = new EmbedBuilder()
+                    .setTitle('🎉 Adoption Successful!')
+                    .setDescription(`You have adopted **${petName}** the ${character}!`)
+                    .setColor('Green')
+                    .addFields(
+                        { name: 'Cost', value: price === 0 ? 'Free' : `$${price}`, inline: true },
+                        { name: 'Total Pets', value: `${userPets.length}`, inline: true }
+                    )
+                    .setFooter({ text: 'Use /pet to view your pets and /pet-action to care for them!' });
+
+                const extensions = ['.png', '.jpg', '.jpeg'];
+                let imagePath = null;
+                let fileName = null;
+
+                for (const ext of extensions) {
+                    const testPath = path.join(__dirname, `../../Images/${character}_pet${ext}`);
+                    if (fs.existsSync(testPath)) {
+                        imagePath = testPath;
+                        fileName = `${character}_pet${ext}`;
+                        break;
+                    }
+                }
+
+                const updatePayload = { embeds: [embed], components: [] };
+                if (imagePath) {
+                    updatePayload.files = [imagePath];
+                    embed.setThumbnail(`attachment://${fileName}`);
+                }
+
+                await i.update(updatePayload);
+
+            } else if (i.customId === 'cancel_adopt') {
+                await i.update({
+                    content: '❌ Adoption cancelled.',
+                    embeds: [],
+                    components: []
+                });
+            }
+        });
+
+        collector.on('end', collected => {
+            if (collected.size === 0) {
+                interaction.editReply({
+                    content: '⏳ Adoption timed out.',
+                    embeds: [],
+                    components: []
+                });
+            }
+        });
     }
 };
