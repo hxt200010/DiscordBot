@@ -4,93 +4,96 @@
 
 <img width="1632" height="640" alt="Image" src="https://github.com/user-attachments/assets/0edd9ffe-557e-4a8e-9d3e-92912d312f52" />
 
-
-
 My name is Sonic, and this is the me version of the bot — fast, fearless, and packed with more features than rings in a bonus stage! This Discord bot is way past cool! Built with Discord.js at lightning speed, it delivers a whole bundle of awesome — algorithm tricks, number-crunching math moves, handy utilities, fun entertainment commands, and even a full-on economy with casino-style games. It’s sleek, speedy, and organized with a modular design that keeps everything running smoother than one of my loop-de-loops. Whether you're sorting data, cracking codes, or rolling dice, this bot’s built for max performance and ultimate extensibility. Just plug in, play, and let the good times zoom! 💙⚡️
 
 ## Features
 
-### Algorithm Commands
+### 🐾 Virtual Pet System (NEW!)
+Adopt and raise your own virtual companions!
+- **Adopt**: Choose from various characters like Sonic, Shadow, and Tails (`/adopt`)
+- **Care**: Feed, play, pat, and put your pets to sleep (`/pet-action`)
+- **Level Up**: Earn XP and level up your pets to increase their stats
+- **Grind**: Send your pets to work to earn coins for you (`/pet-action grind`)
+- **Battle**: Pets have Attack and Defense stats for future battles
+- **Manage**: View your collection (`/pet-list`) or sell pets (`/sell-pet`)
 
-- **Binary Search**: Search for elements in sorted arrays
-- **Depth-First Search**: Traverse graph structures
-- **Exponential Search**: Efficient searching in sorted arrays
-- **Sorting Algorithms**: Sort arrays in ascending order
-- **Array Operations**: Find biggest/smallest numbers, remove duplicates
-- **Stock Analysis**: Basic stock price analysis
+### 💰 Economy & Shop
+Become the richest hedgehog in the server!
+- **Balance**: Check your wallet (`/balance`)
+- **Daily**: Claim free coins every 24 hours (`/daily`)
+- **Work**: Earn coins by answering trivia questions (`/work`)
+- **Give**: Transfer coins to friends (`/give`)
+- **Shop**: Buy items like Shields, Repair Kits, and Pet Food (`/shop`, `/buy`)
+- **Inventory**: Manage your items (`/inventory`)
+- **Item Usage**: 
+    - **Shield**: Protect yourself from robbery (`/shield`)
+    - **Shoot**: Attack other users (requires a gun) (`/shoot`)
+    - **Repair**: Fix your broken shield (`/repair`)
 
-### Mathematical Commands
+### 🎮 Fun & Games
+- **Blackjack**: High-stakes casino game with a rich UI (`/blackjack`)
+- **Mining**: Dig for gems and resources (`/mine`)
+- **Hangman**: Classic word guessing game (`/hangman`)
+- **Sudoku**: Solve Sudoku puzzles (`/sudoku`)
+- **Riddles**: Solve brain teasers (`/riddle`)
+- **Cipher**: Encode and decode secret messages (`/cipher`)
+- **Meme**: Get random memes from Giphy (`/meme`)
+- **Shadow**: Special Shadow the Hedgehog interactions (`/shadow`)
+- **Say**: Make the bot repeat your message (`/say`)
+- **Steal**: Attempt to steal coins from other users (`/steal`)
 
-- **Basic Operations**: Add, subtract, multiply, divide
-- **Advanced Functions**: Square root, logarithm, integration
-- **Trigonometry**: Sine, cosine, tangent calculations
-- **Expression Evaluation**: Calculate complex mathematical expressions
+### 🤖 AI & Education
+- **ChatGPT**: Chat with an AI assistant (`/learnai`)
+- **Learn**: Get detailed explanations for various topics (`/learn`)
+- **Data Structures**: Learn about Computer Science concepts (`/datastructure`)
+- **Trivia**: Test your knowledge (`/trivia`)
 
-### Economy System
+### 🧮 Mathematics
+- **Basic**: Add, Subtract, Multiply, Divide
+- **Advanced**: Square Root, Logarithms, Integration (`/functionntergrate`)
+- **Trigonometry**: Sine, Cosine, Tangent
+- **Calculate**: Evaluate complex expressions (`/calculate`)
 
-- **Balance**: Check your current balance or another user's balance
-- **Daily Rewards**: Collect 1000 coins every 24 hours
-- **Blackjack**: Play high-stakes blackjack with betting (minimum bet: 10 coins)
+### 🛠️ Utilities
+- **Weather**: Get real-time weather for any city (`/weather`)
+- **Translate**: Translate text between languages (`/translate`)
+- **Food**: Get nutrition info for food items (`/food`)
+- **Time**: Check current time in any timezone (`/time`)
+- **User Info**: Get details about a user (`/userinfo`)
+- **Avatar**: View user avatars (`/avatar`)
+- **Ping**: Check bot latency (`/ping`)
 
-### Fun Commands
-
-- **Meme**: Get random memes from Giphy
-- **Say**: Make the bot repeat your message
-- **Blackjack**: Casino-style blackjack game with enhanced UI
-
-### Utility Commands
-
-- **Avatar**: Display user avatars
-- **Calories**: Get nutritional information for food items
-- **Help**: Display all available commands
-- **Owner**: Show bot owner information
-- **Ping**: Check bot latency and response time
-- **Time**: Get current time for any location
-- **Translate**: Translate text between languages
-- **User Info**: Display detailed user information
-- **Weather**: Get weather information for any city
-
-### Moderation Commands
-
-- **Ban**: Ban users from the server (requires permissions)
-
-### AI Integration
-
-- **ChatGPT**: The bot includes OpenAI integration for conversational AI in designated channels
+### 🛡️ Moderation
+- **Ban/Unban**: Manage server bans
+- **Kick**: Kick users from the server
+- **Timeout/Untimeout**: Mute and unmute users
+- **Purge**: Bulk delete messages
 
 ## Installation
 
 ### Prerequisites
-
 - Node.js version 20.17.0 or higher
 - A Discord Bot Token
-- API Keys for various services (optional, depending on features used)
+- API Keys (Optional): OpenAI, Giphy, OpenWeather, Nutritionix
 
 ### Setup Steps
 
 1. Clone the repository:
-
    ```bash
    git clone <repository-url>
    cd DiscordBot
    ```
 
 2. Install dependencies:
-
    ```bash
    npm install
    ```
 
 3. Configure environment variables:
-
-   - Navigate to the `src` directory
-   - Create a `.env` file with the following variables:
-
+   Create a `.env` file in the `src` directory:
    ```
    TOKEN=your_discord_bot_token
    API_KEY=your_openai_api_key
-   CHANNEL_ID=your_primary_channel_id
-   CHANNEL_ID_2=your_secondary_channel_id
    MEME_API=your_giphy_api_key
    WEATHER_API=your_openweather_api_key
    FOOD_API=your_nutritionix_api_key
@@ -98,7 +101,7 @@ My name is Sonic, and this is the me version of the bot — fast, fearless, and 
    ```
 
 4. Configure server settings:
-   - Edit `config.json` in the root directory:
+   Edit `config.json`:
    ```json
    {
      "testServer": "your_test_server_id",
@@ -109,171 +112,42 @@ My name is Sonic, and this is the me version of the bot — fast, fearless, and 
 ## Running the Bot
 
 ### Standard Mode
-
-To run the bot normally:
-
 ```bash
 cd src
 node index.js
 ```
 
-### Development Mode with Auto-Restart
-
-For development, use nodemon to automatically restart the bot when you make changes to files:
-
-**Option 1: From the root directory**
-
-```bash
-npm run dev
-```
-
-**Option 2: From the src directory**
-
+### Development Mode
 ```bash
 cd src
 npx nodemon index.js
 ```
 
-With nodemon running, any changes you save to your code files will automatically restart the bot, making development much faster and more convenient.
-
 ## Project Structure
-
 ```
 DiscordBot/
 ├── src/
-│   ├── commands/
-│   │   ├── Algorithm/      # Algorithmic operation commands
-│   │   ├── Economy/        # Currency and economy commands
-│   │   ├── Education/      # Educational commands
-│   │   ├── Fun/            # Entertainment commands
-│   │   │   └── Blackjack/  # Card game utilities (Card, Deck classes)
-│   │   ├── Game/           # Game-related utilities
-│   │   ├── mathematic/     # Mathematical operation commands
-│   │   ├── misc/           # Miscellaneous utility commands
-│   │   └── moderation/     # Server moderation commands
-│   ├── events/
-│   │   ├── interactionCreate/  # Command interaction handlers
-│   │   └── ready/              # Bot startup events
-│   ├── handlers/
-│   │   └── eventHandler.js     # Event registration system
-│   ├── utils/
-│   │   ├── EconomySystem.js    # Economy and currency management
-│   │   ├── getAllFiles.js      # File system utilities
-│   │   ├── getLocalCommands.js # Command loader
-│   │   └── areCommandsDifferent.js  # Command comparison
-│   ├── data/
-│   │   └── economy.json        # User balance storage
-│   ├── .env                    # Environment variables
-│   └── index.js                # Main bot entry point
-├── config.json                 # Bot configuration
-├── package.json                # Dependencies and scripts
-└── README.md                   # This file
+│   ├── commands/       # All bot commands organized by category
+│   ├── events/         # Event handlers (ready, interactionCreate)
+│   ├── utils/          # Utility classes (Database, Economy, Pets)
+│   ├── data/           # Backup JSON files (migrated to SQLite)
+│   └── index.js        # Entry point
+├── database.sqlite     # SQLite Database (Users, Economy, Pets)
+├── config.json         # Configuration
+└── README.md           # Documentation
 ```
-
-## Usage
-
-All commands use Discord's slash command system. Simply type `/` in any channel where the bot has access to see all available commands.
-
-### Example Commands
-
-**Economy:**
-
-- `/daily` - Collect your daily reward of 1000 coins
-- `/balance` - Check your current balance
-- `/balance @user` - Check another user's balance
-- `/blackjack bet:100` - Play blackjack with a 100 coin bet
-
-**Utility:**
-
-- `/ping` - Check bot response time
-- `/weather city:London` - Get weather for London
-- `/translate` - Translate text between languages
-- `/userinfo @user` - Get information about a user
-
-**Math:**
-
-- `/calculate expression:2+2*5` - Calculate mathematical expressions
-- `/sqrt number:144` - Calculate square root
-- `/sin angle:90` - Calculate sine of an angle
-
-**Fun:**
-
-- `/meme` - Get a random meme
-- `/say message:Hello World` - Make the bot say something
-
-## Economy System
-
-The bot includes a complete economy system:
-
-- **Starting Balance**: New users start with 0 coins
-- **Daily Rewards**: Collect 1000 coins every 24 hours with `/daily`
-- **Blackjack**: Bet coins in a casino-style blackjack game
-  - Minimum bet: 10 coins
-  - Win: Get 2x your bet back
-  - Tie (Push): Get your bet back
-  - Lose: Lose your bet
-- **Balance Persistence**: All balances are saved in `src/data/economy.json`
-
-## API Keys Required
-
-Some commands require API keys to function:
-
-- **OpenAI API**: For ChatGPT integration
-- **Giphy API**: For meme commands
-- **OpenWeather API**: For weather commands
-- **Nutritionix API**: For calorie/food information commands
-
-These are optional and the bot will work without them, but the respective commands will not function.
-
-## Development
-
-### Adding New Commands
-
-1. Create a new file in the appropriate `src/commands/` subdirectory
-2. Export an object with the following structure:
-   ```javascript
-   module.exports = {
-     name: "commandname",
-     description: "Command description",
-     options: [], // Optional command options
-     callback: async (client, interaction) => {
-       // Command logic here
-     },
-   };
-   ```
-3. The command will be automatically registered on bot restart
-
-### Command Categories
-
-Commands are organized by category in separate folders. Create new folders for new categories as needed.
 
 ## Troubleshooting
 
 **Bot not responding:**
+- Check permissions and token.
+- Ensure the bot is online.
 
-- Ensure the bot has proper permissions in your Discord server
-- Check that the bot token in `.env` is correct
-- Verify the bot is online in Discord
+**Database Issues:**
+- The bot now uses `database.sqlite`. Ensure this file is writable.
+- If you see errors, check the terminal logs.
 
-**Commands not registering:**
-
-- Check console for error messages during startup
-- Ensure `testServer` in `config.json` is set correctly
-- Try restarting the bot
-
-**Economy data lost:**
-
-- Check that `src/data/economy.json` exists and is not corrupted
-- Ensure the bot has write permissions in the `src/data/` directory
-
-**Interaction timeout errors:**
-
-- These occur when commands take too long to respond
-- The bot uses `deferReply` to prevent most timeout issues
-- If issues persist, check your internet connection and Discord API status
-
-Invite my bot using this link
+Invite my bot using this link:
 https://discord.com/oauth2/authorize?client_id=1130301590146916435&permissions=8&integration_type=0&scope=bot
-
 
 https://github.com/user-attachments/assets/8db0a6f5-c72e-4ecf-b7d0-f9b14050c379
