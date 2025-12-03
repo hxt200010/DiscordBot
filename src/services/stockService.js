@@ -52,6 +52,20 @@ class StockService {
     }
 
     /**
+     * Get trending stocks
+     * @param {string} country 
+     */
+    async getTrending(country = 'US') {
+        try {
+            const result = await yahooFinance.trendingSymbols(country);
+            return result.quotes.map(q => q.symbol);
+        } catch (error) {
+            console.error(`Error fetching trending for ${country}:`, error);
+            return [];
+        }
+    }
+
+    /**
      * Generate stock chart URL
      * @param {string} symbol 
      * @param {Array} data 

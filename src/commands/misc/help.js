@@ -75,7 +75,7 @@ module.exports = {
                 },
                 {
                     name: `Stock Market`,
-                    value: `\`\`stock, chart, compare, watchlist, alert, stock-search\`\``,
+                    value: `\`\`stock, chart, compare, watchlist, alert, stock-search, stock-trending\`\``,
                     inline: false
                 }
             ]);
