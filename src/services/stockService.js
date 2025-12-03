@@ -38,6 +38,20 @@ class StockService {
     }
 
     /**
+     * Search for stock symbols
+     * @param {string} query 
+     */
+    async search(query) {
+        try {
+            const result = await yahooFinance.search(query);
+            return result.quotes;
+        } catch (error) {
+            console.error(`Error searching for ${query}:`, error);
+            return [];
+        }
+    }
+
+    /**
      * Generate stock chart URL
      * @param {string} symbol 
      * @param {Array} data 
