@@ -123,5 +123,7 @@ Want to run your own Sonic? Follow these steps:
 <div align="center">
   <img src="src/Images/shadow.png" width="100%" alt="Shadow Footer" />
   
-  <h3>Made with ❤️, Chili Dogs 🌭, and Chaos Emeralds 💎</h3>
+  <h3>We will soon introduce Shadow discord bot, the ultimate lifeform full with Power, Rage, Revenge, and many more features! </h3>
 </div>
+
+https://github.com/user-attachments/assets/8db0a6f5-c72e-4ecf-b7d0-f9b14050c379
