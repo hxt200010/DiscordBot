@@ -5,7 +5,6 @@ const path = require('path');
 const petConfig = require('../../utils/petConfig');
 const EconomySystem = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
-const PetSystem = require('../../utils/PetSystem');
 const { applyWorkGains, checkLevelUp } = require('../../utils/petUtils');
 
 function createBar(value, max = 100) {

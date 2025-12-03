@@ -10,12 +10,12 @@ const calculateWorkGains = (pet) => {
     if (hoursWorked <= 0) return { coins: 0, xp: 0, timeWorked: 0, hungerLost: 0, hpLost: 0, isDead: false };
 
     // Formulas:
-    // Coins = 10 per hour
+    // Coins = 10 + (Level * 5) per hour
     // XP = 2.5 per hour
     // Hunger Loss = 1 per hour
     // HP Loss (if Hunger <= 0) = 10 per hour
 
-    const coinsEarned = Math.floor(10 * hoursWorked);
+    const coinsEarned = Math.floor((10 + (pet.level * 5)) * hoursWorked);
     const xpEarned = 2.5 * hoursWorked;
 
     const hungerLost = 1 * hoursWorked;
@@ -97,10 +97,19 @@ const checkLevelUp = (pet) => {
         pet.level += 1;
 
         // Increase stats on level up
-        pet.maxHp += 10;
-        pet.hp = pet.maxHp; // Heal on level up? Or just increase cap? Let's heal to full for reward.
-        pet.stats.attack += 2;
-        pet.stats.defense += 2;
+        pet.maxHp += 10; // Always +10 MaxHP
+        pet.hp = pet.maxHp; // Full heal
+
+        // Alternating Stats:
+        // Level 2 (Even): +3 Attack
+        // Level 3 (Odd): +3 Defense
+        // Level 4 (Even): +3 Attack
+        // ...
+        if (pet.level % 2 === 0) {
+            pet.stats.attack += 3;
+        } else {
+            pet.stats.defense += 3;
+        }
 
         leveledUp = true;
     }
