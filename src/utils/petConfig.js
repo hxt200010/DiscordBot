@@ -32,6 +32,6 @@ module.exports = [
         value: 'amy',
         emoji: '🌸',
         description: "A cheerful and determined hedgehog with a giant Piko Piko Hammer. She's the heart of the team and never backs down from a fight.",
-        stats: { attack: 75, defense: 55, health: 2600 }
+        stats: { attack: 50, defense: 110, health: 2600 }
     }
 ];

@@ -72,6 +72,11 @@ module.exports = {
                     name: `Puzzle / Logic Games`,
                     value: `\`\`riddle, cipher, sudoku, hangman\`\``,
                     inline: false
+                },
+                {
+                    name: `Stock Market`,
+                    value: `\`\`stock, chart, compare, watchlist, alert\`\``,
+                    inline: false
                 }
             ]);
 

@@ -4,6 +4,7 @@ const { Client, IntentsBitField } = require('discord.js');
 const eventHandler = require('./handlers/eventHandler');
 const chatbotHandler = require('./handlers/chatbotHandler');
 const connectDB = require('./utils/Database');
+const stockAlertHandler = require('./handlers/stockAlertHandler');
 
 // Connect to Database
 connectDB();
@@ -26,6 +27,7 @@ client.on('interactionCreate', (interaction) => {
 });
 
 eventHandler(client);
+stockAlertHandler(client);
 client.login(process.env.TOKEN);
 
 const express = require("express");
