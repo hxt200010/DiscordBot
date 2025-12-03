@@ -1,4 +1,5 @@
-const yahooFinance = require('yahoo-finance2').default;
+const YahooFinance = require('yahoo-finance2').default;
+const yahooFinance = new YahooFinance();
 const QuickChart = require('quickchart-js');
 
 class StockService {
@@ -28,8 +29,8 @@ class StockService {
             period1.setDate(period1.getDate() - days);
             
             const queryOptions = { period1: period1.toISOString().split('T')[0], interval: interval };
-            const result = await yahooFinance.historical(symbol, queryOptions);
-            return result;
+            const result = await yahooFinance.chart(symbol, queryOptions);
+            return result.quotes;
         } catch (error) {
             console.error(`Error fetching history for ${symbol}:`, error);
             return null;
