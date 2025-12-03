@@ -42,6 +42,9 @@ const calculateWorkGains = (pet) => {
         // Let's just flag it. The caller will handle setting HP to 0.
     }
 
+    // Check for level up
+    checkLevelUp(pet);
+
     return {
         coins: coinsEarned,
         xp: xpEarned,
@@ -78,9 +81,30 @@ const applyWorkGains = (pet) => {
             // So we update timestamp to "now" so we don't re-calculate the same decay next time.
             pet.lastWorkUpdate = Date.now();
         }
+
+        // Check for level up after applying gains
+        checkLevelUp(pet);
     }
 
     return gains;
 };
 
-module.exports = { calculateWorkGains, applyWorkGains };
+const checkLevelUp = (pet) => {
+    let leveledUp = false;
+    // XP needed for next level: level * 20
+    while (pet.xp >= pet.level * 20) {
+        pet.xp -= pet.level * 20;
+        pet.level += 1;
+
+        // Increase stats on level up
+        pet.maxHp += 10;
+        pet.hp = pet.maxHp; // Heal on level up? Or just increase cap? Let's heal to full for reward.
+        pet.stats.attack += 2;
+        pet.stats.defense += 2;
+
+        leveledUp = true;
+    }
+    return leveledUp;
+};
+
+module.exports = { calculateWorkGains, applyWorkGains, checkLevelUp };

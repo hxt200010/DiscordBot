@@ -5,7 +5,8 @@ const path = require('path');
 const petConfig = require('../../utils/petConfig');
 const EconomySystem = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
-const { applyWorkGains } = require('../../utils/petUtils');
+const PetSystem = require('../../utils/PetSystem');
+const { applyWorkGains, checkLevelUp } = require('../../utils/petUtils');
 
 function createBar(value, max = 100) {
     const percentage = value / max;
@@ -48,13 +49,18 @@ async function generatePetEmbed(pet, userId, interaction) {
                 p.hp = Math.max(0, (p.hp || p.maxHp) - gains.hpLost);
                 p.lastWorkUpdate = Date.now();
                 p.currentWorkCoins = (p.currentWorkCoins || 0) + gains.coins;
+
+                // Check for level up in DB
+                checkLevelUp(p);
             });
 
             // Update local pet object for display
-            pet.xp = (pet.xp || 0) + gains.xp;
-            pet.stats.hunger = Math.max(0, (pet.stats.hunger || 50) - gains.hungerLost);
-            pet.hp = Math.max(0, (pet.hp || pet.maxHp) - gains.hpLost);
+            // applyWorkGains already updated pet.xp, pet.stats.hunger, pet.hp, pet.lastWorkUpdate
+            // We just need to update currentWorkCoins as applyWorkGains doesn't track that on the pet object directly in the same way?
+            // Wait, applyWorkGains does NOT update currentWorkCoins on the pet object.
             pet.currentWorkCoins = (pet.currentWorkCoins || 0) + gains.coins;
+
+            // Note: pet.xp, pet.level, pet.stats, pet.hp are already updated by applyWorkGains(pet) reference.
 
             workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check. (Total this session: **${pet.currentWorkCoins} coins**)`;
             if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${gains.hungerLost.toFixed(1)} Hunger`;
