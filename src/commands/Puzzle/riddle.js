@@ -1,10 +1,9 @@
 const { Client, Interaction, EmbedBuilder } = require('discord.js');
 const economySystem = require('../../utils/EconomySystem');
 const { Configuration, OpenAIApi } = require("openai");
-const { openaiAPIKey } = require('../../../config.json');
 
 const configuration = new Configuration({
-    apiKey: openaiAPIKey,
+    apiKey: process.env.API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
@@ -13,7 +12,7 @@ const activeGames = new Map();
 async function generateRiddle() {
     try {
         const result = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "system",
@@ -53,7 +52,7 @@ async function generateRiddle() {
 async function getAIHint(riddle, previousGuesses) {
     try {
         const result = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "system",
@@ -78,7 +77,7 @@ async function getAIHint(riddle, previousGuesses) {
 async function checkAnswer(userAnswer, correctAnswer, riddleQuestion) {
     try {
         const result = await openai.createChatCompletion({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
             messages: [
                 {
                     role: "system",
