@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="src/Images/christmas_sonic.jpg" width="400" alt="Sonic Christmas Logo" />
+  <img src="src/Images/sonicTailKnuckle.jpg" width="200" alt="I'm with Knuckle and Tails on a Raceeee" />
 
 # ⚡️ Sonic Bot ⚡️
 
