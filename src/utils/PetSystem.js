@@ -48,7 +48,8 @@ class PetSystem {
             isWorking: sourceStats.isWorking || false,
             lastWorkUpdate: sourceStats.lastWorkUpdate || null,
             isDead: sourceStats.isDead || false,
-            maxHp: sourceStats.maxHp || 100
+            maxHp: sourceStats.maxHp || 100,
+            purchaseCost: sourceStats.purchaseCost || 0
         });
 
         return newPet.id;
@@ -155,7 +156,8 @@ class PetSystem {
             hp: petDoc.stats.health,
             maxHp: petDoc.maxHp || 100,
             attack: petDoc.stats.attack,
-            defense: petDoc.stats.defense
+            defense: petDoc.stats.defense,
+            purchaseCost: petDoc.purchaseCost
         };
     }
 }
