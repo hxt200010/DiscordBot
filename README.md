@@ -57,7 +57,7 @@ Earn rings (coins) and become the richest!
 
 ### 🎮 Fun & Games
 
-<img align="right" src="src/Images/sonicTailKnuckle.png" width="300" alt="Team Sonic" />
+<img align="right" src="src/Images/sonic_pet.png" width="300" alt="Team Sonic" />
 
 Entertainment for everyone!
 
