@@ -86,6 +86,45 @@ Learn while you chill!
 
 ---
 
+## 💰 Economy & Rewards
+
+Here is a breakdown of how many coins you can earn from various commands:
+
+### 📚 Education
+
+- `/learn`: Earn coins by answering programming questions.
+  - **Easy:** 10 coins
+  - **Medium:** 20 coins
+  - **Hard:** 40 coins
+- `/learnai`: Earn **3 coins** for learning about AI topics.
+- `/datastructure`: Earn **5 coins** for viewing the solution to a practice question.
+
+### 🧩 Puzzles
+
+- `/sudoku`: Earn **100 coins** for solving a mini sudoku.
+- `/cipher`: Earn **75 coins** for decrypting a message.
+- `/hangman`: Earn **60 coins** for guessing the word.
+- `/riddle`: Earn **50 coins** for solving the riddle.
+
+### 💼 Jobs & Daily
+
+- `/daily`: Collect **1000 coins** every 24 hours.
+- `/work`: Earn **10 coins** for every correct answer to a trivia question.
+
+### 🐾 Pets
+
+- **Grinding:** Your pet earns coins while grinding.
+  - Rate: `10 + (Pet Level * 5)` coins per hour.
+- **Level Up:** Increases your pet's daily coin generation potential.
+
+### 🎲 Fun & Games
+
+- `/mine`: Earn variable coins based on the resources you find.
+- `/blackjack`: Bet coins to win more (1.5x profit for Blackjack, 1x profit for normal win).
+- `/steal`: Attempt to steal **$10–$50** from another user (Risk: **$5–$30** fine if caught).
+
+---
+
 ## ⚙️ Installation & Setup
 
 Want to run your own Sonic? Follow these steps:
