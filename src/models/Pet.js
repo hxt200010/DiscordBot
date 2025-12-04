@@ -21,6 +21,7 @@ const petSchema = new mongoose.Schema({
     currentWorkCoins: { type: Number, default: 0 },
     isDead: { type: Boolean, default: false },
     maxHp: { type: Number, default: 100 },
+    purchaseCost: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now }
 });
 
