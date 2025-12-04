@@ -97,8 +97,13 @@ const checkLevelUp = (pet) => {
         pet.level += 1;
 
         // Increase stats on level up
-        pet.maxHp += 10; // Always +10 MaxHP
+        pet.maxHp = (pet.maxHp || 100) + 10; // Always +10 MaxHP
         pet.hp = pet.maxHp; // Full heal
+
+        // Sync top-level HP if it exists (though usually we use pet.hp)
+        if (pet.stats) {
+            pet.stats.health = pet.maxHp;
+        }
 
         // Alternating Stats:
         // Level 2 (Even): +3 Attack
@@ -107,8 +112,12 @@ const checkLevelUp = (pet) => {
         // ...
         if (pet.level % 2 === 0) {
             pet.stats.attack += 3;
+            // Sync top-level attack if it exists
+            if (pet.attack !== undefined) pet.attack = pet.stats.attack;
         } else {
             pet.stats.defense += 3;
+            // Sync top-level defense if it exists
+            if (pet.defense !== undefined) pet.defense = pet.stats.defense;
         }
 
         leveledUp = true;

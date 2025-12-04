@@ -1,7 +1,7 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 
 const petConfig = require('../../utils/petConfig');
-const { applyWorkGains } = require('../../utils/petUtils');
+const { applyWorkGains, checkLevelUp } = require('../../utils/petUtils');
 const EconomySystem = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
 
@@ -213,17 +213,8 @@ module.exports = {
             pet.lastInteraction = Date.now();
 
             // Level Up
-            const xpThreshold = pet.level * 20;
-            if (pet.xp >= xpThreshold) {
-                pet.level += 1;
-                pet.xp -= xpThreshold;
+            if (checkLevelUp(pet)) {
                 pet.dailyCoins = 50 + (pet.level * 5);
-
-                const cycleIndex = (pet.level - 2) % 3;
-                if (cycleIndex === 0) pet.attack += 10;
-                else if (cycleIndex === 1) pet.defense += 10;
-                else { pet.maxHp += 50; pet.hp += 50; }
-
                 actionResult += ` | **LEVEL UP!** (${pet.level})`;
             }
 
