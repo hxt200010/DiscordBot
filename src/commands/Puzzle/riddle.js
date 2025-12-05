@@ -10,14 +10,23 @@ const openai = new OpenAIApi(configuration);
 
 const activeGames = new Map();
 
+const fallbackRiddles = [
+    { question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?", answer: "echo" },
+    { question: "The more you take, the more you leave behind. What am I?", answer: "footsteps" },
+    { question: "I have cities, but no houses. I have mountains, but no trees. I have water, but no fish. What am I?", answer: "map" },
+    { question: "What has keys, but no locks; space, but no room; you can enter, but never go outside?", answer: "keyboard" },
+    { question: "I am not alive, but I grow; I don't have lungs, but I need air; I don't have a mouth, but water kills me. What am I?", answer: "fire" }
+];
+
 async function generateRiddle() {
     try {
+        const randomSeed = Math.floor(Math.random() * 1000000);
         const result = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [
                 {
                     role: "system",
-                    content: "You are a creative riddle master. Generate a clever riddle with a single-word answer. Return ONLY a JSON object with 'question' and 'answer' fields. The answer must be a single word (or short phrase max 2 words). Make it challenging but fair."
+                    content: `You are a creative riddle master. Generate a unique, challenging, and random riddle with a single-word answer. Avoid common riddles. Return ONLY a JSON object with 'question' and 'answer' fields. The answer must be a single word (or short phrase max 2 words). Random seed: ${randomSeed}`
                 },
                 {
                     role: "user",
@@ -25,7 +34,7 @@ async function generateRiddle() {
                 }
             ],
             max_tokens: 150,
-            temperature: 0.9
+            temperature: 1.0
         });
 
         const content = result.data.choices[0].message.content.trim();
@@ -35,18 +44,12 @@ async function generateRiddle() {
             return JSON.parse(jsonMatch[0]);
         }
 
-        // Fallback to hardcoded riddle if parsing fails
-        return {
-            question: "I speak without a mouth and hear without ears. I have no body, but I come alive with wind. What am I?",
-            answer: "echo"
-        };
+        // Fallback to random hardcoded riddle if parsing fails
+        return fallbackRiddles[Math.floor(Math.random() * fallbackRiddles.length)];
     } catch (error) {
         console.error('OpenAI Riddle Generation Error:', error);
         // Fallback riddle
-        return {
-            question: "The more you take, the more you leave behind. What am I?",
-            answer: "footsteps"
-        };
+        return fallbackRiddles[Math.floor(Math.random() * fallbackRiddles.length)];
     }
 }
 
