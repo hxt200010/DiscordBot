@@ -57,7 +57,7 @@ Earn rings (coins) and become the richest!
 
 ### Fun & Games
 
-<img align="right" src="src/study_images/blackjack.png" width="300" alt="Let's play Blackjack!" />
+<img align="right" src="src/game_images/blackjack.png" width="300" alt="Let's play Blackjack!" />
 
 Entertainment for everyone!
 
@@ -71,7 +71,7 @@ Entertainment for everyone!
 
 ### AI & Education
 
-<img align="left" src="src/study_images/Interview.png" width="200" alt="Education" />
+<img align="left" src="src/study_images/Interview.png" width="600" alt="Education" />
 
 Learn while you chill!
 
