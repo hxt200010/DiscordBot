@@ -2,7 +2,6 @@ const { EmbedBuilder } = require('discord.js');
 const economy = require('../../utils/EconomySystem');
 
 const dailyAmount = 1000;
-const cooldowns = new Set();
 
 module.exports = {
     name: 'daily',
@@ -10,15 +9,13 @@ module.exports = {
     callback: async (client, interaction) => {
         await interaction.deferReply();
 
-        if (cooldowns.has(interaction.user.id)) {
+        const success = await economy.claimDaily(interaction.user.id, dailyAmount);
+
+        if (!success) {
             return interaction.editReply({ content: 'You have already collected your daily reward today. Come back tomorrow!' });
         }
 
-        const newBalance = await economy.addBalance(interaction.user.id, dailyAmount);
-
-        // Simple daily cooldown (reset on bot restart for now, ideally use DB or timestamp)
-        cooldowns.add(interaction.user.id);
-        setTimeout(() => cooldowns.delete(interaction.user.id), 24 * 60 * 60 * 1000);
+        const newBalance = await economy.getBalance(interaction.user.id);
 
         const embed = new EmbedBuilder()
             .setColor(0xFFD700)

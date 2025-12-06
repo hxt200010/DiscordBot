@@ -15,6 +15,7 @@ class EconomySystem {
                 amount: user.dailyAmount,
                 date: user.lastDaily
             },
+            lastDailyReward: user.lastDailyReward,
             isShielded: user.isShielded
         };
     }
@@ -144,6 +145,25 @@ class EconomySystem {
                 dailyAmount: newAmount
             }
         );
+    }
+
+    async claimDaily(userId, amount) {
+        const user = await this.getUser(userId);
+        const today = new Date().toDateString();
+
+        if (user.lastDailyReward === today) {
+            return false;
+        }
+
+        await User.findOneAndUpdate(
+            { userId },
+            {
+                $inc: { balance: amount },
+                lastDailyReward: today
+            },
+            { upsert: true }
+        );
+        return true;
     }
 }
 

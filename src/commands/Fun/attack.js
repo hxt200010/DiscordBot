@@ -172,6 +172,18 @@ module.exports = {
         // Forced Sleep Check
         if (attackerPet.stats.energy < 10) {
             attackerPet.isSleeping = true;
+            
+            // Stop Grinding if active
+            if (attackerPet.isWorking) {
+                const { applyWorkGains } = require('../../utils/petUtils');
+                const EconomySystem = require('../../utils/EconomySystem');
+                const gains = applyWorkGains(attackerPet);
+                attackerPet.isWorking = false;
+                attackerPet.lastWorkUpdate = null;
+                await EconomySystem.addBalance(attackerId, gains.coins);
+                sleepMessage += `\n🛑 **Stopped Grinding**: Collected ${gains.coins} coins.`;
+            }
+
             // Duration based on how drained? 
             // "The lower its remaining Energy... the longer it will need to sleep"
             // Let's say: Base 1 hour + (10 - Energy) * 10 minutes.
@@ -181,7 +193,7 @@ module.exports = {
             const sleepMinutes = 60 + (energyDeficit * 10);
             attackerPet.sleepUntil = Date.now() + (sleepMinutes * 60 * 1000);
             attackerPet.sleepStart = Date.now();
-            sleepMessage = `\n💤 **${attackerPet.petName}** collapsed from exhaustion! Sleeping for ${sleepMinutes} minutes.`;
+            sleepMessage += `\n💤 **${attackerPet.petName}** collapsed from exhaustion! Sleeping for ${sleepMinutes} minutes.`;
         }
 
         // --- UPDATE DB ---
@@ -192,6 +204,8 @@ module.exports = {
             p.isSleeping = attackerPet.isSleeping;
             p.sleepUntil = attackerPet.sleepUntil;
             p.sleepStart = attackerPet.sleepStart;
+            p.isWorking = attackerPet.isWorking;
+            p.lastWorkUpdate = attackerPet.lastWorkUpdate;
         });
 
         // Update Defender

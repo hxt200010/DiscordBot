@@ -37,20 +37,25 @@ module.exports = {
         }
     ],
     autocomplete: async (client, interaction) => {
-        const focusedValue = interaction.options.getFocused();
-        const userPets = await PetSystem.getUserPets(interaction.user.id);
+        try {
+            const focusedValue = interaction.options.getFocused();
+            const userPets = await PetSystem.getUserPets(interaction.user.id);
 
-        if (!userPets || userPets.length === 0) return interaction.respond([]);
+            if (!userPets || userPets.length === 0) return interaction.respond([]);
 
-        const options = userPets.map(pet => ({ name: `${pet.petName} (${pet.type})`, value: pet.petName }));
+            const options = userPets.map(pet => ({ name: `${pet.petName} (${pet.type})`, value: pet.petName }));
 
-        // Add "All Pets" option if multiple pets
-        if (userPets.length > 1) {
-            options.unshift({ name: 'All Pets (Grind/Feed/Play/Sleep)', value: 'all_pets' });
+            // Add "All Pets" option if multiple pets
+            if (userPets.length > 1) {
+                options.unshift({ name: 'All Pets (Grind/Feed/Play/Sleep)', value: 'all_pets' });
+            }
+
+            const filtered = options.filter(opt => opt.name.toLowerCase().includes(focusedValue.toLowerCase()));
+            await interaction.respond(filtered.slice(0, 25));
+        } catch (error) {
+            console.error("Autocomplete Error:", error);
+            await interaction.respond([]); // Respond with empty to prevent "failed" error if possible
         }
-
-        const filtered = options.filter(opt => opt.name.toLowerCase().includes(focusedValue.toLowerCase()));
-        await interaction.respond(filtered.slice(0, 25));
     },
     callback: async (client, interaction) => {
         const userId = interaction.user.id;
@@ -121,16 +126,22 @@ module.exports = {
                 continue;
             }
 
-            // Check if sleeping (Forced Sleep)
-            if (pet.isSleeping) {
-                if (pet.sleepUntil && Date.now() < pet.sleepUntil) {
+            // Check if sleeping
+            if (pet.isSleeping && action !== 'wake') {
+                // Check forced sleep expiration
+                if (pet.sleepUntil && Date.now() >= pet.sleepUntil) {
+                    pet.isSleeping = false;
+                    pet.sleepUntil = null;
+                    // Continue to action (auto-wake from forced sleep)
+                } else if (pet.sleepUntil) {
+                    // Forced sleep active
                     const remaining = Math.ceil((pet.sleepUntil - Date.now()) / 60000);
                     results.push(`💤 **${pet.petName}** is exhausted and sleeping for ${remaining} more minutes.`);
                     continue;
                 } else {
-                    // Woke up naturally
-                    pet.isSleeping = false;
-                    pet.sleepUntil = null;
+                    // Voluntary sleep - Block action
+                    results.push(`💤 **${pet.petName}** is sleeping. Use \`/pet-action action:wake\` to wake them up.`);
+                    continue;
                 }
             }
 
@@ -183,9 +194,20 @@ module.exports = {
                     if (pet.isSleeping) {
                         actionResult = `Already sleeping! Use 'wake' to wake up.`;
                     } else {
+                        // Stop Grinding if active
+                        if (pet.isWorking) {
+                            const gains = applyWorkGains(pet);
+                            pet.isWorking = false;
+                            pet.lastWorkUpdate = null;
+                            await EconomySystem.addBalance(userId, gains.coins);
+                            actionResult = `Stopped Grinding (+${gains.coins} coins) & `;
+                        } else {
+                            actionResult = "";
+                        }
+                        
                         pet.isSleeping = true;
                         pet.sleepStart = Date.now();
-                        actionResult = `Started sleeping... (Regenerates 1 Energy/min)`;
+                        actionResult += `Started sleeping... (Regenerates 1 Energy/min)`;
                     }
                     break;
 
