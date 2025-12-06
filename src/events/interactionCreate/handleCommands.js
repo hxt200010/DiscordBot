@@ -59,20 +59,6 @@ module.exports = async (client, interaction) => {
         }
       }
 
-      // Currency System Logic
-      const economySystem = require('../../utils/EconomySystem');
-      let reward = 1; // Default reward
-
-      if (commandObject.category === 'mathematic' || commandObject.category === 'Algorithm') {
-          reward = 2;
-      } else if (commandObject.category === 'moderation') {
-          reward = 0;
-      }
-
-      if (reward > 0) {
-          economySystem.addBalance(interaction.member.id, reward);
-      }
-
       await commandObject.callback(client, interaction);
     } catch (error) {
       console.log(`There was an error running this command: ${error}`);
