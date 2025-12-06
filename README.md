@@ -57,7 +57,7 @@ Earn rings (coins) and become the richest!
 
 ### Fun & Games
 
-<img align="right" src="src/Images/sonic_pet.png" width="300" alt="Team Sonic" />
+<img align="right" src="src/study_images/blackjack.png" width="300" alt="Let's play Blackjack!" />
 
 Entertainment for everyone!
 
@@ -71,12 +71,16 @@ Entertainment for everyone!
 
 ### AI & Education
 
+<img align="left" src="src/study_images/Interview.png" width="200" alt="Education" />
+
 Learn while you chill!
 
 - **`/learnai`**: Chat with an advanced AI.
 - **`/learn`**: Detailed lessons on various topics.
 - **`/datastructure`**: Master CS concepts.
 - **`/trivia`**: Test your brainpower.
+
+<br clear="left"/>
 
 ### Utilities & Math
 
