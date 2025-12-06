@@ -196,16 +196,18 @@ module.exports = {
             }
 
             if (i.customId === 'confirm_buy') {
+                await i.deferUpdate();
+
                 // Re-check balance just in case
                 const currentBalance = await economySystem.getBalance(userId);
                 if (currentBalance < totalCost) {
-                    return i.update({ content: "❌ Transaction failed: Insufficient funds.", embeds: [], components: [] });
+                    return i.editReply({ content: "❌ Transaction failed: Insufficient funds.", embeds: [], components: [] });
                 }
 
                 // Process transaction
                 const success = await economySystem.removeBalance(userId, totalCost);
                 if (!success) {
-                    return i.update({ content: "❌ Transaction failed: Error processing payment.", embeds: [], components: [] });
+                    return i.editReply({ content: "❌ Transaction failed: Error processing payment.", embeds: [], components: [] });
                 }
 
                 // Add items
@@ -216,7 +218,7 @@ module.exports = {
                     }
                 }
 
-                await i.update({
+                await i.editReply({
                     content: `✅ Purchase successful! You spent **$${totalCost}**.\nItems added to your inventory.`,
                     embeds: [],
                     components: []
