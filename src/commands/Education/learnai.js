@@ -66,7 +66,7 @@ module.exports = {
             }
             Ensure the total content length fits within a Discord Embed (approx 2000 chars).
             For every code you provide, comment the code what it does and explain it in detail.
-            For every library you provide, explain what it does and how to use it.
+            For every library you provide, explain the concept through code examples and real-life applications.
             Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
             const completion = await openai.createChatCompletion({
