@@ -60,9 +60,11 @@ module.exports = {
             For each question:
             1. Provide a clear "Title" (e.g., "What is a dictionary in Python?").
             2. Provide a "Theory" paragraph explaining the concept.
-            3. Provide a "Code" snippet demonstrating the concept. **The code must be a COMPLETE, working example with NO blanks.** output code output as comment
-            4. Create a "fill in the blank" challenge. The blank "____" MUST be in the "Theory" text and should represent a key term or keyword.
-            5. Provide 4 options for the blank.
+            3. Provide a "Code" snippet demonstrating the concept. **The code must be a COMPLETE, working example with NO blanks.**
+            4. **CRITICAL:** Format the code properly with newlines and indentation. Do NOT minify the code.
+            5. Include the expected output of the code as a comment at the end of the snippet.
+            6. Create a "fill in the blank" challenge. The blank "____" MUST be in the "Theory" text and should represent a key term or keyword.
+            7. Provide 4 options for the blank.
             
             Ensure each question is completely different and covers a different concept, write so it's easy for users to understand.
             
