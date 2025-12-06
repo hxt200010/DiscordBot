@@ -34,6 +34,11 @@ Become a Wall Street tycoon without leaving Discord!
 - **`/stock-trending`**: See the top trending stocks in the US market right now!
 - **`/chart [symbol]`**: View historical price charts.
 
+
+
+
+
+
 ### Virtual Pet System
 
 Adopt your favorite character and raise them! They need food, sleep, and playtime.
