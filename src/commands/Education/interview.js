@@ -49,7 +49,8 @@ module.exports = {
         await interaction.deferReply();
 
         let coinsEarned = 0;
-        const reward = 5; // Flat reward of 5 coins
+        const rewards = { easy: 5, medium: 15, hard: 30 };
+        const reward = rewards[difficulty];
         const sessionData = [];
 
         try {
