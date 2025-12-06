@@ -26,7 +26,7 @@ Built with **Discord.js**, I bring the speed of sound to your commands.
 ## Key Features
 
 ### Stock Market (HOT!)
-
+<img align="right" src="src/Images/stock1.png" width="500" alt="Let's play Blackjack!" />
 Become a Wall Street tycoon without leaving Discord!
 
 - **`/stock [symbol]`**: Get real-time stock quotes and data.
