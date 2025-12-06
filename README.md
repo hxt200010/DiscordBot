@@ -57,7 +57,7 @@ Earn rings (coins) and become the richest!
 
 ### Fun & Games
 
-<img align="right" src="src/game_images/blackjack.png" width="300" alt="Let's play Blackjack!" />
+<img align="right" src="src/game_images/blackjack.png" width="600" alt="Let's play Blackjack!" />
 
 Entertainment for everyone!
 
