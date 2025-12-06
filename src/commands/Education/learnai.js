@@ -58,14 +58,14 @@ module.exports = {
             Provide the output in strict JSON format with the following structure:
             {
                 "title": "Title of the topic",
-                "definition": "Clear and concise definition of the topic.",
+                "definition": "Clear and concise definition of the topic, long enough to explain the topic.",
                 "sub_techniques": ["Sub-technique 1", "Sub-technique 2", "Sub-technique 3"],
                 "applications": ["Real-life application 1", "Real-life application 2"],
-                "code": "A short, illustrative Python code snippet (max 15 lines).",
-                "libraries": ["Library/Tool 1", "Library/Tool 2", "Library/Tool 3"]
+                "code": "A short, illustrative Python code snippet (max 25 lines).",
+                "libraries": ["Library/Tool 1", "Library/Tool 2", "Library/Tool 3", "Library/Tool 4", "Library/Tool 5"]
             }
             Ensure the total content length fits within a Discord Embed (approx 2000 chars).
-            For every code you provide, comment the code what it does and explain it in detail.
+            For every code you provide, short comment the code what it does and explain it in detail.
             For every library you provide, explain the concept through code examples and real-life applications.
             Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
