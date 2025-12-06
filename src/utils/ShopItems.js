@@ -14,6 +14,13 @@ module.exports = [
         type: 'defense'
     },
     {
+        name: 'Pet Shield',
+        price: 100,
+        description: 'Absorbs 50% damage from pet attacks. Durability: 10.',
+        durability: 10,
+        type: 'defense'
+    },
+    {
         name: 'Health Pack',
         price: 50,
         description: 'Repair your Gun by +1 durability.',

@@ -157,7 +157,11 @@ class PetSystem {
             maxHp: petDoc.maxHp || 100,
             attack: petDoc.stats.attack,
             defense: petDoc.stats.defense,
-            purchaseCost: petDoc.purchaseCost
+            purchaseCost: petDoc.purchaseCost,
+            shield: petDoc.shield || 0,
+            isSleeping: petDoc.isSleeping || false,
+            sleepUntil: petDoc.sleepUntil || null,
+            sleepStart: petDoc.sleepStart || null
         };
     }
 }

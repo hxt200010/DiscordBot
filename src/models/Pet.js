@@ -22,7 +22,11 @@ const petSchema = new mongoose.Schema({
     isDead: { type: Boolean, default: false },
     maxHp: { type: Number, default: 100 },
     purchaseCost: { type: Number, default: 0 },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    shield: { type: Number, default: 0 },
+    isSleeping: { type: Boolean, default: false },
+    sleepUntil: { type: Number, default: null },
+    sleepStart: { type: Number, default: null }
 });
 
 module.exports = mongoose.model('Pet', petSchema);

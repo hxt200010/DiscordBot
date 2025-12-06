@@ -21,9 +21,11 @@ module.exports = {
                 { name: 'Play 🎾', value: 'play' },
                 { name: 'Pat 👋', value: 'pat' },
                 { name: 'Sleep 💤', value: 'sleep' },
+                { name: 'Wake ☀️', value: 'wake' },
                 { name: 'Grind ⚔️', value: 'grind' },
                 { name: 'Heal 💊 (Needs Health Pack)', value: 'heal' },
                 { name: 'Revive 💖 (Needs Health Kit)', value: 'revive' },
+                { name: 'Equip Shield 🛡️ (Needs Pet Shield)', value: 'equip' },
             ],
         },
         {
@@ -51,7 +53,6 @@ module.exports = {
         await interaction.respond(filtered.slice(0, 25));
     },
     callback: async (client, interaction) => {
-        // Cooldown Check
         const userId = interaction.user.id;
         if (cooldowns.has(userId)) {
             const expirationTime = cooldowns.get(userId) + 2000; // Reduced cooldown for better UX with multiple pets
@@ -120,6 +121,19 @@ module.exports = {
                 continue;
             }
 
+            // Check if sleeping (Forced Sleep)
+            if (pet.isSleeping) {
+                if (pet.sleepUntil && Date.now() < pet.sleepUntil) {
+                    const remaining = Math.ceil((pet.sleepUntil - Date.now()) / 60000);
+                    results.push(`💤 **${pet.petName}** is exhausted and sleeping for ${remaining} more minutes.`);
+                    continue;
+                } else {
+                    // Woke up naturally
+                    pet.isSleeping = false;
+                    pet.sleepUntil = null;
+                }
+            }
+
             let xpGain = 0;
             let actionResult = "";
             let itemUsed = false;
@@ -129,11 +143,27 @@ module.exports = {
                     if (countItem('Pet Food') > 0) {
                         await useItem('Pet Food');
                         pet.stats.hunger = cap(pet.stats.hunger + 20);
+                        pet.stats.energy = cap(pet.stats.energy + 1); // User requested +1 Energy
                         xpGain = 3;
-                        actionResult = `Fed (+20 Hunger)`;
+                        actionResult = `Fed (+20 Hunger, +1 Energy)`;
                         itemUsed = true;
                     } else {
                         actionResult = `❌ No Food`;
+                    }
+                    break;
+
+                case 'equip':
+                    if (countItem('Pet Shield') > 0) {
+                        if (pet.shield >= 10) {
+                            actionResult = `Shield is already full (10/10)`;
+                        } else {
+                            await useItem('Pet Shield');
+                            pet.shield = 10;
+                            actionResult = `Equipped Shield (10/10 Durability)`;
+                            itemUsed = true;
+                        }
+                    } else {
+                        actionResult = `❌ No Pet Shield`;
                     }
                     break;
 
@@ -150,9 +180,31 @@ module.exports = {
                     break;
 
                 case 'sleep':
-                    pet.stats.energy = cap(pet.stats.energy + 20);
-                    xpGain = 3;
-                    actionResult = `Slep (+20 Energy)`;
+                    if (pet.isSleeping) {
+                        actionResult = `Already sleeping! Use 'wake' to wake up.`;
+                    } else {
+                        pet.isSleeping = true;
+                        pet.sleepStart = Date.now();
+                        actionResult = `Started sleeping... (Regenerates 1 Energy/min)`;
+                    }
+                    break;
+
+                case 'wake':
+                    if (!pet.isSleeping) {
+                        actionResult = `Not sleeping!`;
+                    } else if (pet.sleepUntil && Date.now() < pet.sleepUntil) {
+                        const remaining = Math.ceil((pet.sleepUntil - Date.now()) / 60000);
+                        actionResult = `Cannot wake up yet! Forced sleep for ${remaining} more minutes.`;
+                    } else {
+                        const sleepDurationMinutes = Math.floor((Date.now() - (pet.sleepStart || Date.now())) / 60000);
+                        const energyGain = Math.max(0, sleepDurationMinutes * 1); // 1 Energy per minute
+                        pet.stats.energy = cap(pet.stats.energy + energyGain);
+                        pet.isSleeping = false;
+                        pet.sleepUntil = null;
+                        pet.sleepStart = null;
+                        xpGain = Math.floor(energyGain / 5); // Small XP for sleeping
+                        actionResult = `Woke up! Slept for ${sleepDurationMinutes} mins (+${energyGain} Energy)`;
+                    }
                     break;
 
                 case 'heal':
@@ -241,6 +293,10 @@ module.exports = {
                 p.lastInteraction = pet.lastInteraction;
                 p.dailyCoins = pet.dailyCoins;
                 p.maxHp = pet.maxHp;
+                p.shield = pet.shield;
+                p.isSleeping = pet.isSleeping;
+                p.sleepUntil = pet.sleepUntil;
+                p.sleepStart = pet.sleepStart;
             });
         }
 
