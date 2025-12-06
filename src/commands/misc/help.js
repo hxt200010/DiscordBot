@@ -30,7 +30,7 @@ module.exports = {
                 },
                 {
                     name: `Education`,
-                    value: `\`\`learn, learnai, trivia, datastructure\`\``,
+                    value: `\`\`learn, learnai, trivia, datastructure, interview\`\``,
                     inline: false
                 },
                 {
@@ -40,7 +40,7 @@ module.exports = {
                 },
                 {
                     name: `misc`,
-                    value: `\`\`owner, ping, avatar, weather, translate, userinfo, help, food, work\`\``,
+                    value: `\`\`owner, ping, avatar, weather, translate, userinfo, help, food, work, poll\`\``,
                     inline: false
                 },
                 {
