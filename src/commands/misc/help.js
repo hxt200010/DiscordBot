@@ -80,6 +80,10 @@ module.exports = {
                 }
             ]);
 
-        interaction.reply({ embeds: [embed] });
+        try {
+            await interaction.reply({ embeds: [embed] });
+        } catch (error) {
+            console.error('Error in help command:', error);
+        }
     }
 };
