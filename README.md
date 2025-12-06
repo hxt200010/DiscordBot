@@ -32,11 +32,7 @@ Become a Wall Street tycoon without leaving Discord!
 - **`/stock [symbol]`**: Get real-time stock quotes and data.
 - **`/stock-search [query]`**: Find the ticker symbol for any company.
 - **`/stock-trending`**: See the top trending stocks in the US market right now!
-- **`/chart [symbol]`**: View historical price charts.
-
-
-
-
+- **`/chart [symbol]`**: View historical price charts.  
 
 
 ### Virtual Pet System
