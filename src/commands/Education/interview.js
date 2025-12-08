@@ -67,7 +67,7 @@ module.exports = {
             6. Create a "fill in the blank" challenge. The blank "____" MUST be in the "Theory" text and should represent a key term or keyword.
             7. Provide 4 options for the blank.
             
-            Ensure each question is completely different and covers a different concept, write so it's easy for users to understand.
+            Ensure each question is completely different and covers a different concept, write as if you are teaching a 5 years old, mesning extrmely easy to understand.
             
             Provide the output in strict JSON format as an array of objects with the following structure:
             [
