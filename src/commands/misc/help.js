@@ -5,8 +5,8 @@ module.exports = {
     description: 'Generate list of commands',
     callback: async (client, interaction) => {
         const embed = new EmbedBuilder()
-            .setTitle('You don’t know what I’m capable of!')
-            .setColor('Random')
+            .setTitle('Sonic Bot Command List')
+            .setColor('Blue')
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp(Date.now())
             .setAuthor({
@@ -15,67 +15,62 @@ module.exports = {
             })
             .setFooter({
                 iconURL: client.user.displayAvatarURL(),
-                text: client.user.tag
+                text: 'Use /help-pet for detailed pet system guide!'
             })
             .addFields([
                 {
-                    name: `Configuration`,
-                    value: `\`\`setupChatbot, disableChatbot\`\``,
+                    name: 'Pet System',
+                    value: '`adopt, pet, pet-action, pet-list, sell-pet, attack, equip, teach, pet-glasses, help-pet`',
                     inline: false
                 },
                 {
-                    name: `Moderation`,
-                    value: `\`\`kick, ban, timeout, unban, untimeout, purge\`\``,
+                    name: 'Economy',
+                    value: '`balance, daily, give, achievements, spin`',
                     inline: false
                 },
                 {
-                    name: `Education`,
-                    value: `\`\`learn, learnai, trivia, datastructure, interview\`\``,
+                    name: 'Shop',
+                    value: '`shop, buy, inventory, open, shoot, repair, shield`',
                     inline: false
                 },
                 {
-                    name: `mathematic`,
-                    value: `\`\`add, subtract, multiply, divide, sqrt, calculate, log, integrate, sin, cos, tan\`\``,
+                    name: 'Fun & Games',
+                    value: '`shadow, meme, say, blackjack, mine, riddle, cipher, sudoku, hangman`',
                     inline: false
                 },
                 {
-                    name: `misc`,
-                    value: `\`\`owner, ping, avatar, weather, translate, userinfo, help, food, work, poll\`\``,
+                    name: 'Education',
+                    value: '`learn, learnai, trivia, datastructure, interview, job-interview`',
                     inline: false
                 },
                 {
-                    name: `Algorithm gameplay`,
-                    value: `\`\`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs, roman, remove, duplicate, smallestpositivenumber\`\``,
+                    name: 'Mathematic',
+                    value: '`add, subtract, multiply, divide, sqrt, calculate, log, integrate, sin, cos, tan`',
                     inline: false
                 },
                 {
-                    name: `Fun`,
-                    value: `\`\`shadow, meme, say, blackjack, mine, adopt, pet, pet-action, sell-pet, pet-list\`\``,
+                    name: 'Algorithm Gameplay',
+                    value: '`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs, roman, remove, duplicate`',
                     inline: false
                 },
                 {
-                    name: `Economy`,
-                    value: `\`\`balance, daily, give\`\``,
+                    name: 'Moderation',
+                    value: '`kick, ban, timeout, unban, untimeout, purge`',
                     inline: false
                 },
                 {
-                    name: `Shop`,
-                    value: `\`\`shop, buy, inventory, shoot, repair, shield\`\``,
+                    name: 'Stock Market',
+                    value: '`stock, chart, compare, watchlist, alert, stock-search, stock-trending`',
                     inline: false
                 },
                 {
-                    name: `User Interaction`,
-                    value: `\`\`steal\`\``,
+                    name: 'Misc',
+                    value: '`owner, ping, avatar, weather, translate, userinfo, food, work, poll, steal`',
                     inline: false
                 },
                 {
-                    name: `Puzzle / Logic Games`,
-                    value: `\`\`riddle, cipher, sudoku, hangman\`\``,
-                    inline: false
-                },
-                {
-                    name: `Stock Market`,
-                    value: `\`\`stock, chart, compare, watchlist, alert, stock-search, stock-trending\`\``,
+                    name: 'Configuration',
+                    value: '`setupChatbot, disableChatbot`',
                     inline: false
                 }
             ]);

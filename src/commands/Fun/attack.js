@@ -29,7 +29,7 @@ module.exports = {
     ],
     autocomplete: async (client, interaction) => {
         const focusedOption = interaction.options.getFocused(true);
-        
+
         if (focusedOption.name === 'pet') {
             const userPets = await PetSystem.getUserPets(interaction.user.id);
             if (!userPets || userPets.length === 0) return interaction.respond([]);
@@ -139,9 +139,84 @@ module.exports = {
         const AP = attackerPet.attack || 10;
         const DP = defenderPet.defense || 10;
 
+        // Get skills
+        const attackerSkills = attackerPet.skills || [];
+        const defenderSkills = defenderPet.skills || [];
+
+        let skillMessages = [];
+
+        // --- DEFENDER SKILL CHECKS ---
+
+        // Chaos Control: 20% dodge chance
+        if (defenderSkills.includes('Chaos Control')) {
+            if (Math.random() < 0.2) {
+                skillMessages.push(`⏱️ **Chaos Control!** ${defenderPet.petName} warped through time and dodged the attack!`);
+
+                // Still consume attacker energy
+                let energyCost = 10;
+                if (attackerSkills.includes('Iron Will')) {
+                    energyCost = Math.ceil(10 * 0.75);
+                    skillMessages.push(`💪 **Iron Will**: ${attackerPet.petName} saved energy! (-${energyCost} instead of -10)`);
+                }
+                attackerPet.stats.energy -= energyCost;
+
+                // Update attacker in DB
+                await PetSystem.updatePet(attackerPet.id, (p) => {
+                    p.stats.energy = attackerPet.stats.energy;
+                });
+
+                const dodgeEmbed = new EmbedBuilder()
+                    .setTitle(`⚔️ Battle: ${attackerPet.petName} vs ${defenderPet.petName}`)
+                    .setColor('Blue')
+                    .setDescription(
+                        `**${attackerPet.petName}** attacks!\n\n` +
+                        skillMessages.join('\n') +
+                        `\n\n💨 **No damage dealt!**` +
+                        `\n\n⚡ **${attackerPet.petName} Energy:** ${attackerPet.stats.energy}`
+                    )
+                    .setTimestamp();
+
+                return interaction.editReply({ embeds: [dodgeEmbed] });
+            }
+        }
+
+        // --- ATTACKER SKILL BONUSES ---
+
         // Damage Formula
-        const rawDamage = AP * 0.75;
-        const defenseReduction = DP * 0.5;
+        let rawDamage = AP * 0.75;
+
+        // Chaos Spear: +20% bonus damage
+        if (attackerSkills.includes('Chaos Spear')) {
+            const bonus = AP * 0.2;
+            rawDamage += bonus;
+            skillMessages.push(`⚡ **Chaos Spear**: +${Math.floor(bonus)} bonus damage!`);
+        }
+
+        // Spin Dash: 50% chance for double damage
+        if (attackerSkills.includes('Spin Dash')) {
+            if (Math.random() < 0.5) {
+                rawDamage *= 2;
+                skillMessages.push(`🌀 **Spin Dash**: CRITICAL HIT! Double damage!`);
+            }
+        }
+
+        // Hammer Strike: 25% stun chance (noted for defender's next turn - future feature)
+        if (attackerSkills.includes('Hammer Strike')) {
+            if (Math.random() < 0.25) {
+                skillMessages.push(`🔨 **Hammer Strike**: Stunning blow! (Opponent dazed)`);
+            }
+        }
+
+        // --- DEFENDER DAMAGE REDUCTION ---
+
+        let defenseReduction = DP * 0.5;
+
+        // Iron Wall: 15% damage reduction
+        if (defenderSkills.includes('Iron Wall')) {
+            defenseReduction *= 1.15;
+            skillMessages.push(`🛡️ **Iron Wall**: ${defenderPet.petName} reduced damage by 15%!`);
+        }
+
         let netDamage = Math.max(1, Math.floor(rawDamage - defenseReduction));
 
         // Shield Logic
@@ -165,14 +240,21 @@ module.exports = {
             faintMessage = `\n💀 **${defenderPet.petName}** fainted!`;
         }
 
-        // Energy Consumption
-        attackerPet.stats.energy -= 10;
+        // Energy Consumption (Iron Will: 25% reduction)
+        let energyCost = 10;
+        if (attackerSkills.includes('Iron Will')) {
+            energyCost = Math.ceil(10 * 0.75);
+            if (!skillMessages.some(m => m.includes('Iron Will'))) {
+                skillMessages.push(`💪 **Iron Will**: ${attackerPet.petName} saved energy! (-${energyCost} instead of -10)`);
+            }
+        }
+        attackerPet.stats.energy -= energyCost;
         let sleepMessage = "";
-        
+
         // Forced Sleep Check
         if (attackerPet.stats.energy < 10) {
             attackerPet.isSleeping = true;
-            
+
             // Stop Grinding if active
             if (attackerPet.isWorking) {
                 const { applyWorkGains } = require('../../utils/petUtils');
@@ -197,7 +279,7 @@ module.exports = {
         }
 
         // --- UPDATE DB ---
-        
+
         // Update Attacker
         await PetSystem.updatePet(attackerPet.id, (p) => {
             p.stats.energy = attackerPet.stats.energy;
@@ -219,6 +301,8 @@ module.exports = {
         // cooldowns.set(interaction.user.id, Date.now());
 
         // Response
+        const skillDisplay = skillMessages.length > 0 ? `\n\n📜 **Skills:**\n${skillMessages.join('\n')}` : '';
+
         const embed = new EmbedBuilder()
             .setTitle(`⚔️ Battle: ${attackerPet.petName} vs ${defenderPet.petName}`)
             .setColor(defenderPet.isDead ? 'Red' : 'Orange')
@@ -229,7 +313,8 @@ module.exports = {
                 `${shieldMessage}` +
                 `\n📉 **${defenderPet.petName} HP:** ${defenderPet.hp}/${defenderPet.maxHp}` +
                 `${faintMessage}` +
-                `\n\n⚡ **${attackerPet.petName} Energy:** ${attackerPet.stats.energy} (-10)` +
+                `${skillDisplay}` +
+                `\n\n⚡ **${attackerPet.petName} Energy:** ${attackerPet.stats.energy} (-${energyCost})` +
                 `${sleepMessage}`
             )
             .setTimestamp();

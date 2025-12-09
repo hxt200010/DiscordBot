@@ -53,13 +53,7 @@ async function generatePetEmbed(pet, userId, interaction) {
                 checkLevelUp(p);
             });
 
-            // Update local pet object for display
-            // applyWorkGains already updated pet.xp, pet.stats.hunger, pet.hp, pet.lastWorkUpdate
-            // We just need to update currentWorkCoins as applyWorkGains doesn't track that on the pet object directly in the same way?
-            // Wait, applyWorkGains does NOT update currentWorkCoins on the pet object.
             pet.currentWorkCoins = (pet.currentWorkCoins || 0) + gains.coins;
-
-            // Note: pet.xp, pet.level, pet.stats, pet.hp are already updated by applyWorkGains(pet) reference.
 
             workMessage = `\n⚔️ **Grinding:** Collected **${gains.coins} coins** & **${gains.xp.toFixed(2)} XP** since last check. (Total this session: **${pet.currentWorkCoins} coins**)`;
             if (gains.hungerLost > 0) workMessage += `\n📉 Stats: -${gains.hungerLost.toFixed(1)} Hunger`;
@@ -83,22 +77,77 @@ async function generatePetEmbed(pet, userId, interaction) {
             { name: 'Combat ⚔️', value: `AP: ${pet.attack || baseStats.attack} | DP: ${pet.defense || baseStats.defense}`, inline: false }
         );
 
+    // Add accessories display if pet has any
+    if (pet.accessories && pet.accessories.length > 0) {
+        const accessoryEmojis = {
+            'Sunglasses': '😎',
+            'Golden Gloves': '🥊',
+            'Royal Cape': '👑',
+            'Chaos Aura': '🔥'
+        };
+        const accessoryDisplay = pet.accessories.map(a => `${accessoryEmojis[a] || '✨'} ${a}`).join('\n');
+        embed.addFields({ name: '👕 Accessories', value: accessoryDisplay, inline: false });
+    }
+
+    // Add skills display if pet has any
+    if (pet.skills && pet.skills.length > 0) {
+        const skillEmojis = {
+            'Spin Dash': '🌀',
+            'Chaos Spear': '⚡',
+            'Hammer Strike': '🔨',
+            'Chaos Control': '⏱️',
+            'Iron Wall': '🛡️',
+            'Healing Factor': '💚',
+            'Iron Will': '💪',
+            'Ring Collector': '💰',
+            'Quick Learner': '📚'
+        };
+        const skillDisplay = pet.skills.map(s => `${skillEmojis[s] || '✨'} ${s}`).join('\n');
+        embed.addFields({ name: '📜 Skills', value: skillDisplay, inline: false });
+    }
+
     if (pet.isDead) {
         embed.addFields({ name: '💀 DECEASED', value: 'This pet has died. Use `/pet-action revive` with a Health Kit to bring them back.', inline: false });
     } else if (pet.boostActiveUntil && pet.boostActiveUntil > Date.now()) {
         embed.addFields({ name: '🔥 Boost Day Active!', value: 'Rewards increased!', inline: true });
     }
 
+    // Image handling with glasses support
     const extensions = ['.png', '.jpg', '.jpeg'];
     let imagePath = null;
     let fileName = null;
 
-    for (const ext of extensions) {
-        const testPath = path.join(__dirname, `../../Images/${pet.type}_pet${ext}`);
-        if (fs.existsSync(testPath)) {
-            imagePath = testPath;
-            fileName = `${pet.type}_pet${ext}`;
-            break;
+    // Define glasses image mappings
+    const glassesImages = {
+        'sonic': 'sonic_pet_with_glass.jpg',
+        'knuckles': 'knuckle_pet_with_glass.jpg',
+        'shadow': 'shadow_pet_glasses.jpg',
+        'amy': 'amy_rose_glass.jpg',
+        'amy rose': 'amy_rose_glass.jpg'
+    };
+
+    // Check if pet has showGlasses enabled and has Sunglasses accessory
+    const useGlasses = pet.showGlasses && pet.accessories && pet.accessories.includes('Sunglasses');
+
+    if (useGlasses && glassesImages[pet.type.toLowerCase()]) {
+        // Use glasses version
+        const glassesFile = glassesImages[pet.type.toLowerCase()];
+        const glassesPath = path.join(__dirname, `../../Images/${glassesFile}`);
+        if (fs.existsSync(glassesPath)) {
+            imagePath = glassesPath;
+            fileName = glassesFile;
+        }
+    }
+
+    // Fallback to normal image if glasses not available or not enabled
+    if (!imagePath) {
+        for (const ext of extensions) {
+            const testPath = path.join(__dirname, `../../Images/${pet.type}_pet${ext}`);
+            if (fs.existsSync(testPath)) {
+                imagePath = testPath;
+                fileName = `${pet.type}_pet${ext}`;
+                break;
+            }
         }
     }
 

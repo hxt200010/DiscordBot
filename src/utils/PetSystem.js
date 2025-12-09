@@ -161,7 +161,10 @@ class PetSystem {
             shield: petDoc.shield || 0,
             isSleeping: petDoc.isSleeping || false,
             sleepUntil: petDoc.sleepUntil || null,
-            sleepStart: petDoc.sleepStart || null
+            sleepStart: petDoc.sleepStart || null,
+            accessories: petDoc.accessories || [],
+            skills: petDoc.skills || [],
+            showGlasses: petDoc.showGlasses || false
         };
     }
 }

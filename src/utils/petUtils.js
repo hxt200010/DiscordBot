@@ -9,14 +9,27 @@ const calculateWorkGains = (pet) => {
 
     if (hoursWorked <= 0) return { coins: 0, xp: 0, timeWorked: 0, hungerLost: 0, hpLost: 0, isDead: false };
 
+    // Get pet skills for passive bonuses
+    const skills = pet.skills || [];
+
     // Formulas:
     // Coins = 10 + (Level * 5) per hour
     // XP = 2.5 per hour
     // Hunger Loss = 1 per hour
     // HP Loss (if Hunger <= 0) = 10 per hour
 
-    const coinsEarned = Math.floor((10 + (pet.level * 5)) * hoursWorked);
-    const xpEarned = 2.5 * hoursWorked;
+    let coinsEarned = Math.floor((10 + (pet.level * 5)) * hoursWorked);
+    let xpEarned = 2.5 * hoursWorked;
+
+    // Apply Ring Collector skill: +20% coins
+    if (skills.includes('Ring Collector')) {
+        coinsEarned = Math.floor(coinsEarned * 1.2);
+    }
+
+    // Apply Quick Learner skill: +25% XP
+    if (skills.includes('Quick Learner')) {
+        xpEarned = xpEarned * 1.25;
+    }
 
     const hungerLost = 1 * hoursWorked;
     let hpLost = 0;
@@ -32,6 +45,12 @@ const calculateWorkGains = (pet) => {
         // Time spent starving
         const starvingHours = hoursWorked - timeToStarve;
         hpLost = 10 * starvingHours;
+    }
+
+    // Apply Healing Factor skill: +5 HP/hour (counters HP loss)
+    if (skills.includes('Healing Factor')) {
+        const hpHealed = 5 * hoursWorked;
+        hpLost = Math.max(0, hpLost - hpHealed);
     }
 
     // Check for death

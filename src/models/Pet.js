@@ -26,7 +26,10 @@ const petSchema = new mongoose.Schema({
     shield: { type: Number, default: 0 },
     isSleeping: { type: Boolean, default: false },
     sleepUntil: { type: Number, default: null },
-    sleepStart: { type: Number, default: null }
+    sleepStart: { type: Number, default: null },
+    accessories: [{ type: String }],  // Equipped cosmetic items
+    skills: [{ type: String }],  // Learned skills
+    showGlasses: { type: Boolean, default: false }  // Toggle for sunglasses display
 });
 
 module.exports = mongoose.model('Pet', petSchema);

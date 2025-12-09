@@ -6,7 +6,21 @@ const userSchema = new mongoose.Schema({
     lastDaily: { type: String, default: null },
     lastDailyReward: { type: String, default: null },
     dailyAmount: { type: Number, default: 0 },
-    isShielded: { type: Boolean, default: false }
+    isShielded: { type: Boolean, default: false },
+    lastWheelSpin: { type: Date, default: null },
+    // Achievement tracking
+    achievements: [{ type: String }],  // Unlocked achievement IDs
+    stats: {
+        battlesWon: { type: Number, default: 0 },
+        petsAdopted: { type: Number, default: 0 },
+        coinsEarned: { type: Number, default: 0 },
+        skillsLearned: { type: Number, default: 0 },
+        boxesOpened: { type: Number, default: 0 },
+        accessoriesEquipped: { type: Number, default: 0 },
+        jackpotsHit: { type: Number, default: 0 },
+        wheelStreak: { type: Number, default: 0 },
+        lastWheelDate: { type: String, default: null }
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
