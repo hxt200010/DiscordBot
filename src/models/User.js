@@ -20,7 +20,14 @@ const userSchema = new mongoose.Schema({
         jackpotsHit: { type: Number, default: 0 },
         wheelStreak: { type: Number, default: 0 },
         lastWheelDate: { type: String, default: null }
-    }
+    },
+    // Bounty tracking
+    bountyDate: { type: String, default: null },
+    bountyProgress: { type: Object, default: {} },
+    bountiesClaimed: [{ type: String }],
+    // Chaos Emeralds
+    chaosEmeralds: { type: Number, default: 0 },
+    hasSuperForm: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model('User', userSchema);

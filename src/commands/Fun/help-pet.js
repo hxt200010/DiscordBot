@@ -110,12 +110,15 @@ function createCommandsEmbed() {
                     '`/buy <item> <qty>` - Purchase items\n' +
                     '`/inventory` - View your items\n' +
                     '`/open [qty]` - Open Mystery Boxes\n' +
-                    '`/spin` - Daily wheel spin (free, 24h cooldown)',
+                    '`/spin` - Daily wheel spin (free)\n' +
+                    '`/gift <user> <item>` - Send items to friends',
                 inline: false
             },
             {
-                name: 'Progress & Stats', value:
-                    '`/achievements` - View your achievements & progress\n' +
+                name: 'Progress & Rewards', value:
+                    '`/achievements` - View your achievements\n' +
+                    '`/bounty` - Daily challenges for coins\n' +
+                    '`/chaos-emeralds` - Collect 7 for Super Form!\n' +
                     '`/balance` - Check your coins\n' +
                     '`/daily` - Claim daily reward',
                 inline: false

@@ -24,8 +24,8 @@ module.exports = {
                     inline: false
                 },
                 {
-                    name: 'Economy',
-                    value: '`balance, daily, give, achievements, spin`',
+                    name: 'Economy & Rewards',
+                    value: '`balance, daily, give, gift, achievements, spin, bounty, chaos-emeralds`',
                     inline: false
                 },
                 {
@@ -40,7 +40,7 @@ module.exports = {
                 },
                 {
                     name: 'Education',
-                    value: '`learn, learnai, trivia, datastructure, interview, job-interview`',
+                    value: '`learn, learncs, learnai, learn-general, trivia, datastructure, interview, job-interview`',
                     inline: false
                 },
                 {

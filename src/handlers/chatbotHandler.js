@@ -40,9 +40,17 @@ module.exports = async (client, message) => {
         const result = await openai.createChatCompletion({
             model: 'gpt-4o-mini',
             messages: conversationLog,
+            max_tokens: 500  // Limit response length
         });
 
-        message.reply(result.data.choices[0].message.content);
+        let response = result.data.choices[0].message.content;
+
+        // Discord has a 2000 character limit
+        if (response.length > 1990) {
+            response = response.substring(0, 1987) + '...';
+        }
+
+        message.reply(response);
     } catch (error) {
         console.error(`Error in chatbot handler: ${error}`);
     }
