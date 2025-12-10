@@ -1,4 +1,10 @@
-const calculateWorkGains = (pet) => {
+/**
+ * Calculate work gains for a pet, including passive item effects
+ * @param {Object} pet - The pet object
+ * @param {Array} userInventory - Optional: User's inventory items for passive bonuses
+ * @param {Object} userBoosts - Optional: User's active boosts (e.g., speedShoesBoost)
+ */
+const calculateWorkGains = (pet, userInventory = [], userBoosts = {}) => {
     if (!pet.isWorking || !pet.lastWorkUpdate) {
         return { coins: 0, xp: 0, timeWorked: 0, hungerLost: 0, hpLost: 0, isDead: false };
     }
@@ -12,6 +18,9 @@ const calculateWorkGains = (pet) => {
     // Get pet skills for passive bonuses
     const skills = pet.skills || [];
 
+    // Helper to check if user has item in inventory
+    const hasItem = (itemName) => userInventory.some(i => i.name === itemName);
+
     // Formulas:
     // Coins = 10 + (Level * 5) per hour
     // XP = 2.5 per hour
@@ -24,6 +33,26 @@ const calculateWorkGains = (pet) => {
     // Apply Ring Collector skill: +20% coins
     if (skills.includes('Ring Collector')) {
         coinsEarned = Math.floor(coinsEarned * 1.2);
+    }
+
+    // Apply PASSIVE ITEM BONUSES
+
+    // Pet Weapon: +10% coins from grinding
+    if (hasItem('Pet Weapon')) {
+        coinsEarned = Math.floor(coinsEarned * 1.1);
+    }
+
+    // Golden Ring: +50% all coin generation
+    if (hasItem('Golden Ring')) {
+        coinsEarned = Math.floor(coinsEarned * 1.5);
+    }
+
+    // Speed Shoes boost: +10% per stack (max 30%)
+    if (userBoosts.speedShoesBoost && 
+        userBoosts.speedShoesBoost.stacks > 0 && 
+        userBoosts.speedShoesBoost.expiresAt > now) {
+        const speedBonus = 1 + (userBoosts.speedShoesBoost.stacks * 0.1);
+        coinsEarned = Math.floor(coinsEarned * speedBonus);
     }
 
     // Apply Quick Learner skill: +25% XP
@@ -45,6 +74,11 @@ const calculateWorkGains = (pet) => {
         // Time spent starving
         const starvingHours = hoursWorked - timeToStarve;
         hpLost = 10 * starvingHours;
+
+        // Pet Armor: -50% starvation HP loss
+        if (hasItem('Pet Armor')) {
+            hpLost = Math.floor(hpLost * 0.5);
+        }
     }
 
     // Apply Healing Factor skill: +5 HP/hour (counters HP loss)
@@ -57,8 +91,6 @@ const calculateWorkGains = (pet) => {
     let isDead = false;
     if ((pet.hp - hpLost) <= 0) {
         isDead = true;
-        // Cap HP loss to exact death amount for display, or just let it go negative internally then fix?
-        // Let's just flag it. The caller will handle setting HP to 0.
     }
 
     // Check for level up
@@ -74,8 +106,14 @@ const calculateWorkGains = (pet) => {
     };
 };
 
-const applyWorkGains = (pet) => {
-    const gains = calculateWorkGains(pet);
+/**
+ * Apply work gains to a pet and update its state
+ * @param {Object} pet - The pet object
+ * @param {Array} userInventory - Optional: User's inventory items for passive bonuses
+ * @param {Object} userBoosts - Optional: User's active boosts
+ */
+const applyWorkGains = (pet, userInventory = [], userBoosts = {}) => {
+    const gains = calculateWorkGains(pet, userInventory, userBoosts);
 
     if (gains.timeWorked > 0) {
         pet.xp += gains.xp;
@@ -95,9 +133,6 @@ const applyWorkGains = (pet) => {
             pet.lastWorkUpdate = null;
         } else {
             // Only update timestamp if still alive and working
-            // If we stopped working, the caller handles nulling lastWorkUpdate
-            // But applyWorkGains is called when checking status too.
-            // So we update timestamp to "now" so we don't re-calculate the same decay next time.
             pet.lastWorkUpdate = Date.now();
         }
 
@@ -145,3 +180,4 @@ const checkLevelUp = (pet) => {
 };
 
 module.exports = { calculateWorkGains, applyWorkGains, checkLevelUp };
+

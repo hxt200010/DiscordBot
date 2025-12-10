@@ -18,6 +18,8 @@ module.exports = {
             required: true,
             choices: [
                 { name: 'Feed 🍎 (Needs Pet Food)', value: 'feed' },
+                { name: 'Treat 🌭 (Needs Chili Dog)', value: 'treat' },
+                { name: 'Energize ⚡ (Needs Energy Drink)', value: 'energize' },
                 { name: 'Play 🎾', value: 'play' },
                 { name: 'Pat 👋', value: 'pat' },
                 { name: 'Sleep 💤', value: 'sleep' },
@@ -159,7 +161,32 @@ module.exports = {
                         actionResult = `Fed (+20 Hunger, +1 Energy)`;
                         itemUsed = true;
                     } else {
-                        actionResult = `❌ No Food`;
+                        actionResult = `❌ No Pet Food`;
+                    }
+                    break;
+
+                case 'treat':
+                    if (countItem('Chili Dog') > 0) {
+                        await useItem('Chili Dog');
+                        pet.stats.hunger = cap(pet.stats.hunger + 30);
+                        pet.stats.affection = cap(pet.stats.affection + 5);
+                        xpGain = 5;
+                        actionResult = `Treated (+30 Hunger, +5 Affection)`;
+                        itemUsed = true;
+                    } else {
+                        actionResult = `❌ No Chili Dog`;
+                    }
+                    break;
+
+                case 'energize':
+                    if (countItem('Energy Drink') > 0) {
+                        await useItem('Energy Drink');
+                        pet.stats.energy = cap(pet.stats.energy + 25);
+                        xpGain = 3;
+                        actionResult = `Energized (+25 Energy)`;
+                        itemUsed = true;
+                    } else {
+                        actionResult = `❌ No Energy Drink`;
                     }
                     break;
 

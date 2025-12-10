@@ -16,9 +16,10 @@ module.exports = {
             .setColor('#FFA500');
 
         shopItems.forEach(item => {
+            const usageText = item.usage ? `\n${item.usage}` : '';
             embed.addFields({
-                name: `${item.name} — $${item.price}`,
-                value: item.description,
+                name: `${item.name} — $${item.price.toLocaleString()}`,
+                value: `${item.description}${usageText}`,
                 inline: false
             });
         });

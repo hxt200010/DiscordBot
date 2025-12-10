@@ -1,5 +1,6 @@
 const { Client, Interaction, EmbedBuilder } = require('discord.js');
 const economySystem = require('../../utils/EconomySystem');
+const shopItems = require('../../utils/ShopItems');
 
 module.exports = {
     name: 'inventory',
@@ -19,13 +20,8 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('🎒 Your Inventory')
-            .setColor('#3498db');
-
-        // Group items by name or list individually?
-        // Since guns have durability, listing individually might be better if they have different states.
-        // But for cleaner UI, maybe group?
-        // "Inventory shows... durability, quantities".
-        // Let's list them. If too many, we might hit embed limits, but for now it's fine.
+            .setColor('#3498db')
+            .setDescription('Here are your items and how to use them:');
 
         const counts = {};
         inventory.forEach(item => {
@@ -37,16 +33,18 @@ module.exports = {
             const count = items.length;
             let details = '';
 
+            // Get usage info from ShopItems
+            const shopItem = shopItems.find(si => si.name === name);
+            const usageText = shopItem?.usage || '';
+
             if (items[0].durability !== undefined) {
-                // Show durability for each instance or average?
-                // "Gun (x2) - Durability: 5/5, 2/5"
                 const durabilities = items.map(i => `${i.durability}`).join(', ');
-                details = `\nDurability: ${durabilities}`;
+                details = `\n⚙️ Durability: ${durabilities}`;
             }
 
             embed.addFields({
                 name: `${name} (x${count})`,
-                value: `${items[0].description}${details}`,
+                value: `${items[0].description}${details}${usageText ? `\n${usageText}` : ''}`,
                 inline: false
             });
         }

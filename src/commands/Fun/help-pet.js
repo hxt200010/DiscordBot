@@ -218,46 +218,66 @@ function createSkillsEmbed() {
 }
 
 function createShopEmbed() {
-    const petItems = shopItems.filter(i =>
-        i.type === 'consumable' || i.type === 'skill' || i.type === 'skill_choice' || i.type === 'defense'
-    ).filter(i =>
-        i.name.includes('Pet') || i.name.includes('Energy') || i.name.includes('Chili') ||
-        i.name.includes('Health') || i.name.includes('Skill') || i.name.includes('Training')
-    );
-
     return new EmbedBuilder()
-        .setTitle('Pet Shop Items')
+        .setTitle('🛒 Pet Shop Items & How to Use Them')
         .setColor('Orange')
         .addFields(
             {
-                name: 'Consumables', value:
+                name: '🍖 Food & Healing', value:
                     '**Pet Food** ($50) - +20 Hunger\n' +
+                    '└ `/pet-action action:feed`\n' +
                     '**Chili Dog** ($150) - +30 Hunger, +5 Affection\n' +
+                    '└ `/pet-action action:treat`\n' +
                     '**Energy Drink** ($100) - +25 Energy\n' +
-                    '**Health Pack** ($500) - +50 HP',
+                    '└ `/pet-action action:energize`\n' +
+                    '**Health Pack** ($500) - +50 HP\n' +
+                    '└ `/pet-action action:heal`',
                 inline: false
             },
             {
-                name: 'Combat Items', value:
-                    '**Pet Shield** ($1,000) - 50% damage reduction, 10 uses\n' +
+                name: '⚔️ Combat Items', value:
+                    '**Pet Shield** ($1,000) - 50% dmg reduction, 10 uses\n' +
+                    '└ `/pet-action action:equip`\n' +
                     '**Health Kit** ($3,000) - Revive dead pet at 50% HP\n' +
-                    '**Training Weights** ($2,500) - +5 Defense permanently',
+                    '└ `/pet-action action:revive`\n' +
+                    '**Training Weights** ($2,500) - +5 Defense permanently\n' +
+                    '└ `/use-item item:Training Weights pet:<name>`',
                 inline: false
             },
             {
-                name: 'Skill Scrolls', value:
+                name: '👟 Boosts & Passives', value:
+                    '**Speed Shoes** ($2,000) - +10% grind speed, 24h, stacks 3x\n' +
+                    '└ `/use-item item:Speed Shoes` (activates immediately)\n' +
+                    '**Lucky Charm** ($800) - +10% steal/shoot success\n' +
+                    '└ Passive: Auto-active in inventory\n' +
+                    '**Pet Armor** ($1,500) - -50% starvation damage\n' +
+                    '└ Passive: Auto-active in inventory\n' +
+                    '**Pet Weapon** ($1,500) - +10% grind coins\n' +
+                    '└ Passive: Auto-active in inventory\n' +
+                    '**Golden Ring** ($10,000) - +50% all coin generation\n' +
+                    '└ Passive: Auto-active in inventory',
+                inline: false
+            },
+            {
+                name: '📜 Skill Scrolls', value:
                     '**Pet Skill Scroll** ($7,500) - Learn random skill\n' +
-                    '**Legendary Skill Scroll** ($20,000) - Choose any skill',
+                    '└ `/teach pet:<pet_name>`\n' +
+                    '**Legendary Skill Scroll** ($20,000) - Choose any skill\n' +
+                    '└ `/teach pet:<pet_name> scroll:legendary`',
                 inline: false
             },
             {
-                name: 'Premium Items', value:
-                    '**Golden Ring** ($10,000) - +50% coin generation\n' +
-                    '**Ultimate Serum** ($50,000) - +25% all base stats',
+                name: '🎁 Special Items', value:
+                    '**Mystery Box** ($5,000) - Random rewards!\n' +
+                    '└ `/open [quantity]`\n' +
+                    '**Ultimate Serum** ($50,000) - +25% all base stats\n' +
+                    '└ `/use-item item:Ultimate Serum pet:<name>`\n' +
+                    '**Chaos Emerald Shard** ($15,000) - Collect 7\n' +
+                    '└ `/chaos-emeralds` to check progress',
                 inline: false
             }
         )
-        .setFooter({ text: 'Use /shop to see all items, /buy to purchase' });
+        .setFooter({ text: 'Use /shop to see full list • /buy <item> <qty> to purchase' });
 }
 
 function createAccessoriesEmbed() {

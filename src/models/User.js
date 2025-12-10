@@ -27,7 +27,12 @@ const userSchema = new mongoose.Schema({
     bountiesClaimed: [{ type: String }],
     // Chaos Emeralds
     chaosEmeralds: { type: Number, default: 0 },
-    hasSuperForm: { type: Boolean, default: false }
+    hasSuperForm: { type: Boolean, default: false },
+    // Speed Shoes boost tracking
+    speedShoesBoost: {
+        stacks: { type: Number, default: 0 },
+        expiresAt: { type: Number, default: null }
+    }
 });
 
 module.exports = mongoose.model('User', userSchema);
