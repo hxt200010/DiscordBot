@@ -10,8 +10,8 @@ const MONSTERS = {
             name: 'Motobug',
             emoji: '🐞',
             description: 'A simple ladybug-shaped Badnik. Easy prey!',
-            hp: { min: 100, max: 150 },
-            timeLimit: 15,
+            hp: { min: 500, max: 750 },
+            timeLimit: 20,
             rewards: { coins: { min: 50, max: 100 }, xp: 10 },
             art: '```\n  🐞\n /███\\\n```'
         },
@@ -19,8 +19,8 @@ const MONSTERS = {
             name: 'Buzz Bomber',
             emoji: '🐝',
             description: 'A wasp-like robot that buzzes around annoyingly.',
-            hp: { min: 120, max: 180 },
-            timeLimit: 15,
+            hp: { min: 600, max: 900 },
+            timeLimit: 20,
             rewards: { coins: { min: 60, max: 120 }, xp: 12 },
             art: '```\n  🐝💨\n~~~===>\n```'
         },
@@ -28,8 +28,8 @@ const MONSTERS = {
             name: 'Crabmeat',
             emoji: '🦀',
             description: 'A crab robot that pinches but isn\'t very tough.',
-            hp: { min: 100, max: 160 },
-            timeLimit: 15,
+            hp: { min: 500, max: 800 },
+            timeLimit: 20,
             rewards: { coins: { min: 55, max: 110 }, xp: 11 },
             art: '```\n 🦀🦀🦀\n(  ᐛ  )\n```'
         },
@@ -37,8 +37,8 @@ const MONSTERS = {
             name: 'Chopper',
             emoji: '🐟',
             description: 'A piranha Badnik that leaps from the water!',
-            hp: { min: 80, max: 140 },
-            timeLimit: 15,
+            hp: { min: 400, max: 700 },
+            timeLimit: 20,
             rewards: { coins: { min: 45, max: 95 }, xp: 8 },
             art: '```\n  🐟💦\n ><(((º>\n```'
         }
@@ -50,8 +50,8 @@ const MONSTERS = {
             name: 'Badnik Swarm',
             emoji: '🤖',
             description: 'A group of Badniks attacking together! Watch out!',
-            hp: { min: 300, max: 400 },
-            timeLimit: 20,
+            hp: { min: 1500, max: 2000 },
+            timeLimit: 25,
             rewards: { coins: { min: 150, max: 250 }, xp: 30 },
             art: '```\n🤖🤖🤖🤖\n████████\n🤖🤖🤖🤖\n```'
         },
@@ -59,8 +59,8 @@ const MONSTERS = {
             name: 'Egg Pawn',
             emoji: '🥚',
             description: 'Eggman\'s basic robot soldier. Tougher than Badniks!',
-            hp: { min: 350, max: 450 },
-            timeLimit: 20,
+            hp: { min: 1750, max: 2250 },
+            timeLimit: 25,
             rewards: { coins: { min: 180, max: 280 }, xp: 35 },
             art: '```\n  🥚\n [⚙️]\n / \\\n```'
         },
@@ -68,8 +68,8 @@ const MONSTERS = {
             name: 'Spiny',
             emoji: '🦔',
             description: 'A spiked robot that\'s hard to approach!',
-            hp: { min: 280, max: 380 },
-            timeLimit: 20,
+            hp: { min: 1400, max: 1900 },
+            timeLimit: 25,
             rewards: { coins: { min: 140, max: 240 }, xp: 28 },
             art: '```\n⚡🦔⚡\n/\\▓▓/\\\n```'
         },
@@ -77,8 +77,8 @@ const MONSTERS = {
             name: 'Caterkiller',
             emoji: '🐛',
             description: 'A segmented caterpillar robot. Each segment is armored!',
-            hp: { min: 400, max: 500 },
-            timeLimit: 20,
+            hp: { min: 2000, max: 2500 },
+            timeLimit: 25,
             rewards: { coins: { min: 200, max: 300 }, xp: 40 },
             art: '```\n🐛-🐛-🐛-🐛\n===========>\n```'
         }
@@ -90,8 +90,8 @@ const MONSTERS = {
             name: 'Egg Hammer',
             emoji: '🔨',
             description: 'A massive hammer-wielding Egg Pawn. Hits HARD!',
-            hp: { min: 800, max: 1000 },
-            timeLimit: 25,
+            hp: { min: 4000, max: 5000 },
+            timeLimit: 30,
             rewards: { coins: { min: 400, max: 600 }, xp: 80 },
             art: '```\n   🔨\n  [🥚]\n  /██\\\n```'
         },
@@ -99,8 +99,8 @@ const MONSTERS = {
             name: 'E-100 Alpha',
             emoji: '🤖',
             description: 'One of Eggman\'s elite E-Series robots!',
-            hp: { min: 900, max: 1100 },
-            timeLimit: 25,
+            hp: { min: 4500, max: 5500 },
+            timeLimit: 30,
             rewards: { coins: { min: 500, max: 700 }, xp: 90 },
             art: '```\n ⚡🤖⚡\n[█████]\n  🦿🦿\n```'
         },
@@ -108,8 +108,8 @@ const MONSTERS = {
             name: 'Chaos 0',
             emoji: '💧',
             description: 'A watery creature of pure chaos energy!',
-            hp: { min: 1000, max: 1200 },
-            timeLimit: 25,
+            hp: { min: 5000, max: 6000 },
+            timeLimit: 30,
             rewards: { coins: { min: 550, max: 750 }, xp: 100 },
             art: '```\n  💧💧\n 💧😈💧\n💧💧💧💧\n```'
         },
@@ -117,8 +117,8 @@ const MONSTERS = {
             name: 'Shadow Android',
             emoji: '🦔',
             description: 'A robotic copy of the Ultimate Lifeform!',
-            hp: { min: 950, max: 1150 },
-            timeLimit: 25,
+            hp: { min: 4750, max: 5750 },
+            timeLimit: 30,
             rewards: { coins: { min: 520, max: 720 }, xp: 95 },
             art: '```\n  ⬛🔴\n [🦔]\n ⚡⚡⚡\n```'
         }
@@ -130,8 +130,8 @@ const MONSTERS = {
             name: 'Death Egg Robot',
             emoji: '🤖',
             description: 'Eggman\'s ultimate creation! A towering mechanical menace!',
-            hp: { min: 2000, max: 2500 },
-            timeLimit: 30,
+            hp: { min: 10000, max: 12500 },
+            timeLimit: 45,
             rewards: { coins: { min: 1000, max: 1500 }, xp: 200 },
             art: '```\n  🔴👁️🔴\n ███████\n[███🤖███]\n  🦿  🦿\n```'
         },
@@ -139,8 +139,8 @@ const MONSTERS = {
             name: 'Perfect Chaos',
             emoji: '🌊',
             description: 'The god of destruction in its ultimate form!',
-            hp: { min: 2200, max: 2800 },
-            timeLimit: 30,
+            hp: { min: 11000, max: 14000 },
+            timeLimit: 45,
             rewards: { coins: { min: 1200, max: 1800 }, xp: 250 },
             art: '```\n🌊🌊😈🌊🌊\n💧💧💧💧💧\n```'
         },
@@ -148,8 +148,8 @@ const MONSTERS = {
             name: 'Mephiles the Dark',
             emoji: '👁️',
             description: 'A being of pure darkness. Truly terrifying!',
-            hp: { min: 2500, max: 3000 },
-            timeLimit: 30,
+            hp: { min: 12500, max: 15000 },
+            timeLimit: 45,
             rewards: { coins: { min: 1500, max: 2000 }, xp: 300 },
             art: '```\n  🖤👁️🖤\n ⬛⬛⬛⬛\n💜💜💜💜💜\n```'
         },
@@ -157,8 +157,8 @@ const MONSTERS = {
             name: 'Metal Overlord',
             emoji: '🦾',
             description: 'Metal Sonic\'s ultimate transformation! ALL LIVING THINGS KNEEL!',
-            hp: { min: 2800, max: 3500 },
-            timeLimit: 30,
+            hp: { min: 14000, max: 17500 },
+            timeLimit: 45,
             rewards: { coins: { min: 1800, max: 2500 }, xp: 350 },
             art: '```\n🔴⚡🦾⚡🔴\n[███████]\n 🔥🔥🔥🔥\n```'
         }
