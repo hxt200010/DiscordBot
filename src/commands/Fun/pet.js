@@ -6,6 +6,7 @@ const petConfig = require('../../utils/petConfig');
 const EconomySystem = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
 const { applyWorkGains, checkLevelUp } = require('../../utils/petUtils');
+const User = require('../../models/User');
 
 function createBar(value, max = 100) {
     const percentage = value / max;
@@ -36,7 +37,11 @@ async function generatePetEmbed(pet, userId, interaction) {
     // Apply pending work gains
     let workMessage = "";
     if (pet.isWorking) {
-        const gains = applyWorkGains(pet);
+        // Fetch user inventory and boosts for grinding calculations
+        const inventory = await EconomySystem.getInventory(userId);
+        const user = await User.findOne({ userId });
+        const userBoosts = { speedShoesBoost: user?.speedShoesBoost };
+        const gains = applyWorkGains(pet, inventory, userBoosts);
         if (gains.coins > 0 || gains.xp > 0) {
             // Update economy with coins
             await EconomySystem.addBalance(userId, gains.coins);

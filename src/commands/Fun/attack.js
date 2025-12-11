@@ -1,5 +1,7 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const PetSystem = require('../../utils/PetSystem');
+const EconomySystem = require('../../utils/EconomySystem');
+const User = require('../../models/User');
 
 const cooldowns = new Map();
 
@@ -258,8 +260,10 @@ module.exports = {
             // Stop Grinding if active
             if (attackerPet.isWorking) {
                 const { applyWorkGains } = require('../../utils/petUtils');
-                const EconomySystem = require('../../utils/EconomySystem');
-                const gains = applyWorkGains(attackerPet);
+                const inventory = await EconomySystem.getInventory(attackerId);
+                const user = await User.findOne({ userId: attackerId });
+                const userBoosts = { speedShoesBoost: user?.speedShoesBoost };
+                const gains = applyWorkGains(attackerPet, inventory, userBoosts);
                 attackerPet.isWorking = false;
                 attackerPet.lastWorkUpdate = null;
                 await EconomySystem.addBalance(attackerId, gains.coins);

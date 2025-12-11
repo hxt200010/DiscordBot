@@ -110,6 +110,14 @@ module.exports = [
         type: 'consumable',
         tier: 'medium'
     },
+    {
+        name: 'Monster Lure',
+        price: 500,
+        description: 'Guarantees a Rare or Legendary monster spawn in your next hunt!',
+        usage: '📋 Use: Start `/monster-hunt` with this item in inventory to attract powerful monsters.',
+        type: 'consumable',
+        tier: 'medium'
+    },
 
     // ==================== EXPENSIVE TIER ($5,000+) ====================
     {

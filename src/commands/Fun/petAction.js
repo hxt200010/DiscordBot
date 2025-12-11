@@ -4,6 +4,7 @@ const petConfig = require('../../utils/petConfig');
 const { applyWorkGains, checkLevelUp } = require('../../utils/petUtils');
 const EconomySystem = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
+const User = require('../../models/User');
 
 const cooldowns = new Map();
 
@@ -100,6 +101,8 @@ module.exports = {
         }
 
         const inventory = await EconomySystem.getInventory(userId);
+        const user = await User.findOne({ userId });
+        const userBoosts = { speedShoesBoost: user?.speedShoesBoost };
         // Helper to check item count (simple version, assumes inventory is array of objects)
         const countItem = (itemName) => inventory.filter(i => i.name.toLowerCase() === itemName.toLowerCase()).length;
         const useItem = async (itemName) => await EconomySystem.removeItem(userId, itemName);
@@ -223,7 +226,7 @@ module.exports = {
                     } else {
                         // Stop Grinding if active
                         if (pet.isWorking) {
-                            const gains = applyWorkGains(pet);
+                            const gains = applyWorkGains(pet, inventory, userBoosts);
                             pet.isWorking = false;
                             pet.lastWorkUpdate = null;
                             await EconomySystem.addBalance(userId, gains.coins);
@@ -284,7 +287,7 @@ module.exports = {
 
                 case 'grind':
                     if (pet.isWorking) {
-                        const gains = applyWorkGains(pet);
+                        const gains = applyWorkGains(pet, inventory, userBoosts);
                         pet.isWorking = false;
                         pet.lastWorkUpdate = null;
                         await EconomySystem.addBalance(userId, gains.coins);

@@ -32,7 +32,15 @@ const userSchema = new mongoose.Schema({
     speedShoesBoost: {
         stacks: { type: Number, default: 0 },
         expiresAt: { type: Number, default: null }
-    }
+    },
+    // Monster Hunt stats
+    monsterStats: {
+        totalKills: { type: Number, default: 0 },
+        totalDamage: { type: Number, default: 0 },
+        highestDamage: { type: Number, default: 0 }
+    },
+    // Pet chat conversation memory (last 5 messages per pet)
+    petChatHistory: { type: Map, of: Array, default: new Map() }
 });
 
 module.exports = mongoose.model('User', userSchema);

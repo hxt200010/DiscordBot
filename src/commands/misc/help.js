@@ -20,7 +20,7 @@ module.exports = {
             .addFields([
                 {
                     name: 'Pet System',
-                    value: '`adopt, pet, pet-action, pet-list, sell-pet, attack, equip, teach, pet-glasses, help-pet`',
+                    value: '`adopt, pet, pet-action, pet-list, sell-pet, attack, equip, teach, pet-glasses, pet-chat, help-pet`',
                     inline: false
                 },
                 {
@@ -35,7 +35,7 @@ module.exports = {
                 },
                 {
                     name: 'Fun & Games',
-                    value: '`shadow, meme, say, blackjack, mine, riddle, cipher, sudoku, hangman`',
+                    value: '`shadow, meme, say, blackjack, mine, riddle, cipher, sudoku, hangman, monster-hunt, monster-stats`',
                     inline: false
                 },
                 {
