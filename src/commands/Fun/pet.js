@@ -34,13 +34,14 @@ async function generatePetEmbed(pet, userId, interaction) {
         pet.hp = pet.maxHp;
     }
 
+    // Fetch user inventory and boosts (for grinding and boost display)
+    const inventory = await EconomySystem.getInventory(userId);
+    const user = await User.findOne({ userId });
+    const userBoosts = { speedShoesBoost: user?.speedShoesBoost };
+
     // Apply pending work gains
     let workMessage = "";
     if (pet.isWorking) {
-        // Fetch user inventory and boosts for grinding calculations
-        const inventory = await EconomySystem.getInventory(userId);
-        const user = await User.findOne({ userId });
-        const userBoosts = { speedShoesBoost: user?.speedShoesBoost };
         const gains = applyWorkGains(pet, inventory, userBoosts);
         if (gains.coins > 0 || gains.xp > 0) {
             // Update economy with coins
@@ -109,6 +110,35 @@ async function generatePetEmbed(pet, userId, interaction) {
         };
         const skillDisplay = pet.skills.map(s => `${skillEmojis[s] || '✨'} ${s}`).join('\n');
         embed.addFields({ name: '📜 Skills', value: skillDisplay, inline: false });
+    }
+
+    // Add active boosts display
+    const activeBoosts = [];
+    
+    // Speed Shoes boost
+    if (userBoosts.speedShoesBoost && 
+        userBoosts.speedShoesBoost.stacks > 0 && 
+        userBoosts.speedShoesBoost.expiresAt > Date.now()) {
+        const hoursLeft = Math.ceil((userBoosts.speedShoesBoost.expiresAt - Date.now()) / (60 * 60 * 1000));
+        activeBoosts.push(`👟 Speed Shoes x${userBoosts.speedShoesBoost.stacks} (+${userBoosts.speedShoesBoost.stacks * 10}% coins) - ${hoursLeft}h left`);
+    }
+
+    // Check for passive items in inventory
+    const passiveItems = {
+        'Pet Weapon': { emoji: '🗡️', effect: '+10% grinding coins' },
+        'Pet Armor': { emoji: '🛡️', effect: '-50% starvation HP loss' },
+        'Golden Ring': { emoji: '💍', effect: '+50% all coin generation' },
+        'Lucky Charm': { emoji: '🍀', effect: 'Increased luck' }
+    };
+
+    for (const [itemName, info] of Object.entries(passiveItems)) {
+        if (inventory.some(i => i.name === itemName)) {
+            activeBoosts.push(`${info.emoji} ${itemName} (${info.effect})`);
+        }
+    }
+
+    if (activeBoosts.length > 0) {
+        embed.addFields({ name: '✨ Active Boosts & Items', value: activeBoosts.join('\n'), inline: false });
     }
 
     if (pet.isDead) {
