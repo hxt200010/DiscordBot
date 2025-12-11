@@ -3,8 +3,8 @@ const EconomySystem = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
 const petConfig = require('../../utils/petConfig');
 
-// Items that can be used with this command
-const USABLE_ITEMS = ['Speed Shoes', 'Training Weights', 'Ultimate Serum'];
+// Items that can be used with this command (Speed Shoes now auto-activates on purchase)
+const USABLE_ITEMS = ['Training Weights', 'Ultimate Serum'];
 
 module.exports = {
     name: 'use-item',
@@ -79,52 +79,6 @@ module.exports = {
         let embed;
 
         switch (itemName) {
-            case 'Speed Shoes': {
-                // Activate Speed Shoes boost - stacks up to 3x
-                await EconomySystem.removeItem(userId, 'Speed Shoes');
-
-                // Get or create user data for tracking active boosts
-                let user = await require('../../models/User').findOne({ userId });
-                if (!user) {
-                    user = await require('../../models/User').create({ userId });
-                }
-
-                // Initialize speedShoesBoost if not present
-                if (!user.speedShoesBoost) {
-                    user.speedShoesBoost = { stacks: 0, expiresAt: null };
-                }
-
-                // Add a stack (max 3)
-                const now = Date.now();
-                const duration = 24 * 60 * 60 * 1000; // 24 hours
-
-                // If expired or not active, reset
-                if (!user.speedShoesBoost.expiresAt || user.speedShoesBoost.expiresAt < now) {
-                    user.speedShoesBoost = { stacks: 1, expiresAt: now + duration };
-                } else {
-                    // Add stack, max 3
-                    user.speedShoesBoost.stacks = Math.min(3, user.speedShoesBoost.stacks + 1);
-                    // Extend expiry
-                    user.speedShoesBoost.expiresAt = now + duration;
-                }
-
-                await user.save();
-
-                const bonusPercent = user.speedShoesBoost.stacks * 10;
-                const hoursLeft = Math.ceil((user.speedShoesBoost.expiresAt - now) / (60 * 60 * 1000));
-
-                embed = new EmbedBuilder()
-                    .setColor('Blue')
-                    .setTitle('👟 Speed Shoes Activated!')
-                    .setDescription(
-                        `You now have **${user.speedShoesBoost.stacks}x** Speed Shoes active!\n\n` +
-                        `🚀 **+${bonusPercent}%** coin grinding speed\n` +
-                        `⏰ Expires in **${hoursLeft} hours**`
-                    )
-                    .setFooter({ text: user.speedShoesBoost.stacks < 3 ? 'Use another Speed Shoes to stack up to 3x!' : 'Maximum stacks reached!' });
-                break;
-            }
-
             case 'Training Weights': {
                 // Requires a pet target
                 if (!petName) {

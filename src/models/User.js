@@ -28,9 +28,9 @@ const userSchema = new mongoose.Schema({
     // Chaos Emeralds
     chaosEmeralds: { type: Number, default: 0 },
     hasSuperForm: { type: Boolean, default: false },
-    // Speed Shoes boost tracking
+    // Speed Shoes boost tracking (applies to ALL pets)
     speedShoesBoost: {
-        stacks: { type: Number, default: 0 },
+        active: { type: Boolean, default: false },
         expiresAt: { type: Number, default: null }
     },
     // Monster Hunt stats

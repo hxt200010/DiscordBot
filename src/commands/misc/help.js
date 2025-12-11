@@ -34,8 +34,13 @@ module.exports = {
                     inline: false
                 },
                 {
-                    name: 'Fun & Games',
-                    value: '`shadow, meme, say, blackjack, mine, riddle, cipher, sudoku, hangman, monster-hunt, monster-stats`',
+                    name: '🎰 Casino & Betting',
+                    value: '`blackjack, highlow, slots, crash, scratch, guess`',
+                    inline: false
+                },
+                {
+                    name: '🎮 Fun & Games',
+                    value: '`shadow, meme, say, reaction, tictactoe, mine, riddle, cipher, sudoku, hangman, monster-hunt, monster-stats`',
                     inline: false
                 },
                 {

@@ -211,15 +211,57 @@ module.exports = {
                 }
 
                 // Add items
+                let speedShoesActivated = false;
+                let speedShoesCount = 0;
+                
                 for (const req of mergedItems) {
+                    // Check for auto-activate items like Speed Shoes
+                    if (req.item.autoActivate && req.item.name === 'Speed Shoes') {
+                        speedShoesCount += req.quantity;
+                        speedShoesActivated = true;
+                        // Don't add to inventory, activate directly
+                        continue;
+                    }
+                    
                     for (let k = 0; k < req.quantity; k++) {
                         // Create new instance for each item (important for durability items)
                         await economySystem.addItem(userId, { ...req.item });
                     }
                 }
+                
+                // Handle Speed Shoes auto-activation
+                if (speedShoesActivated) {
+                    const User = require('../../models/User');
+                    let user = await User.findOne({ userId });
+                    if (!user) {
+                        user = await User.create({ userId });
+                    }
+                    
+                    const now = Date.now();
+                    const duration = 24 * 60 * 60 * 1000; // 24 hours
+                    
+                    // Activate Speed Shoes boost for ALL pets (+50% grinding coins)
+                    user.speedShoesBoost = { 
+                        active: true, 
+                        expiresAt: now + duration 
+                    };
+                    
+                    await user.save();
+                }
+
+                let confirmationMsg = `✅ Purchase successful! You spent **$${totalCost}**.`;
+                if (speedShoesActivated) {
+                    const PetSystem = require('../../utils/PetSystem');
+                    const userPets = await PetSystem.getUserPets(userId);
+                    const petCount = userPets?.length || 0;
+                    confirmationMsg += `\n\n👟 **Speed Shoes Activated!**`;
+                    confirmationMsg += `\n🚀 **+50%** coin grinding for ALL **${petCount}** pet${petCount !== 1 ? 's' : ''}!`;
+                    confirmationMsg += `\n⏰ Lasts **24 hours**`;
+                }
+                confirmationMsg += `\nItems added to your inventory.`;
 
                 await i.editReply({
-                    content: `✅ Purchase successful! You spent **$${totalCost}**.\nItems added to your inventory.`,
+                    content: confirmationMsg,
                     embeds: [],
                     components: []
                 });

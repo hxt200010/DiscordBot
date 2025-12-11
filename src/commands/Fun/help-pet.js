@@ -246,8 +246,8 @@ function createShopEmbed() {
             },
             {
                 name: '👟 Boosts & Passives', value:
-                    '**Speed Shoes** ($2,000) - +10% grind speed, 24h, stacks 3x\n' +
-                    '└ `/use-item item:Speed Shoes` (activates immediately)\n' +
+                    '**Speed Shoes** ($2,000) - +50% grind coins, 24h, ALL pets!\n' +
+                    '└ Auto-activates on purchase for ALL your pets\n' +
                     '**Lucky Charm** ($800) - +10% steal/shoot success\n' +
                     '└ Passive: Auto-active in inventory\n' +
                     '**Pet Armor** ($1,500) - -50% starvation damage\n' +

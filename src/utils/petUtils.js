@@ -47,11 +47,11 @@ const calculateWorkGains = (pet, userInventory = [], userBoosts = {}) => {
         coinsEarned = Math.floor(coinsEarned * 1.5);
     }
 
-    // Speed Shoes boost: +10% per stack (max 30%)
+    // Speed Shoes boost: +50% coins (applies to all pets)
     if (userBoosts.speedShoesBoost && 
-        userBoosts.speedShoesBoost.stacks > 0 && 
+        userBoosts.speedShoesBoost.active && 
         userBoosts.speedShoesBoost.expiresAt > now) {
-        const speedBonus = 1 + (userBoosts.speedShoesBoost.stacks * 0.1);
+        const speedBonus = 1.5; // Flat +50% bonus
         coinsEarned = Math.floor(coinsEarned * speedBonus);
     }
 

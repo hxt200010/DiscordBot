@@ -88,11 +88,12 @@ module.exports = [
     {
         name: 'Speed Shoes',
         price: 2000,
-        description: '+10% coin grinding speed for 24 hours. Stack up to 3x!',
-        usage: '📋 Use: `/use-item item:Speed Shoes` to activate. Lasts 24 hours, stacks up to 3x (+30%).',
+        description: 'Auto-equips on ALL pets! +50% coin grinding for 24 hours. More pets = more value!',
+        usage: '📋 Auto: Activates instantly on purchase for ALL your pets. Lasts 24 hours.',
         type: 'consumable',
         duration: 86400000, // 24 hours in ms
-        tier: 'medium'
+        tier: 'medium',
+        autoActivate: true // Activates on purchase, applies to all pets
     },
     {
         name: 'Training Weights',

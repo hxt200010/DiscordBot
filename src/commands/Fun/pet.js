@@ -115,12 +115,12 @@ async function generatePetEmbed(pet, userId, interaction) {
     // Add active boosts display
     const activeBoosts = [];
     
-    // Speed Shoes boost
+    // Speed Shoes boost (applies to ALL pets)
     if (userBoosts.speedShoesBoost && 
-        userBoosts.speedShoesBoost.stacks > 0 && 
+        userBoosts.speedShoesBoost.active && 
         userBoosts.speedShoesBoost.expiresAt > Date.now()) {
         const hoursLeft = Math.ceil((userBoosts.speedShoesBoost.expiresAt - Date.now()) / (60 * 60 * 1000));
-        activeBoosts.push(`👟 Speed Shoes x${userBoosts.speedShoesBoost.stacks} (+${userBoosts.speedShoesBoost.stacks * 10}% coins) - ${hoursLeft}h left`);
+        activeBoosts.push(`👟 Speed Shoes (+50% coins on ALL pets) - ${hoursLeft}h left`);
     }
 
     // Check for passive items in inventory
