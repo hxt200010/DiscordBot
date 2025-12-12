@@ -22,6 +22,7 @@ function maxProfit (price) {
 }
 
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'stock1', 
     description: 'best time to buy and sell stock', 
     options: [

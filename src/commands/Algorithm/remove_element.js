@@ -22,6 +22,7 @@ function removeElement(num, val) {
 
 }
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'remove', 
     description: 'remove element in an array', 
     options: [

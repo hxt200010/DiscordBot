@@ -10,7 +10,7 @@ module.exports = {
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp(Date.now())
             .setAuthor({
-                icon: interaction.user.avatar,
+                iconURL: interaction.user.displayAvatarURL(),
                 name: interaction.user.tag
             })
             .setFooter({
@@ -19,18 +19,18 @@ module.exports = {
             })
             .addFields([
                 {
-                    name: 'Pet System',
+                    name: '🐾 Pet System',
                     value: '`adopt, pet, pet-action, pet-list, sell-pet, attack, equip, teach, pet-glasses, pet-chat, help-pet`',
                     inline: false
                 },
                 {
-                    name: 'Economy & Rewards',
+                    name: '💰 Economy & Rewards',
                     value: '`balance, daily, give, gift, achievements, spin, bounty, chaos-emeralds`',
                     inline: false
                 },
                 {
-                    name: 'Shop',
-                    value: '`shop, buy, inventory, open, shoot, repair, shield`',
+                    name: '🛒 Shop',
+                    value: '`shop, buy, inventory, open, shoot, repair, shield, use-item`',
                     inline: false
                 },
                 {
@@ -44,37 +44,37 @@ module.exports = {
                     inline: false
                 },
                 {
-                    name: 'Education',
+                    name: '📚 Education',
                     value: '`learn, learncs, learnai, learn-general, trivia, datastructure, interview, job-interview`',
                     inline: false
                 },
                 {
-                    name: 'Mathematic',
-                    value: '`add, subtract, multiply, divide, sqrt, calculate, log, integrate, sin, cos, tan`',
+                    name: '🔢 Math (`/math <subcommand>`)',
+                    value: 'Subcommands: `add, subtract, multiply, divide, sqrt, sin, cos, tan, log, calculate, integrate`',
                     inline: false
                 },
                 {
-                    name: 'Algorithm Gameplay',
-                    value: '`biggest, smallest, ascending, descending, binarySearch, exponential_search, dfs, roman, remove, duplicate`',
+                    name: '⚙️ Algorithms (`/algo <subcommand>`)',
+                    value: 'Subcommands: `ascending, descending, biggest, smallest, binary-search, exponential-search, dfs, roman, stock, remove-duplicates, remove-element, smallest-missing`',
                     inline: false
                 },
                 {
-                    name: 'Moderation',
+                    name: '🛡️ Moderation',
                     value: '`kick, ban, timeout, unban, untimeout, purge`',
                     inline: false
                 },
                 {
-                    name: 'Stock Market',
+                    name: '📈 Stock Market',
                     value: '`stock, chart, compare, watchlist, alert, stock-search, stock-trending`',
                     inline: false
                 },
                 {
-                    name: 'Misc',
-                    value: '`owner, ping, avatar, weather, translate, userinfo, food, work, poll, steal`',
+                    name: '🔧 Misc',
+                    value: '`owner, ping, avatar, weather, translate, userinfo, work, poll, steal, reminder`',
                     inline: false
                 },
                 {
-                    name: 'Configuration',
+                    name: '⚙️ Configuration',
                     value: '`setupChatbot, disableChatbot`',
                     inline: false
                 }

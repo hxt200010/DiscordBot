@@ -54,6 +54,7 @@ function romanToInt(s) {
 }
 
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'romantointeger', 
     description: 'convert from Roman to integer',
     options: [

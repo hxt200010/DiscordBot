@@ -1,6 +1,7 @@
 const {Client, Interaction, ApplicationCommandOptionType} = require('discord.js')
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'sqrt',
     description: 'Squareroot a number, example: sqrt(4) = 2',
     options: [

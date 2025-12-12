@@ -13,6 +13,7 @@ while (left <= right) {
     }
 }`;
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'binarysearch',
     description: 'Perform binary search on a sorted array',
     options: [

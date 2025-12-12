@@ -1,6 +1,7 @@
 const {Client, Interaction, ApplicationCommandOptionType} = require('discord.js')
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'multiply',
     description: 'multiply 2 numbers',
     options: [

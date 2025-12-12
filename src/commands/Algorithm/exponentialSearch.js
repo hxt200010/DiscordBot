@@ -17,6 +17,7 @@ for (let i = startIndex; i <= endIndex; i++) {
 }
 `
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'exponential_search',
     description: 'Perform exponential search on a sorted array',
     options: [

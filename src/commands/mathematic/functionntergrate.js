@@ -2,6 +2,7 @@ const math = require('mathjs');
 const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'integrate',
     description: 'Calculate a definite integral of a function',
     options: [

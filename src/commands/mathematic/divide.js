@@ -1,6 +1,7 @@
 const {Client, Interaction, ApplicationCommandOptionType} = require('discord.js')
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'divide',
     description: 'divide 2 numbers',
     options: [

@@ -3,6 +3,7 @@ const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const math = require('mathjs');
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'tan',
     description: 'Calculate the tangent of an angle',
     options: [

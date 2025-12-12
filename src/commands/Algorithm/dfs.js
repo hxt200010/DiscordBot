@@ -75,6 +75,7 @@ class Graph {
 }
 
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'dfs',
     description: 'Perform depth-first search on a graph',
     options: [

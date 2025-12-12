@@ -36,6 +36,7 @@ function removeDuplicate(array) {
 }
 
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'duplicate', 
     description: 'remove duplicate in an array', 
     options: [

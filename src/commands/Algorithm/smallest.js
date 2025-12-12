@@ -7,6 +7,7 @@ for (let i = 1; i < numbers.length; i++) {
      }
 }`
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'smallest',
     description: 'Find the smallest number in the array',
     options: [

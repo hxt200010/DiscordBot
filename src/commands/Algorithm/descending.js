@@ -12,6 +12,7 @@ for (let i = 0; i < numbers.length; i++) {
     }
 }`
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'sort',
     description: 'Sort the numbers in descending order',
     options: [

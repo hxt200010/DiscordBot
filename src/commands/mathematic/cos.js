@@ -3,6 +3,7 @@ const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const math = require('mathjs');
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'cos',
     description: 'Calculate the cosine of an angle',
     options: [

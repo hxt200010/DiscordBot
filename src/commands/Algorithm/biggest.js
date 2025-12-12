@@ -7,6 +7,7 @@ for (let i = 1; i < numbers.length; i++) {
      }
 }`
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: 'biggest',
     description: 'Find the biggest number in the array',
     options: [

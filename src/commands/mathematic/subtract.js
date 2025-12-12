@@ -1,6 +1,7 @@
 const {Client, Interaction, ApplicationCommandOptionType} = require('discord.js')
 
 module.exports = {
+    deleted: true, // Consolidated into /math command
     name: 'subtract',
     description: 'subtract 2 numbers',
     options: [

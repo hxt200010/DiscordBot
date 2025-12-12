@@ -21,6 +21,7 @@ const smallestMissingPositiveCode = `def findSmallestMissingPositive(orderNumber
     return n + 1`;
 
 module.exports = {
+    deleted: true, // Consolidated into /algo command
     name: "smallestpositivenumber",
     description: 'find the smallest positive integer not present in the array in O(n) time and O(1) extra space.',
     options: [
