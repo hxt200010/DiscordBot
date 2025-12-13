@@ -1,4 +1,5 @@
 module.exports = {
+    deleted: true, // Consolidated into /misc utility command
     name: 'ping',
     description: 'Reply with a bot ping',
     // devOnly: Boolean,

@@ -49,7 +49,7 @@ module.exports = {
         await interaction.deferReply();
 
         let coinsEarned = 0;
-        const rewards = { easy: 5, medium: 15, hard: 30 };
+        const rewards = { easy: 15, medium: 45, hard: 90 };
         const reward = rewards[difficulty];
         const sessionData = [];
 

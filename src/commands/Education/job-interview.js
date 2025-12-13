@@ -38,7 +38,7 @@ module.exports = {
         await interaction.deferReply();
 
         let coinsEarned = 0;
-        const rewardPerQuestion = 20; // Reward for each correct answer
+        const rewardPerQuestion = 50; // Reward for each correct answer
         const sessionData = [];
 
         try {

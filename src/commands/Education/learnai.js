@@ -95,10 +95,10 @@ module.exports = {
                     { name: '🌍 Real-life Applications', value: data.applications.join('\n') || 'N/A' }
                 )
                 .setDescription(`**Example Code:**\n\`\`\`python\n${data.code}\n\`\`\``)
-                .setFooter({ text: 'You earned 3 coins for learning!' });
+                .setFooter({ text: 'You earned 20 coins for learning!' });
 
             // Reward user
-            await economySystem.addBalance(interaction.user.id, 3);
+            await economySystem.addBalance(interaction.user.id, 20);
 
             await interaction.editReply({ embeds: [embed] });
 

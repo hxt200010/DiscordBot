@@ -2,6 +2,7 @@ const { ApplicationCommandOptionType } = require('discord.js');
 const moment = require('moment-timezone');
 
 module.exports = {
+    deleted: true, // Consolidated into /misc utility command
   name: 'time',
   description: 'Get the current time in UTC',
   

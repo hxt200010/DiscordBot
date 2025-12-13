@@ -1,6 +1,7 @@
 const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
+    deleted: true, // Consolidated into /mod command
     name: 'kick',
     description: 'Kicks a member from this server.',
     options: [

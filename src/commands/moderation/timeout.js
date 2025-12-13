@@ -18,6 +18,7 @@ function parseDuration(durationStr) {
 }
 
 module.exports = {
+    deleted: true, // Consolidated into /mod command
     name: 'timeout',
     description: 'Timeouts a member.',
     options: [

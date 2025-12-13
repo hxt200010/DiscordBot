@@ -138,10 +138,10 @@ module.exports = {
                     { name: '🔗 Related Topics', value: (data.related_topics || []).join(', ') || 'N/A' }
                 )
                 .setDescription(`**Example Code (${language}):**\n\`\`\`${language.toLowerCase()}\n${codeSnippet}\n\`\`\``)
-                .setFooter({ text: 'You earned 5 coins for learning! Use /learncs to explore more topics.' });
+                .setFooter({ text: 'You earned 25 coins for learning! Use /learncs to explore more topics.' });
 
             // Reward user
-            await economySystem.addBalance(interaction.user.id, 5);
+            await economySystem.addBalance(interaction.user.id, 25);
 
             await interaction.editReply({ embeds: [embed] });
 

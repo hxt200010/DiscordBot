@@ -1,6 +1,7 @@
 const { ApplicationCommandOptionType, EmbedBuilder, Embed } = require('discord.js');
 
 module.exports = {
+    deleted: true, // Consolidated into /misc utility command
     name: 'userinfo',
     description: 'Get information about a user',
     options: [

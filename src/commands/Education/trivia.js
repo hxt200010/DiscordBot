@@ -1,5 +1,6 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
 const axios = require('axios'); 
+const economySystem = require('../../utils/EconomySystem');
 
 // Example of available categories
 const categories = [
@@ -31,7 +32,7 @@ const categories = [
 
 module.exports = {
   name: 'trivia',
-  description: 'Start a trivia quiz',
+  description: 'Start a trivia quiz and earn coins!',
   options: [
     {
       name: 'category',
@@ -59,8 +60,12 @@ module.exports = {
       );
 
       const questions = response.data.results;
+      const reward = 15; // Coins per trivia quiz
 
-      const embed = new EmbedBuilder().setTitle('Trivia Quiz').setColor('Random');
+      const embed = new EmbedBuilder()
+        .setTitle(`🎯 Trivia Quiz: ${chosenCategory.name}`)
+        .setColor('Random')
+        .setFooter({ text: `You earned ${reward} coins for playing trivia!` });
 
       for (let i = 0; i < questions.length; i++) {
         const question = questions[i].question;
@@ -86,6 +91,9 @@ module.exports = {
           inline: false,
         });
       }
+
+      // Reward user for playing trivia
+      await economySystem.addBalance(interaction.user.id, reward);
 
       await interaction.reply({ embeds: [embed] });
     } catch (error) {

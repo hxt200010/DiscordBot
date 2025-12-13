@@ -185,6 +185,8 @@ module.exports = {
             fetchReply: true
         });
 
+        let isProcessing = false; // Flag to prevent double-processing
+        
         const collector = response.createMessageComponentCollector({
             componentType: ComponentType.Button,
             time: 15000
@@ -194,6 +196,13 @@ module.exports = {
             if (i.user.id !== interaction.user.id) {
                 return i.reply({ content: "This isn't your purchase!", ephemeral: true });
             }
+
+            // Prevent double-clicks from processing multiple times
+            if (isProcessing) {
+                return i.reply({ content: "⏳ Already processing your request...", ephemeral: true });
+            }
+            isProcessing = true;
+            collector.stop('processed'); // Stop collecting more button clicks
 
             if (i.customId === 'confirm_buy') {
                 await i.deferUpdate();
@@ -270,8 +279,9 @@ module.exports = {
             }
         });
 
-        collector.on('end', collected => {
-            if (collected.size === 0) {
+        collector.on('end', (collected, reason) => {
+            // Only show timeout if it actually timed out (not if we stopped it after processing)
+            if (reason === 'time' && collected.size === 0) {
                 interaction.editReply({ content: "❌ Purchase timed out.", embeds: [], components: [] });
             }
         });

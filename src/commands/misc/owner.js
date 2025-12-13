@@ -1,6 +1,7 @@
 const { ApplicationCommandOptionType } = require('discord.js');
 
 module.exports = {
+    deleted: true, // Consolidated into /misc utility command
     name: 'owner',
     description: 'Display the bot owner',
     callback: (client, interaction) => {

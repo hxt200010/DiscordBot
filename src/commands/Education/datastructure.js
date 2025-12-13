@@ -146,7 +146,7 @@ module.exports = {
                     });
 
                     if (confirmation.customId === 'show_solution') {
-                        const reward = 5;
+                        const reward = 30;
                         await economySystem.addBalance(interaction.user.id, reward);
 
                         let solutionText = '';

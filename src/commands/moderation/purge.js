@@ -1,6 +1,7 @@
 const { Client, Interaction, ApplicationCommandOptionType, PermissionFlagsBits } = require('discord.js');
 
 module.exports = {
+    deleted: true, // Consolidated into /mod command
     name: 'purge',
     description: 'Deletes a specified number of messages.',
     options: [

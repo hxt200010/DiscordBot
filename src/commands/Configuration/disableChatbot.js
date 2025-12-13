@@ -2,6 +2,7 @@ const { Client, Interaction, PermissionFlagsBits, ApplicationCommandOptionType }
 const guildConfig = require('../../utils/GuildConfig');
 
 module.exports = {
+    deleted: true, // Consolidated into /config command
     name: 'disablechatbot',
     description: 'Disable the chatbot in a specific channel',
     options: [

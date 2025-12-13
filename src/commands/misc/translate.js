@@ -2,6 +2,7 @@ const { ApplicationCommandOptionType } = require('discord.js');
 const translate = require('translate-google');
 
 module.exports = {
+    deleted: true, // Consolidated into /misc utility command
     name: 'translate',
     description: 'Translate a sentence to a target language',
     options: [

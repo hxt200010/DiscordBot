@@ -124,10 +124,10 @@ Do not include any markdown formatting like \`\`\`json. Just the raw JSON string
                     { name: '🎲 Fun Fact', value: data.fun_fact || 'N/A' },
                     { name: '🔗 Learn More About', value: (data.learn_more || []).join(', ') || 'N/A' }
                 )
-                .setFooter({ text: 'You earned 5 coins for learning! Knowledge is power!' });
+                .setFooter({ text: 'You earned 25 coins for learning! Knowledge is power!' });
 
             // Reward user
-            await economySystem.addBalance(interaction.user.id, 5);
+            await economySystem.addBalance(interaction.user.id, 25);
 
             await interaction.editReply({ embeds: [embed] });
 

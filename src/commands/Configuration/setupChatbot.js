@@ -2,6 +2,7 @@ const { Client, Interaction, PermissionFlagsBits, ApplicationCommandOptionType }
 const guildConfig = require('../../utils/GuildConfig');
 
 module.exports = {
+    deleted: true, // Consolidated into /config command
     name: 'setupchatbot',
     description: 'Enable the chatbot in a specific channel',
     options: [

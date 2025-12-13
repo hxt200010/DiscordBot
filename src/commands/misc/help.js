@@ -5,7 +5,7 @@ module.exports = {
     description: 'Generate list of commands',
     callback: async (client, interaction) => {
         const embed = new EmbedBuilder()
-            .setTitle('Sonic Bot Command List')
+            .setTitle('🦔 Sonic Bot Command List')
             .setColor('Blue')
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp(Date.now())
@@ -25,7 +25,7 @@ module.exports = {
                 },
                 {
                     name: '💰 Economy & Rewards',
-                    value: '`balance, daily, give, gift, achievements, spin, bounty, chaos-emeralds`',
+                    value: '`balance, daily, give, gift, achievements, spin, bounty, chaos-emeralds, work`',
                     inline: false
                 },
                 {
@@ -35,7 +35,7 @@ module.exports = {
                 },
                 {
                     name: '🎰 Casino & Betting',
-                    value: '`blackjack, highlow, slots, crash, scratch, guess`',
+                    value: '`blackjack, highlow, slots, crash, scratch, guess, rps, fish`',
                     inline: false
                 },
                 {
@@ -49,18 +49,18 @@ module.exports = {
                     inline: false
                 },
                 {
-                    name: '🔢 Math (`/math <subcommand>`)',
-                    value: 'Subcommands: `add, subtract, multiply, divide, sqrt, sin, cos, tan, log, calculate, integrate`',
+                    name: '🔢 Math (`/math <sub>`)',
+                    value: '`add, subtract, multiply, divide, sqrt, sin, cos, tan, log, calculate, integrate`',
                     inline: false
                 },
                 {
-                    name: '⚙️ Algorithms (`/algo <subcommand>`)',
-                    value: 'Subcommands: `ascending, descending, biggest, smallest, binary-search, exponential-search, dfs, roman, stock, remove-duplicates, remove-element, smallest-missing`',
+                    name: '⚙️ Algorithms (`/algo <sub>`)',
+                    value: '`ascending, descending, biggest, smallest, binary-search, exponential-search, dfs, roman, stock, remove-duplicates, remove-element, smallest-missing`',
                     inline: false
                 },
                 {
-                    name: '🛡️ Moderation',
-                    value: '`kick, ban, timeout, unban, untimeout, purge`',
+                    name: '🛡️ Moderation (`/mod <sub>`)',
+                    value: '`ban, unban, kick, timeout, untimeout, purge`',
                     inline: false
                 },
                 {
@@ -69,13 +69,18 @@ module.exports = {
                     inline: false
                 },
                 {
-                    name: '🔧 Misc',
-                    value: '`owner, ping, avatar, weather, translate, userinfo, work, poll, steal, reminder`',
+                    name: '🔧 Utility (`/misc <sub>`)',
+                    value: '`ping, avatar, owner, userinfo, translate, time`',
                     inline: false
                 },
                 {
-                    name: '⚙️ Configuration',
-                    value: '`setupChatbot, disableChatbot`',
+                    name: '⚙️ Configuration (`/config <sub>`)',
+                    value: '`chatbot-enable, chatbot-disable`',
+                    inline: false
+                },
+                {
+                    name: '📦 Other',
+                    value: '`poll, steal, reminder, weather, food`',
                     inline: false
                 }
             ]);

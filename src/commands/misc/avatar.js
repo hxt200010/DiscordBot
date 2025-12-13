@@ -1,6 +1,7 @@
 const { Client, Interaction, EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 
 module.exports = {
+    deleted: true, // Consolidated into /misc utility command
     name: 'avatar',
     description: 'Generate your or other avatar picture',
     options: [
