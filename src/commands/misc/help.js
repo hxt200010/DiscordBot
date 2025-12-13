@@ -40,7 +40,7 @@ module.exports = {
                 },
                 {
                     name: '🎮 Fun & Games',
-                    value: '`shadow, meme, say, reaction, tictactoe, mine, riddle, cipher, sudoku, hangman, monster-hunt, monster-stats`',
+                    value: '`shadow, meme, say, reaction, tictactoe, mine, riddle, cipher, sudoku, hangman, monster-hunt, monster-stats, typing, tower`',
                     inline: false
                 },
                 {
