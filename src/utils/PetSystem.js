@@ -146,7 +146,7 @@ class PetSystem {
             id: petDoc.id,
             petName: petDoc.petName,
             type: petDoc.type,
-            stats: { ...petDoc.stats }, // Deep copy to prevent shared reference bug
+            stats: petDoc.stats ? { ...petDoc.stats.toObject() } : { hunger: 50, happiness: 50, affection: 50, energy: 50, health: 100, attack: 10, defense: 10, cleanliness: 50 }, // Deep copy from Mongoose subdoc
             xp: petDoc.xp,
             level: petDoc.level,
             isWorking: petDoc.isWorking,
