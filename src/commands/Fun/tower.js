@@ -6,6 +6,9 @@ const { checkLevelUp } = require('../../utils/petUtils');
 
 const activeGames = new Map();
 
+// Energy cost per attack
+const ENERGY_PER_ATTACK = 10;
+
 // XP rewards per enemy type
 const ENEMY_XP = {
     rat: 2,
@@ -40,10 +43,9 @@ const WAVES = [
 
 // Generate endless wave enemies (waves 6+)
 function generateEndlessWave(waveNum) {
-    const waveIndex = waveNum - 5; // 1 for wave 6, 2 for wave 7, etc.
+    const waveIndex = waveNum - 5;
     const enemies = [];
     
-    // Each wave gets progressively harder
     if (waveNum <= 7) {
         enemies.push('dragon');
         for (let i = 0; i < waveIndex; i++) enemies.push('bear');
@@ -71,26 +73,21 @@ function getWaveName(waveNum) {
     return '🔥 DEMON INVASION';
 }
 
-// Rewards based on waves survived (with streak multiplier) - INCREASED REWARDS!
+// Rewards based on waves survived (with streak multiplier)
 function getReward(wavesSurvived, towerHp, streak = 0) {
-    // Base reward calculation - MUCH HIGHER!
     let reward = 0;
     
     if (wavesSurvived <= 5) {
-        // Wave 5 = $800, scaling down
         const baseRewards = { 5: 800, 4: 400, 3: 200, 2: 100, 1: 50, 0: 0 };
         reward = baseRewards[wavesSurvived] || 0;
     } else {
-        // Endless mode: exponential scaling (starting from $800)
         reward = 800 + (wavesSurvived - 5) * 200 + Math.pow(wavesSurvived - 5, 2) * 50;
     }
     
-    // HP Bonus (only if won at least 5 waves) - +5 coins per HP
     if (wavesSurvived >= 5 && towerHp > 0) {
         reward += Math.floor(towerHp * 5);
     }
     
-    // Streak multiplier: +10% per streak (max 100%)
     const streakMultiplier = 1 + Math.min(streak, 10) * 0.1;
     reward = Math.floor(reward * streakMultiplier);
     
@@ -101,12 +98,17 @@ function getReward(wavesSurvived, towerHp, streak = 0) {
 function createHealthBar(current, max, length = 10) {
     const filled = Math.max(0, Math.round((current / max) * length));
     const empty = length - filled;
-    const filledChar = '█';
-    const emptyChar = '░';
-    return `${filledChar.repeat(filled)}${emptyChar.repeat(empty)} ${current}/${max}`;
+    return `${'█'.repeat(filled)}${'░'.repeat(empty)} ${current}/${max}`;
 }
 
-// Create game embed
+// Create energy bar
+function createEnergyBar(energy) {
+    const filled = Math.max(0, Math.round(energy / 10));
+    const empty = 10 - filled;
+    return `${'⚡'.repeat(Math.min(filled, 3))}${'█'.repeat(Math.max(0, filled - 3))}${'░'.repeat(empty)} ${energy}/100`;
+}
+
+// Create game embed with pet queue display
 function createGameEmbed(game, message = '') {
     const embed = new EmbedBuilder()
         .setTitle(`🏰 TOWER DEFENSE 🏰`)
@@ -115,20 +117,33 @@ function createGameEmbed(game, message = '') {
     // Tower status
     let description = `**🏰 Tower Health:** ${createHealthBar(game.towerHp, game.maxTowerHp, 15)}\n\n`;
     
-    // Pet info with level and XP
-    description += `**⚔️ Defending Pet:** ${game.pet.petName} (${game.pet.type})\n`;
-    description += `**ATK:** ${game.pet.stats.attack} | **DEF:** ${game.pet.stats.defense} | **LVL:** ${game.pet.level}\n`;
-    description += `**📊 XP:** ${Math.floor(game.pet.xp)}/${game.pet.level * 20}\n\n`;
+    // Current attacking pet with energy
+    const activePet = game.petQueue[game.activePetIndex];
+    description += `**⚔️ ACTIVE PET:**\n`;
+    description += `🐾 **${activePet.petName}** (${activePet.type})\n`;
+    description += `   ATK: ${activePet.stats.attack} | DEF: ${activePet.stats.defense} | LVL: ${activePet.level}\n`;
+    description += `   ⚡ Energy: ${createEnergyBar(activePet.stats.energy)}\n`;
+    description += `   📊 XP: ${Math.floor(activePet.xp)}/${activePet.level * 20}\n\n`;
     
-    // Energy drink count
+    // Pet queue (next pets sorted by ATK)
+    if (game.petQueue.length > 1) {
+        description += `**🔄 PET QUEUE** (sorted by ATK):\n`;
+        game.petQueue.forEach((pet, idx) => {
+            if (idx === game.activePetIndex) return; // Skip active pet
+            const energyStatus = pet.stats.energy >= ENERGY_PER_ATTACK ? '✅' : '❌';
+            description += `${energyStatus} ${pet.petName} (ATK:${pet.stats.attack} | ⚡${pet.stats.energy})\n`;
+        });
+        description += '\n';
+    }
+    
+    // Energy drinks and streak
     if (game.energyDrinks > 0) {
-        description += `**⚡ Energy Drinks:** ${game.energyDrinks}\n`;
+        description += `**🧃 Energy Drinks:** ${game.energyDrinks}\n`;
     }
-    
-    // Streak info
     if (game.streak > 0) {
-        description += `**🔥 Streak:** ${game.streak}x (+${Math.min(game.streak, 10) * 10}% coins)\n\n`;
+        description += `**🔥 Streak:** ${game.streak}x (+${Math.min(game.streak, 10) * 10}% coins)\n`;
     }
+    description += '\n';
     
     // Current wave
     const waveName = game.currentWave < 5 ? WAVES[game.currentWave].name : generateEndlessWave(game.currentWave + 1).name;
@@ -136,7 +151,7 @@ function createGameEmbed(game, message = '') {
     
     // Enemies
     description += `**🎯 Enemies:**\n`;
-    game.currentEnemies.forEach((enemy, index) => {
+    game.currentEnemies.forEach((enemy) => {
         if (enemy.alive) {
             description += `${enemy.emoji} **${enemy.name}** - ${createHealthBar(enemy.hp, enemy.maxHp, 8)}\n`;
         } else {
@@ -153,16 +168,18 @@ function createGameEmbed(game, message = '') {
     }
 
     embed.setDescription(description);
-    embed.setFooter({ text: `Entry: $${game.entryFee} | Keep fighting for bigger rewards!` });
+    embed.setFooter({ text: `Entry: $${game.entryFee} | ${ENERGY_PER_ATTACK} energy per attack` });
     embed.setTimestamp();
     
     return embed;
 }
 
-// Create attack buttons for enemies + energy drink button
+// Create attack buttons + utility row
 function createAttackButtons(game, disabled = false) {
     const rows = [];
     const aliveEnemies = game.currentEnemies.filter(e => e.alive);
+    const activePet = game.petQueue[game.activePetIndex];
+    const hasEnergy = activePet.stats.energy >= ENERGY_PER_ATTACK;
     
     if (aliveEnemies.length === 0 || disabled) {
         return [new ActionRowBuilder().addComponents(
@@ -174,26 +191,44 @@ function createAttackButtons(game, disabled = false) {
         )];
     }
 
-    // Create buttons for each alive enemy (always enabled - no energy limit!)
-    const buttons = aliveEnemies.slice(0, 4).map((enemy, index) => 
+    // Attack buttons - disabled if no energy
+    const attackButtons = aliveEnemies.slice(0, 4).map((enemy) => 
         new ButtonBuilder()
             .setCustomId(`attack_${game.currentEnemies.indexOf(enemy)}`)
             .setLabel(`⚔️ ${enemy.emoji} ${enemy.name}`)
             .setStyle(ButtonStyle.Danger)
-            .setDisabled(disabled)
+            .setDisabled(disabled || !hasEnergy)
     );
-
-    rows.push(new ActionRowBuilder().addComponents(buttons));
+    rows.push(new ActionRowBuilder().addComponents(attackButtons));
     
-    // Add utility row with Energy Drink button
-    const utilityRow = new ActionRowBuilder().addComponents(
+    // Utility row: Switch Pet + Energy Drink
+    const utilityButtons = [];
+    
+    // Switch Pet button - only show if there are other pets with energy
+    const otherPetsWithEnergy = game.petQueue.filter((p, idx) => 
+        idx !== game.activePetIndex && p.stats.energy >= ENERGY_PER_ATTACK
+    );
+    
+    if (game.petQueue.length > 1) {
+        utilityButtons.push(
+            new ButtonBuilder()
+                .setCustomId('switch_pet')
+                .setLabel(`🔄 Switch Pet (${otherPetsWithEnergy.length} ready)`)
+                .setStyle(ButtonStyle.Primary)
+                .setDisabled(disabled || otherPetsWithEnergy.length === 0)
+        );
+    }
+    
+    // Energy Drink button
+    utilityButtons.push(
         new ButtonBuilder()
             .setCustomId('use_energy_drink')
             .setLabel(`⚡ Energy Drink (${game.energyDrinks || 0})`)
             .setStyle(ButtonStyle.Success)
             .setDisabled(disabled || game.energyDrinks <= 0)
     );
-    rows.push(utilityRow);
+    
+    rows.push(new ActionRowBuilder().addComponents(utilityButtons));
     
     return rows;
 }
@@ -212,9 +247,8 @@ function spawnWave(waveIndex) {
         const baseEnemy = ENEMIES[type];
         const enemy = { ...baseEnemy };
         
-        // Scale enemy stats for endless mode
         if (waveIndex >= 5) {
-            const scaling = 1 + (waveIndex - 5) * 0.15; // +15% per wave after 5
+            const scaling = 1 + (waveIndex - 5) * 0.15;
             enemy.hp = Math.floor(enemy.health * scaling);
             enemy.maxHp = enemy.hp;
             enemy.damage = Math.floor(enemy.damage * scaling);
@@ -230,15 +264,15 @@ function spawnWave(waveIndex) {
     });
 }
 
-// Process enemy attacks on tower
+// Process enemy attacks on tower (uses active pet's defense)
 function enemyAttackPhase(game) {
     let totalDamage = 0;
     const attackMessages = [];
+    const activePet = game.petQueue[game.activePetIndex];
     
     game.currentEnemies.forEach(enemy => {
         if (enemy.alive) {
-            // Defense reduces damage
-            const reducedDamage = Math.max(1, enemy.damage - Math.floor(game.pet.stats.defense * 0.3));
+            const reducedDamage = Math.max(1, enemy.damage - Math.floor(activePet.stats.defense * 0.3));
             totalDamage += reducedDamage;
             attackMessages.push(`${enemy.emoji} dealt **${reducedDamage}** damage!`);
         }
@@ -249,16 +283,30 @@ function enemyAttackPhase(game) {
     return { totalDamage, attackMessages };
 }
 
+// Save all pet states to database
+async function saveAllPetStates(game) {
+    for (const pet of game.petQueue) {
+        await PetSystem.updatePet(pet.id, (p) => {
+            p.xp = pet.xp;
+            p.level = pet.level;
+            p.maxHp = pet.maxHp;
+            p.stats.health = pet.maxHp;
+            p.stats.attack = pet.stats.attack;
+            p.stats.defense = pet.stats.defense;
+            p.stats.energy = pet.stats.energy;
+        });
+    }
+}
+
 // Get or create user's tower streak data
 async function getTowerStreak(userId) {
     try {
         const user = await User.findOne({ userId });
         if (user && user.towerStreak !== undefined) {
-            // Check if streak is still valid (within 24 hours of last game)
             const lastGame = user.lastTowerGame || 0;
             const hoursSince = (Date.now() - lastGame) / (1000 * 60 * 60);
             if (hoursSince > 24) {
-                return 0; // Streak reset
+                return 0;
             }
             return user.towerStreak || 0;
         }
@@ -289,7 +337,7 @@ async function updateTowerStreak(userId, won, currentStreak) {
 
 module.exports = {
     name: 'tower',
-    description: 'Defend your tower using your pet! Battle endless waves for huge rewards!',
+    description: 'Defend your tower using your pets! Battle endless waves for huge rewards!',
 
     callback: async (client, interaction) => {
         const userId = interaction.user.id;
@@ -312,7 +360,7 @@ module.exports = {
             });
         }
 
-        // Get user's pet
+        // Get user's pets - SORTED BY ATTACK (highest first)
         const userPets = await PetSystem.getUserPets(userId);
         if (!userPets || userPets.length === 0) {
             return interaction.reply({ 
@@ -321,8 +369,11 @@ module.exports = {
             });
         }
 
-        // Use first alive pet (no energy requirement!)
-        const alivePets = userPets.filter(p => !p.isDead && !p.isSleeping);
+        // Filter alive pets and sort by attack (highest first)
+        const alivePets = userPets
+            .filter(p => !p.isDead && !p.isSleeping)
+            .sort((a, b) => b.stats.attack - a.stats.attack);
+            
         if (alivePets.length === 0) {
             return interaction.reply({ 
                 content: "❌ All your pets are either fainted or sleeping!", 
@@ -330,8 +381,15 @@ module.exports = {
             });
         }
 
-        const pet = alivePets[0];
-        
+        // Check if at least one pet has energy
+        const petsWithEnergy = alivePets.filter(p => p.stats.energy >= ENERGY_PER_ATTACK);
+        if (petsWithEnergy.length === 0) {
+            return interaction.reply({ 
+                content: `❌ All your pets are exhausted! They need at least ${ENERGY_PER_ATTACK} energy to fight.\nUse \`/pet-action action:energize\` or wait for them to recover.`, 
+                ephemeral: true 
+            });
+        }
+
         // Get current streak
         const streak = await getTowerStreak(userId);
 
@@ -342,11 +400,12 @@ module.exports = {
         const inventory = await economy.getInventory(userId);
         const energyDrinkCount = inventory.filter(i => i.name === 'Energy Drink').length;
 
-        // Initialize game state
+        // Initialize game state with pet queue
         const game = {
             towerHp: 100,
             maxTowerHp: 100,
-            pet: pet,
+            petQueue: alivePets, // All alive pets, sorted by ATK
+            activePetIndex: 0, // Start with highest ATK pet
             currentWave: 0,
             currentEnemies: spawnWave(0),
             score: 0,
@@ -362,9 +421,10 @@ module.exports = {
         activeGames.set(userId, game);
 
         // Send initial game state
+        const activePet = game.petQueue[game.activePetIndex];
         const startMessage = streak > 0 
-            ? `🎮 **Battle Start!** 🔥 **${streak}x Streak Bonus!** Click an enemy to attack!`
-            : `🎮 **Battle Start!** Click an enemy to attack with ${pet.petName}!`;
+            ? `🎮 **Battle Start!** 🔥 **${streak}x Streak!** ${activePet.petName} leads the attack!`
+            : `🎮 **Battle Start!** ${activePet.petName} (ATK: ${activePet.stats.attack}) leads the attack!`;
             
         await interaction.reply({
             embeds: [createGameEmbed(game, startMessage)],
@@ -373,10 +433,10 @@ module.exports = {
 
         const reply = await interaction.fetchReply();
 
-        // Button collector (10 minutes timeout for endless mode)
+        // Button collector (10 minutes timeout)
         const collector = reply.createMessageComponentCollector({
             componentType: ComponentType.Button,
-            time: 600000 // 10 minutes
+            time: 600000
         });
 
         collector.on('collect', async (i) => {
@@ -389,9 +449,37 @@ module.exports = {
                 return i.reply({ content: "Game not found!", ephemeral: true });
             }
 
-            // Parse action
-            const [action, targetIndex] = i.customId.split('_');
-            
+            const activePet = game.petQueue[game.activePetIndex];
+
+            // Handle Switch Pet
+            if (i.customId === 'switch_pet') {
+                // Find next pet with energy
+                const otherPetsWithEnergy = game.petQueue
+                    .map((p, idx) => ({ pet: p, idx }))
+                    .filter(x => x.idx !== game.activePetIndex && x.pet.stats.energy >= ENERGY_PER_ATTACK);
+                
+                if (otherPetsWithEnergy.length === 0) {
+                    return i.reply({ content: "❌ No other pets have enough energy to fight!", ephemeral: true });
+                }
+                
+                // Switch to next pet with energy (highest ATK among those with energy)
+                const nextPet = otherPetsWithEnergy[0];
+                game.activePetIndex = nextPet.idx;
+                
+                // Save current pet's energy to DB immediately
+                await PetSystem.updatePet(activePet.id, (p) => {
+                    p.stats.energy = activePet.stats.energy;
+                });
+                
+                const switchMessage = `🔄 **Switched to ${nextPet.pet.petName}!**\nATK: ${nextPet.pet.stats.attack} | ⚡ Energy: ${nextPet.pet.stats.energy}`;
+                
+                await i.update({
+                    embeds: [createGameEmbed(game, switchMessage)],
+                    components: createAttackButtons(game)
+                });
+                return;
+            }
+
             // Handle Energy Drink use
             if (i.customId === 'use_energy_drink') {
                 if (game.energyDrinks <= 0) {
@@ -402,14 +490,17 @@ module.exports = {
                 await economy.removeItem(userId, 'Energy Drink');
                 game.energyDrinks--;
                 
-                // Restore pet energy (+25)
-                game.pet.stats.energy = Math.min(100, (game.pet.stats.energy || 0) + 25);
+                // Restore active pet's energy (+25) and save to DB
+                activePet.stats.energy = Math.min(100, (activePet.stats.energy || 0) + 25);
+                await PetSystem.updatePet(activePet.id, (p) => {
+                    p.stats.energy = activePet.stats.energy;
+                });
                 
                 // Heal tower slightly (+15 HP)
                 const towerHeal = Math.min(15, game.maxTowerHp - game.towerHp);
                 game.towerHp += towerHeal;
                 
-                const energyMessage = `⚡ **Energy Drink used!**\n+25 Pet Energy | +${towerHeal} Tower HP\n*${game.energyDrinks} drinks remaining*`;
+                const energyMessage = `⚡ **Energy Drink used on ${activePet.petName}!**\n+25 Energy (now ${activePet.stats.energy}) | +${towerHeal} Tower HP\n*${game.energyDrinks} drinks remaining*`;
                 
                 await i.update({
                     embeds: [createGameEmbed(game, energyMessage)],
@@ -418,6 +509,8 @@ module.exports = {
                 return;
             }
             
+            // Handle Attack
+            const [action, targetIndex] = i.customId.split('_');
             if (action !== 'attack') return;
 
             const target = game.currentEnemies[parseInt(targetIndex)];
@@ -425,33 +518,72 @@ module.exports = {
                 return i.reply({ content: "That enemy is already defeated!", ephemeral: true });
             }
 
-            // Pet attacks enemy (NO ENERGY COST!)
-            const petDamage = Math.floor(game.pet.stats.attack * (0.8 + Math.random() * 0.4)); // 80-120% of attack
+            // Check energy
+            if (activePet.stats.energy < ENERGY_PER_ATTACK) {
+                // Auto-prompt for switch or energy drink
+                const otherPets = game.petQueue.filter((p, idx) => 
+                    idx !== game.activePetIndex && p.stats.energy >= ENERGY_PER_ATTACK
+                );
+                
+                let exhaustedMsg = `⚠️ **${activePet.petName} is exhausted!** (${activePet.stats.energy} energy)`;
+                if (otherPets.length > 0) {
+                    exhaustedMsg += `\n🔄 Click **Switch Pet** to use ${otherPets[0].petName}`;
+                }
+                if (game.energyDrinks > 0) {
+                    exhaustedMsg += `\n⚡ Or use an **Energy Drink** to restore energy`;
+                }
+                if (otherPets.length === 0 && game.energyDrinks === 0) {
+                    exhaustedMsg += `\n❌ **No options left!** All pets exhausted and no drinks!`;
+                }
+                
+                await i.update({
+                    embeds: [createGameEmbed(game, exhaustedMsg)],
+                    components: createAttackButtons(game)
+                });
+                return;
+            }
+
+            // DRAIN ENERGY and save to DB
+            activePet.stats.energy -= ENERGY_PER_ATTACK;
+            await PetSystem.updatePet(activePet.id, (p) => {
+                p.stats.energy = activePet.stats.energy;
+            });
+
+            // Pet attacks enemy
+            const petDamage = Math.floor(activePet.stats.attack * (0.8 + Math.random() * 0.4));
             target.hp -= petDamage;
             game.turnsTaken++;
 
-            let battleMessage = `⚔️ **${game.pet.petName}** attacks ${target.emoji} for **${petDamage}** damage!`;
+            let battleMessage = `⚔️ **${activePet.petName}** attacks ${target.emoji} for **${petDamage}** damage! (-${ENERGY_PER_ATTACK}⚡)`;
 
-            // Check if enemy died - AWARD XP!
+            // Check if enemy died - AWARD XP
             if (target.hp <= 0) {
                 target.hp = 0;
                 target.alive = false;
                 game.score += target.points;
                 
-                // Get enemy type and award XP
                 const enemyType = Object.keys(ENEMIES).find(k => ENEMIES[k].name === target.name) || 'rat';
                 const xpGain = ENEMY_XP[enemyType] || 5;
-                game.pet.xp += xpGain;
+                activePet.xp += xpGain;
                 game.totalXpGained += xpGain;
                 
                 battleMessage += `\n💀 **${target.name}** defeated! +${target.points} pts | +${xpGain} XP`;
                 
                 // Check for level up
-                const oldLevel = game.pet.level;
-                if (checkLevelUp(game.pet)) {
+                if (checkLevelUp(activePet)) {
                     game.levelsGained++;
-                    battleMessage += `\n🎉 **LEVEL UP!** ${game.pet.petName} is now Level ${game.pet.level}!`;
-                    battleMessage += `\n   +10 Max HP | +3 ${game.pet.level % 2 === 0 ? 'ATK' : 'DEF'}`;
+                    battleMessage += `\n🎉 **LEVEL UP!** ${activePet.petName} is now Level ${activePet.level}!`;
+                    battleMessage += `\n   +10 Max HP | +3 ${activePet.level % 2 === 0 ? 'ATK' : 'DEF'}`;
+                    
+                    // Save level up immediately
+                    await PetSystem.updatePet(activePet.id, (p) => {
+                        p.xp = activePet.xp;
+                        p.level = activePet.level;
+                        p.maxHp = activePet.maxHp;
+                        p.stats.health = activePet.maxHp;
+                        p.stats.attack = activePet.stats.attack;
+                        p.stats.defense = activePet.stats.defense;
+                    });
                 }
             }
 
@@ -460,14 +592,14 @@ module.exports = {
             if (aliveEnemies.length === 0) {
                 game.wavesSurvived = game.currentWave + 1;
                 
-                // Heal tower slightly between waves (bonus for skill)
+                // Heal tower slightly between waves
                 const healAmount = Math.min(10, game.maxTowerHp - game.towerHp);
                 if (healAmount > 0) {
                     game.towerHp += healAmount;
                     battleMessage += `\n💚 Tower repaired! +${healAmount} HP`;
                 }
                 
-                // Next wave (endless!)
+                // Next wave
                 game.currentWave++;
                 game.currentEnemies = spawnWave(game.currentWave);
                 
@@ -498,15 +630,8 @@ module.exports = {
                     await economy.addBalance(userId, reward);
                 }
                 
-                // Save pet XP and level changes to database
-                await PetSystem.updatePet(game.pet.id, (p) => {
-                    p.xp = game.pet.xp;
-                    p.level = game.pet.level;
-                    p.maxHp = game.pet.maxHp;
-                    p.stats.health = game.pet.maxHp;
-                    p.stats.attack = game.pet.stats.attack;
-                    p.stats.defense = game.pet.stats.defense;
-                });
+                // Save all pet states
+                await saveAllPetStates(game);
                 
                 // Reset streak on loss
                 await updateTowerStreak(userId, false, game.streak);
@@ -523,9 +648,9 @@ module.exports = {
                         `${game.streak > 0 ? `🔥 **Streak Bonus:** x${streakMultiplier.toFixed(1)}\n` : ''}` +
                         `💰 **Reward:** $${reward}\n` +
                         `💵 **Balance:** $${newBalance.toLocaleString()}\n\n` +
-                        `� **${game.pet.petName}:** +${game.totalXpGained} XP` +
+                        `📊 **Total XP:** +${game.totalXpGained}` +
                         `${game.levelsGained > 0 ? ` | +${game.levelsGained} Level(s)!` : ''}\n\n` +
-                        `�😢 **Streak Reset!** Play again to build a new streak!`
+                        `😢 **Streak Reset!** Play again to build a new streak!`
                     )
                     .setTimestamp();
                 
@@ -533,6 +658,21 @@ module.exports = {
                 activeGames.delete(userId);
                 collector.stop('defeat');
                 return;
+            }
+
+            // Check if active pet is exhausted after attack
+            if (activePet.stats.energy < ENERGY_PER_ATTACK) {
+                const otherPets = game.petQueue.filter((p, idx) => 
+                    idx !== game.activePetIndex && p.stats.energy >= ENERGY_PER_ATTACK
+                );
+                
+                if (otherPets.length > 0) {
+                    battleMessage += `\n\n⚠️ **${activePet.petName} is exhausted!** Use 🔄 Switch Pet`;
+                } else if (game.energyDrinks > 0) {
+                    battleMessage += `\n\n⚠️ **${activePet.petName} is exhausted!** Use ⚡ Energy Drink`;
+                } else {
+                    battleMessage += `\n\n❌ **All pets exhausted!** No energy drinks left!`;
+                }
             }
 
             // Update game display
@@ -545,24 +685,15 @@ module.exports = {
         collector.on('end', async (collected, reason) => {
             const game = activeGames.get(userId);
             if (game) {
-                // Game ended (timeout or manual stop) - give rewards for current progress
                 const { reward, streakMultiplier } = getReward(game.wavesSurvived, game.towerHp, game.streak);
                 
                 if (reward > 0) {
                     await economy.addBalance(userId, reward);
                 }
                 
-                // Save pet XP and level changes to database
-                await PetSystem.updatePet(game.pet.id, (p) => {
-                    p.xp = game.pet.xp;
-                    p.level = game.pet.level;
-                    p.maxHp = game.pet.maxHp;
-                    p.stats.health = game.pet.maxHp;
-                    p.stats.attack = game.pet.stats.attack;
-                    p.stats.defense = game.pet.stats.defense;
-                });
+                // Save all pet states
+                await saveAllPetStates(game);
                 
-                // Update streak based on if they survived 5+ waves
                 const won = game.wavesSurvived >= 5;
                 await updateTowerStreak(userId, won, game.streak);
                 
