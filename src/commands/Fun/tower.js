@@ -223,9 +223,18 @@ function createAttackButtons(game, disabled = false) {
     utilityButtons.push(
         new ButtonBuilder()
             .setCustomId('use_energy_drink')
-            .setLabel(`⚡ Energy Drink (${game.energyDrinks || 0})`)
+            .setLabel(`⚡ Use Drink (${game.energyDrinks || 0})`)
             .setStyle(ButtonStyle.Success)
             .setDisabled(disabled || game.energyDrinks <= 0)
+    );
+    
+    // Buy Energy Drink button
+    utilityButtons.push(
+        new ButtonBuilder()
+            .setCustomId('buy_energy_drink')
+            .setLabel(`💰 Buy Drink ($100)`)
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(disabled)
     );
     
     rows.push(new ActionRowBuilder().addComponents(utilityButtons));
@@ -504,6 +513,29 @@ module.exports = {
                 
                 await i.update({
                     embeds: [createGameEmbed(game, energyMessage)],
+                    components: createAttackButtons(game)
+                });
+                return;
+            }
+
+            // Handle Buy Energy Drink
+            if (i.customId === 'buy_energy_drink') {
+                const DRINK_PRICE = 100;
+                const currentBalance = await economy.getBalance(userId);
+                
+                if (currentBalance < DRINK_PRICE) {
+                    return i.reply({ content: `❌ Not enough coins! You need $${DRINK_PRICE} but only have $${currentBalance}.`, ephemeral: true });
+                }
+                
+                // Deduct cost and add drink
+                await economy.removeBalance(userId, DRINK_PRICE);
+                game.energyDrinks++;
+                
+                const newBalance = await economy.getBalance(userId);
+                const buyMessage = `💰 **Purchased Energy Drink!**\n-$${DRINK_PRICE} (Balance: $${newBalance})\n🧃 You now have **${game.energyDrinks}** Energy Drinks`;
+                
+                await i.update({
+                    embeds: [createGameEmbed(game, buyMessage)],
                     components: createAttackButtons(game)
                 });
                 return;

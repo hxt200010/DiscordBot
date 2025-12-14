@@ -146,7 +146,7 @@ class PetSystem {
             id: petDoc.id,
             petName: petDoc.petName,
             type: petDoc.type,
-            stats: petDoc.stats, // Nested object
+            stats: { ...petDoc.stats }, // Deep copy to prevent shared reference bug
             xp: petDoc.xp,
             level: petDoc.level,
             isWorking: petDoc.isWorking,
