@@ -39,6 +39,9 @@ const userSchema = new mongoose.Schema({
         totalDamage: { type: Number, default: 0 },
         highestDamage: { type: Number, default: 0 }
     },
+    // Tower Defense streak tracking
+    towerStreak: { type: Number, default: 0 },
+    lastTowerGame: { type: Number, default: null },
     // Pet chat conversation memory (last 5 messages per pet)
     petChatHistory: { type: Map, of: Array, default: new Map() }
 });
