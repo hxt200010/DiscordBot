@@ -74,19 +74,22 @@ function getWaveName(waveNum) {
     return '🔥 DEMON INVASION';
 }
 
-// Rewards based on waves survived (with streak multiplier)
+// Rewards based on waves survived (with streak multiplier) - 30% boost
 function getReward(wavesSurvived, towerHp, streak = 0) {
     let reward = 0;
     
     if (wavesSurvived <= 5) {
-        const baseRewards = { 5: 800, 4: 400, 3: 200, 2: 100, 1: 50, 0: 0 };
+        // Base rewards: +30% from original
+        const baseRewards = { 5: 1060, 4: 530, 3: 265, 2: 132, 1: 67, 0: 0 };
         reward = baseRewards[wavesSurvived] || 0;
     } else {
-        reward = 800 + (wavesSurvived - 5) * 200 + Math.pow(wavesSurvived - 5, 2) * 50;
+        // Endless mode: +30% scaling
+        reward = 1060 + (wavesSurvived - 5) * 265 + Math.pow(wavesSurvived - 5, 2) * 67;
     }
     
+    // Tower HP bonus: +30% (5→6.5)
     if (wavesSurvived >= 5 && towerHp > 0) {
-        reward += Math.floor(towerHp * 5);
+        reward += Math.floor(towerHp * 6.5);
     }
     
     const streakMultiplier = 1 + Math.min(streak, 10) * 0.1;
