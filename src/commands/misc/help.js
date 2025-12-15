@@ -35,7 +35,7 @@ module.exports = {
                 },
                 {
                     name: '🎰 Casino & Betting',
-                    value: '`blackjack, highlow, slots, crash, scratch, guess, rps, fish`',
+                    value: '`blackjack, highlow, slots, crash, scratch, guess, rps, fish, tienlen`',
                     inline: false
                 },
                 {
