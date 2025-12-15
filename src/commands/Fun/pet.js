@@ -39,6 +39,18 @@ async function generatePetEmbed(pet, userId, interaction) {
     const user = await User.findOne({ userId });
     const userBoosts = { speedShoesBoost: user?.speedShoesBoost };
 
+    // Clean up duplicate accessories in DB if found
+    if (pet.accessories && pet.accessories.length > 0) {
+        const uniqueAccessories = [...new Set(pet.accessories)].filter(a => a);
+        if (uniqueAccessories.length !== pet.accessories.length) {
+            // Duplicates found - clean up in DB
+            await PetSystem.updatePet(pet.id, (p) => {
+                p.accessories = uniqueAccessories;
+            });
+            pet.accessories = uniqueAccessories;
+        }
+    }
+
     // Apply pending work gains
     let workMessage = "";
     if (pet.isWorking) {
@@ -83,16 +95,21 @@ async function generatePetEmbed(pet, userId, interaction) {
             { name: 'Combat ⚔️', value: `AP: ${pet.attack || baseStats.attack} | DP: ${pet.defense || baseStats.defense}`, inline: false }
         );
 
-    // Add accessories display if pet has any
+    // Add accessories display if pet has any (deduplicated)
     if (pet.accessories && pet.accessories.length > 0) {
-        const accessoryEmojis = {
-            'Sunglasses': '😎',
-            'Golden Gloves': '🥊',
-            'Royal Cape': '👑',
-            'Chaos Aura': '🔥'
-        };
-        const accessoryDisplay = pet.accessories.map(a => `${accessoryEmojis[a] || '✨'} ${a}`).join('\n');
-        embed.addFields({ name: '👕 Accessories', value: accessoryDisplay, inline: false });
+        // Remove duplicates using Set
+        const uniqueAccessories = [...new Set(pet.accessories)].filter(a => a);
+        
+        if (uniqueAccessories.length > 0) {
+            const accessoryEmojis = {
+                'Sunglasses': '😎',
+                'Golden Gloves': '🥊',
+                'Royal Cape': '👑',
+                'Chaos Aura': '🔥'
+            };
+            const accessoryDisplay = uniqueAccessories.map(a => `${accessoryEmojis[a] || '✨'} ${a}`).join('\n');
+            embed.addFields({ name: '👕 Accessories', value: accessoryDisplay, inline: false });
+        }
     }
 
     // Add skills display if pet has any

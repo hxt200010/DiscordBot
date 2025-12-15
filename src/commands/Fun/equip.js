@@ -100,7 +100,11 @@ module.exports = {
         // Equip the accessory
         await PetSystem.updatePet(pet.id, (p) => {
             if (!p.accessories) p.accessories = [];
-            p.accessories.push(accessoryInInventory.name);
+            // Ensure no duplicates (clean up and add)
+            p.accessories = [...new Set(p.accessories)].filter(a => a);
+            if (!p.accessories.includes(accessoryInInventory.name)) {
+                p.accessories.push(accessoryInInventory.name);
+            }
 
             // Auto-enable glasses display when equipping Sunglasses
             if (accessoryInInventory.name === 'Sunglasses') {
