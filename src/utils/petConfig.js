@@ -33,5 +33,30 @@ module.exports = [
         emoji: '🌸',
         description: "A cheerful and determined hedgehog with a giant Piko Piko Hammer. She's the heart of the team and never backs down from a fight.",
         stats: { attack: 50, defense: 110, health: 2600 }
+    },
+    // ==================== EVOLUTION PETS (Not Adoptable) ====================
+    {
+        name: 'Super Sonic',
+        value: 'supersonic',
+        emoji: '⚡✨',
+        description: "The legendary transformation! When Sonic absorbs the power of the Chaos Emeralds, he becomes Super Sonic - an invincible golden warrior!",
+        stats: { attack: 200, defense: 200, health: 3000 },
+        tier: 2,
+        evolvesFrom: 'sonic',
+        evolutionLevel: 20,
+        innateSkill: 'Super Critical',
+        isEvolution: true  // Flag to exclude from /adopt
+    },
+    {
+        name: 'Super Shadow',
+        value: 'supershadow',
+        emoji: '🌑✨',
+        description: "The Ultimate Lifeform unleashed! When Shadow harnesses the full power of the Chaos Emeralds, he becomes Super Shadow - unstoppable raw power!",
+        stats: { attack: 320, defense: 140, health: 2600 },
+        tier: 2,
+        evolvesFrom: 'shadow',
+        evolutionLevel: 20,
+        innateSkill: 'Chaos Fury',
+        isEvolution: true
     }
 ];

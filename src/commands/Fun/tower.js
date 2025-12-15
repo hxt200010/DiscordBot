@@ -2,7 +2,7 @@ const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentTyp
 const economy = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
 const User = require('../../models/User');
-const { checkLevelUp } = require('../../utils/petUtils');
+const { checkLevelUp, checkEvolution, applyCriticalDamage } = require('../../utils/petUtils');
 
 const activeGames = new Map();
 
@@ -597,12 +597,18 @@ module.exports = {
                 p.stats.energy = activePet.stats.energy;
             });
 
-            // Pet attacks enemy
-            const petDamage = Math.floor(activePet.stats.attack * (0.8 + Math.random() * 0.4));
+            // Pet attacks enemy - apply critical damage if applicable
+            let baseDamage = Math.floor(activePet.stats.attack * (0.8 + Math.random() * 0.4));
+            const critResult = applyCriticalDamage(activePet, baseDamage);
+            const petDamage = critResult.damage;
             target.hp -= petDamage;
             game.turnsTaken++;
 
             let battleMessage = `⚔️ **${activePet.petName}** attacks ${target.emoji} for **${petDamage}** damage! (-${ENERGY_PER_ATTACK}⚡)`;
+            if (critResult.isCritical) {
+                const emoji = critResult.skillName === 'Chaos Fury' ? '🔥' : '💥';
+                battleMessage += ` ${emoji} **${critResult.skillName}!** (+${critResult.bonusPercent}%)`;
+            }
 
             // Check if enemy died - AWARD XP
             if (target.hp <= 0) {
@@ -623,14 +629,28 @@ module.exports = {
                     battleMessage += `\n🎉 **LEVEL UP!** ${activePet.petName} is now Level ${activePet.level}!`;
                     battleMessage += `\n   +10 Max HP | +3 ${activePet.level % 2 === 0 ? 'ATK' : 'DEF'}`;
                     
-                    // Save level up immediately
+                    // Check for evolution!
+                    const evolutionResult = checkEvolution(activePet);
+                    if (evolutionResult) {
+                        battleMessage += `\n\n✨✨✨ **EVOLUTION!!!** ✨✨✨`;
+                        battleMessage += `\n${evolutionResult.from} → **${evolutionResult.to}**!`;
+                        battleMessage += `\n⭐ TIER ${evolutionResult.tier} UNLOCKED!`;
+                        battleMessage += `\n💪 New Stats: ${evolutionResult.newStats.attack} ATK | ${evolutionResult.newStats.defense} DEF | ${evolutionResult.newStats.health} HP`;
+                        if (evolutionResult.innateSkill) {
+                            battleMessage += `\n💥 Learned: **${evolutionResult.innateSkill}**!`;
+                        }
+                    }
+                    
+                    // Save level up (and evolution) immediately
                     await PetSystem.updatePet(activePet.id, (p) => {
+                        p.type = activePet.type; // Save new type if evolved
                         p.xp = activePet.xp;
                         p.level = activePet.level;
                         p.maxHp = activePet.maxHp;
                         p.stats.health = activePet.maxHp;
                         p.stats.attack = activePet.stats.attack;
                         p.stats.defense = activePet.stats.defense;
+                        p.skills = activePet.skills || [];
                     });
                 }
             }

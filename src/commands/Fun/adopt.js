@@ -15,7 +15,7 @@ module.exports = {
             description: 'Choose your pet character',
             type: ApplicationCommandOptionType.String,
             required: true,
-            choices: petConfig.map(pet => ({ name: pet.name, value: pet.value })),
+            choices: petConfig.filter(pet => !pet.isEvolution).map(pet => ({ name: pet.name, value: pet.value })),
         },
         {
             name: 'name',
@@ -94,6 +94,16 @@ module.exports = {
                 }
 
                 const config = petConfig.find(p => p.value === character);
+                
+                // Block adopting evolution pets
+                if (config && config.isEvolution) {
+                    return i.update({
+                        content: `❌ **${config.name}** cannot be adopted! You must evolve a **${config.evolvesFrom}** to level **${config.evolutionLevel}** to obtain it.`,
+                        embeds: [],
+                        components: []
+                    });
+                }
+                
                 const baseStats = config ? config.stats : { attack: 10, defense: 10, health: 100 };
 
                 const newPet = {

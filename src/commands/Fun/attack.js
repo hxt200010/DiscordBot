@@ -209,6 +209,24 @@ module.exports = {
             }
         }
 
+        // Super Critical: 25% chance for +10% bonus damage (Super Sonic innate skill)
+        if (attackerSkills.includes('Super Critical')) {
+            if (Math.random() < 0.25) {
+                const critBonus = rawDamage * 0.1;
+                rawDamage += critBonus;
+                skillMessages.push(`💥 **Super Critical**: CRITICAL HIT! +${Math.floor(critBonus)} bonus damage!`);
+            }
+        }
+
+        // Chaos Fury: 25% chance for +25% bonus damage (Super Shadow innate skill)
+        if (attackerSkills.includes('Chaos Fury')) {
+            if (Math.random() < 0.25) {
+                const furyBonus = rawDamage * 0.25;
+                rawDamage += furyBonus;
+                skillMessages.push(`🔥 **Chaos Fury**: DEVASTATING HIT! +${Math.floor(furyBonus)} bonus damage!`);
+            }
+        }
+
         // --- DEFENDER DAMAGE REDUCTION ---
 
         let defenseReduction = DP * 0.5;

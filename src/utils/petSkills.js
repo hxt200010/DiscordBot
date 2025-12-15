@@ -78,6 +78,26 @@ const SKILLS = {
         type: 'passive',
         effect: 'xpBonus',
         value: 0.25
+    },
+
+    // ==================== EVOLUTION SKILLS ====================
+    'Super Critical': {
+        name: 'Super Critical',
+        emoji: '💥',
+        description: '25% chance to deal +10% bonus critical damage on any attack.',
+        type: 'active',
+        effect: 'criticalDamage',
+        value: 0.25,  // 25% chance
+        bonusDamage: 0.1  // +10% damage when triggered
+    },
+    'Chaos Fury': {
+        name: 'Chaos Fury',
+        emoji: '🔥',
+        description: '25% chance to deal +25% bonus damage on any attack.',
+        type: 'active',
+        effect: 'chaosFury',
+        value: 0.25,  // 25% chance
+        bonusDamage: 0.25  // +25% damage when triggered
     }
 };
 

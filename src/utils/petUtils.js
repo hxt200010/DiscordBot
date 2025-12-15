@@ -179,5 +179,97 @@ const checkLevelUp = (pet) => {
     return leveledUp;
 };
 
-module.exports = { calculateWorkGains, applyWorkGains, checkLevelUp };
+/**
+ * Check if a pet should evolve and apply evolution
+ * @param {Object} pet - The pet object to check
+ * @returns {Object|null} Evolution info if evolved, null otherwise
+ */
+const checkEvolution = (pet) => {
+    const petConfig = require('./petConfig');
+    
+    // Find if there's an evolution for this pet type
+    const evolution = petConfig.find(p => 
+        p.isEvolution && 
+        p.evolvesFrom === pet.type && 
+        pet.level >= p.evolutionLevel
+    );
+    
+    if (!evolution) return null;
+    
+    // Store old values for the evolution message
+    const oldType = pet.type;
+    const oldName = petConfig.find(p => p.value === oldType)?.name || oldType;
+    
+    // EVOLVE THE PET!
+    pet.type = evolution.value;
+    
+    // Set new base stats (evolution resets to new base + level bonuses)
+    pet.stats.attack = evolution.stats.attack;
+    pet.stats.defense = evolution.stats.defense;
+    pet.maxHp = evolution.stats.health;
+    pet.hp = pet.maxHp; // Full heal on evolution
+    
+    if (pet.stats) {
+        pet.stats.health = pet.maxHp;
+    }
+    
+    // Sync top-level stats if they exist
+    if (pet.attack !== undefined) pet.attack = pet.stats.attack;
+    if (pet.defense !== undefined) pet.defense = pet.stats.defense;
+    
+    // Add innate skill if not already present
+    if (evolution.innateSkill && !pet.skills?.includes(evolution.innateSkill)) {
+        pet.skills = pet.skills || [];
+        pet.skills.push(evolution.innateSkill);
+    }
+    
+    return {
+        evolved: true,
+        from: oldName,
+        to: evolution.name,
+        newStats: evolution.stats,
+        innateSkill: evolution.innateSkill,
+        tier: evolution.tier
+    };
+};
+
+/**
+ * Calculate critical/bonus damage if pet has evolution skills
+ * @param {Object} pet - The pet object
+ * @param {number} baseDamage - The base damage before critical
+ * @returns {Object} { damage, isCritical, bonusPercent, skillName }
+ */
+const applyCriticalDamage = (pet, baseDamage) => {
+    const skills = pet.skills || [];
+    
+    // Super Critical: 25% chance, +10% damage
+    if (skills.includes('Super Critical')) {
+        if (Math.random() < 0.25) {
+            const bonusDamage = Math.floor(baseDamage * 0.1);
+            return {
+                damage: baseDamage + bonusDamage,
+                isCritical: true,
+                bonusPercent: 10,
+                skillName: 'Super Critical'
+            };
+        }
+    }
+    
+    // Chaos Fury: 25% chance, +25% damage
+    if (skills.includes('Chaos Fury')) {
+        if (Math.random() < 0.25) {
+            const bonusDamage = Math.floor(baseDamage * 0.25);
+            return {
+                damage: baseDamage + bonusDamage,
+                isCritical: true,
+                bonusPercent: 25,
+                skillName: 'Chaos Fury'
+            };
+        }
+    }
+    
+    return { damage: baseDamage, isCritical: false, bonusPercent: 0, skillName: null };
+};
+
+module.exports = { calculateWorkGains, applyWorkGains, checkLevelUp, checkEvolution, applyCriticalDamage };
 
