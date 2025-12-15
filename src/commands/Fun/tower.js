@@ -263,7 +263,7 @@ function spawnWave(waveIndex) {
         const enemy = { ...baseEnemy };
         
         if (waveIndex >= 5) {
-            const scaling = 1 + (waveIndex - 5) * 0.15;
+            const scaling = 1 + (waveIndex - 5) * 0.10; // Reduced from 0.15 to 0.10
             enemy.hp = Math.floor(enemy.health * scaling);
             enemy.maxHp = enemy.hp;
             enemy.damage = Math.floor(enemy.damage * scaling);
@@ -295,7 +295,7 @@ function enemyAttackPhase(game) {
     
     game.currentEnemies.forEach(enemy => {
         if (enemy.alive) {
-            const reducedDamage = Math.max(1, enemy.damage - Math.floor(effectiveDefense * 0.4));
+            const reducedDamage = Math.max(1, enemy.damage - Math.floor(effectiveDefense * 0.5)); // Improved from 0.4 to 0.5
             totalDamage += reducedDamage;
             attackMessages.push(`${enemy.emoji} dealt **${reducedDamage}** damage!`);
         }
@@ -425,8 +425,8 @@ module.exports = {
 
         // Initialize game state with pet queue
         const game = {
-            towerHp: 100,
-            maxTowerHp: 100,
+            towerHp: 150,
+            maxTowerHp: 150,
             petQueue: alivePets, // Alive pets that can attack, sorted by ATK
             allUserPets: userPets, // ALL user's pets (for combined defense calculation)
             activePetIndex: 0, // Start with highest ATK pet
