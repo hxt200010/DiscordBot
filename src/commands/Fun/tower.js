@@ -1,4 +1,4 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, StringSelectMenuBuilder } = require('discord.js');
 const economy = require('../../utils/EconomySystem');
 const PetSystem = require('../../utils/PetSystem');
 const User = require('../../models/User');
@@ -21,15 +21,16 @@ const ENEMY_XP = {
 };
 
 // Enemy types with stats
+// Rebalanced enemy stats (1.5x HP, ~1.4x damage) to account for combined pet defense
 const ENEMIES = {
-    rat: { emoji: '🐀', name: 'Rat', health: 20, damage: 5, speed: 'Fast', points: 10 },
-    wolf: { emoji: '🐺', name: 'Wolf', health: 40, damage: 15, speed: 'Medium', points: 25 },
-    bear: { emoji: '🐻', name: 'Bear', health: 80, damage: 25, speed: 'Slow', points: 50 },
-    dragon: { emoji: '🐉', name: 'Dragon', health: 150, damage: 50, speed: 'Boss', points: 150 },
+    rat: { emoji: '🐀', name: 'Rat', health: 30, damage: 8, speed: 'Fast', points: 10 },
+    wolf: { emoji: '🐺', name: 'Wolf', health: 60, damage: 22, speed: 'Medium', points: 25 },
+    bear: { emoji: '🐻', name: 'Bear', health: 120, damage: 35, speed: 'Slow', points: 50 },
+    dragon: { emoji: '🐉', name: 'Dragon', health: 225, damage: 70, speed: 'Boss', points: 150 },
     // Endless mode enemies
-    hydra: { emoji: '🐲', name: 'Hydra', health: 200, damage: 60, speed: 'Boss', points: 200 },
-    titan: { emoji: '👹', name: 'Titan', health: 300, damage: 80, speed: 'Boss', points: 350 },
-    demon: { emoji: '😈', name: 'Demon Lord', health: 500, damage: 100, speed: 'Boss', points: 500 }
+    hydra: { emoji: '🐲', name: 'Hydra', health: 300, damage: 85, speed: 'Boss', points: 200 },
+    titan: { emoji: '👹', name: 'Titan', health: 450, damage: 110, speed: 'Boss', points: 350 },
+    demon: { emoji: '😈', name: 'Demon Lord', health: 750, damage: 140, speed: 'Boss', points: 500 }
 };
 
 // Wave configurations (first 5 waves are standard, beyond that is endless)
@@ -114,8 +115,10 @@ function createGameEmbed(game, message = '') {
         .setTitle(`🏰 TOWER DEFENSE 🏰`)
         .setColor(game.towerHp > 50 ? 0x00FF00 : game.towerHp > 25 ? 0xFFAA00 : 0xFF0000);
 
-    // Tower status
-    let description = `**🏰 Tower Health:** ${createHealthBar(game.towerHp, game.maxTowerHp, 15)}\n\n`;
+    // Tower status with combined defense
+    const { effectiveDefense, petCount } = calculateCombinedDefense(game);
+    let description = `**🏰 Tower Health:** ${createHealthBar(game.towerHp, game.maxTowerHp, 15)}\n`;
+    description += `**🛡️ Tower Defense:** ${effectiveDefense} (from ${petCount} pets)\n\n`;
     
     // Current attacking pet with energy
     const activePet = game.petQueue[game.activePetIndex];
@@ -201,23 +204,8 @@ function createAttackButtons(game, disabled = false) {
     );
     rows.push(new ActionRowBuilder().addComponents(attackButtons));
     
-    // Utility row: Switch Pet + Energy Drink
+    // Utility row: Energy Drink buttons
     const utilityButtons = [];
-    
-    // Switch Pet button - only show if there are other pets with energy
-    const otherPetsWithEnergy = game.petQueue.filter((p, idx) => 
-        idx !== game.activePetIndex && p.stats.energy >= ENERGY_PER_ATTACK
-    );
-    
-    if (game.petQueue.length > 1) {
-        utilityButtons.push(
-            new ButtonBuilder()
-                .setCustomId('switch_pet')
-                .setLabel(`🔄 Switch Pet (${otherPetsWithEnergy.length} ready)`)
-                .setStyle(ButtonStyle.Primary)
-                .setDisabled(disabled || otherPetsWithEnergy.length === 0)
-        );
-    }
     
     // Energy Drink button
     utilityButtons.push(
@@ -238,6 +226,24 @@ function createAttackButtons(game, disabled = false) {
     );
     
     rows.push(new ActionRowBuilder().addComponents(utilityButtons));
+    
+    // Pet selection dropdown (if multiple pets)
+    if (game.petQueue.length > 1) {
+        const petOptions = game.petQueue.map((pet, idx) => ({
+            label: pet.petName,
+            description: `ATK: ${pet.stats.attack} | DEF: ${pet.stats.defense} | ⚡ ${pet.stats.energy}`,
+            value: `pet_${idx}`,
+            emoji: pet.stats.energy >= ENERGY_PER_ATTACK ? '✅' : '❌',
+            default: idx === game.activePetIndex
+        }));
+        
+        const petSelectMenu = new StringSelectMenuBuilder()
+            .setCustomId('select_pet')
+            .setPlaceholder('🔄 Select a pet to switch to...')
+            .addOptions(petOptions);
+        
+        rows.push(new ActionRowBuilder().addComponents(petSelectMenu));
+    }
     
     return rows;
 }
@@ -273,15 +279,23 @@ function spawnWave(waveIndex) {
     });
 }
 
-// Process enemy attacks on tower (uses active pet's defense)
+// Calculate combined defense from ALL user's pets (with diminishing returns)
+function calculateCombinedDefense(game) {
+    const totalDefense = game.allUserPets.reduce((sum, pet) => sum + (pet.stats?.defense || pet.defense || 0), 0);
+    // Diminishing returns: sqrt scaling so stacking many pets isn't OP
+    const effectiveDefense = Math.floor(Math.sqrt(totalDefense) * 5);
+    return { totalDefense, effectiveDefense, petCount: game.allUserPets.length };
+}
+
+// Process enemy attacks on tower (uses COMBINED defense from all pets)
 function enemyAttackPhase(game) {
     let totalDamage = 0;
     const attackMessages = [];
-    const activePet = game.petQueue[game.activePetIndex];
+    const { effectiveDefense } = calculateCombinedDefense(game);
     
     game.currentEnemies.forEach(enemy => {
         if (enemy.alive) {
-            const reducedDamage = Math.max(1, enemy.damage - Math.floor(activePet.stats.defense * 0.3));
+            const reducedDamage = Math.max(1, enemy.damage - Math.floor(effectiveDefense * 0.4));
             totalDamage += reducedDamage;
             attackMessages.push(`${enemy.emoji} dealt **${reducedDamage}** damage!`);
         }
@@ -289,7 +303,7 @@ function enemyAttackPhase(game) {
     
     game.towerHp = Math.max(0, game.towerHp - totalDamage);
     
-    return { totalDamage, attackMessages };
+    return { totalDamage, attackMessages, effectiveDefense };
 }
 
 // Save all pet states to database
@@ -413,7 +427,8 @@ module.exports = {
         const game = {
             towerHp: 100,
             maxTowerHp: 100,
-            petQueue: alivePets, // All alive pets, sorted by ATK
+            petQueue: alivePets, // Alive pets that can attack, sorted by ATK
+            allUserPets: userPets, // ALL user's pets (for combined defense calculation)
             activePetIndex: 0, // Start with highest ATK pet
             currentWave: 0,
             currentEnemies: spawnWave(0),
@@ -442,9 +457,8 @@ module.exports = {
 
         const reply = await interaction.fetchReply();
 
-        // Button collector (10 minutes timeout)
+        // Component collector for buttons AND select menus (10 minutes timeout)
         const collector = reply.createMessageComponentCollector({
-            componentType: ComponentType.Button,
             time: 600000
         });
 
@@ -460,27 +474,29 @@ module.exports = {
 
             const activePet = game.petQueue[game.activePetIndex];
 
-            // Handle Switch Pet
-            if (i.customId === 'switch_pet') {
-                // Find next pet with energy
-                const otherPetsWithEnergy = game.petQueue
-                    .map((p, idx) => ({ pet: p, idx }))
-                    .filter(x => x.idx !== game.activePetIndex && x.pet.stats.energy >= ENERGY_PER_ATTACK);
+            // Handle Pet Selection from dropdown
+            if (i.customId === 'select_pet') {
+                const selectedValue = i.values[0]; // e.g., "pet_2"
+                const newIndex = parseInt(selectedValue.split('_')[1]);
                 
-                if (otherPetsWithEnergy.length === 0) {
-                    return i.reply({ content: "❌ No other pets have enough energy to fight!", ephemeral: true });
+                if (newIndex === game.activePetIndex) {
+                    return i.reply({ content: "That pet is already active!", ephemeral: true });
                 }
                 
-                // Switch to next pet with energy (highest ATK among those with energy)
-                const nextPet = otherPetsWithEnergy[0];
-                game.activePetIndex = nextPet.idx;
+                const newPet = game.petQueue[newIndex];
+                if (!newPet) {
+                    return i.reply({ content: "❌ Pet not found!", ephemeral: true });
+                }
                 
                 // Save current pet's energy to DB immediately
                 await PetSystem.updatePet(activePet.id, (p) => {
                     p.stats.energy = activePet.stats.energy;
                 });
                 
-                const switchMessage = `🔄 **Switched to ${nextPet.pet.petName}!**\nATK: ${nextPet.pet.stats.attack} | ⚡ Energy: ${nextPet.pet.stats.energy}`;
+                // Switch to selected pet (no energy requirement - user chooses freely)
+                game.activePetIndex = newIndex;
+                
+                const switchMessage = `🔄 **Switched to ${newPet.petName}!**\nATK: ${newPet.stats.attack} | DEF: ${newPet.stats.defense} | ⚡ Energy: ${newPet.stats.energy}`;
                 
                 await i.update({
                     embeds: [createGameEmbed(game, switchMessage)],
