@@ -9,6 +9,9 @@ const SUIT_EMOJIS = { '♠': '♠️', '♣': '♣️', '♦': '♦️', '♥': 
 // Bot names for multi-bot games
 const BOT_NAMES = ['🤖 Bot 1', '🤖 Bot 2', '🤖 Bot 3'];
 
+// Turn timer (in milliseconds) - 30 seconds per turn
+const TURN_TIMER = 30000;
+
 // Card value for comparison (rank * 4 + suit)
 const getCardValue = (card) => {
     const rankIndex = RANKS.indexOf(card.rank);
@@ -378,7 +381,9 @@ module.exports = {
         let gameOver = false;
         let selectedCards = [];
         let winner = null;
-        let passedPlayers = new Set(); // Track who has passed this round
+        let passedPlayers = new Set(); // Track who has passed this round (locked until round reset)
+        let turnTimerId = null; // Timer for auto-pass
+        let turnStartTime = null; // When the turn started (for countdown display)
         
         // Base reward for winning
         const WIN_REWARD = 100;
@@ -415,13 +420,14 @@ module.exports = {
                     const currentPlayer = players[currentPlayerIdx];
                     const isYourTurn = currentPlayer.isPlayer;
                     
-                    // Build clean player list with card bars
+                    // Build clean player list with card bars and pass status
                     const playerList = players.map((p, idx) => {
                         const cards = hands[p.id].length;
                         const bar = '█'.repeat(Math.min(cards, 13)) + '░'.repeat(Math.max(0, 13 - cards));
                         const icon = p.isPlayer ? '👤' : '🤖';
                         const turn = idx === currentPlayerIdx ? '▶' : ' ';
-                        return `${turn} ${icon} ${p.name.padEnd(12)} \`${bar}\` ${cards}`;
+                        const passStatus = passedPlayers.has(p.id) ? ' 🚫' : '';
+                        return `${turn} ${icon} ${p.name.padEnd(12)} \`${bar}\` ${cards}${passStatus}`;
                     }).join('\n');
                     
                     // Build description
@@ -464,8 +470,14 @@ module.exports = {
                             name: '🎯 YOUR TURN — ' + (lastHand ? 'Beat it or Pass!' : 'Play anything!'), 
                             value: handText
                         });
+                        // Show timer countdown
+                        if (turnStartTime) {
+                            const elapsed = Date.now() - turnStartTime;
+                            const remaining = Math.max(0, Math.ceil((TURN_TIMER - elapsed) / 1000));
+                            embed.setFooter({ text: `⏱️ ${remaining}s remaining | 🚫 = passed (locked until round reset)` });
+                        }
                     } else {
-                        embed.setFooter({ text: `⏳ Waiting for ${currentPlayer.name}...` });
+                        embed.setFooter({ text: `⏳ Waiting for ${currentPlayer.name}... | 🚫 = passed (locked until round reset)` });
                     }
                     
                     return embed;
@@ -559,6 +571,68 @@ module.exports = {
             }
         };
 
+        // Clear any existing turn timer
+        const clearTurnTimer = () => {
+            if (turnTimerId) {
+                clearTimeout(turnTimerId);
+                turnTimerId = null;
+            }
+            turnStartTime = null;
+        };
+
+        // Handle auto-pass when timer expires
+        const handleAutoPass = async () => {
+            if (gameOver) return;
+            
+            const currentPlayer = players[currentPlayerIdx];
+            if (!currentPlayer.isPlayer) return; // Only auto-pass for human players
+            
+            // Can't auto-pass on first play of a round (must play something)
+            if (!lastHand) {
+                // If it's the first play and timer expires, just restart timer
+                // This shouldn't normally happen, but adds safety
+                startTurnTimer();
+                return;
+            }
+            
+            // Auto-pass the player
+            passedPlayers.add(challenger.id);
+            selectedCards = [];
+            
+            // Check if only one active player left (they win the round)
+            if (getActivePlayersCount() <= 1 && lastPlayerIdx !== null) {
+                const roundWinnerIdx = lastPlayerIdx;
+                startNewRound();
+                currentPlayerIdx = roundWinnerIdx;
+                await updateGameState(interaction, `⏰ Time's up! You auto-passed. 🔄 **New round!** ${players[roundWinnerIdx].name} won the round!`);
+            } else {
+                currentPlayerIdx = getNextPlayerIdx(currentPlayerIdx);
+                await updateGameState(interaction, `⏰ Time's up! You auto-passed.`);
+            }
+            
+            // Continue with next player
+            if (currentPlayerIdx >= 0 && currentPlayerIdx < players.length) {
+                if (players[currentPlayerIdx].isBot && !gameOver) {
+                    await doBotTurn();
+                } else if (players[currentPlayerIdx].isPlayer && !gameOver) {
+                    startTurnTimer();
+                }
+            }
+        };
+
+        // Start turn timer for human player
+        const startTurnTimer = () => {
+            clearTurnTimer();
+            
+            if (gameOver) return;
+            if (!players[currentPlayerIdx].isPlayer) return; // Don't start timer for bots
+            
+            turnStartTime = Date.now();
+            turnTimerId = setTimeout(async () => {
+                await handleAutoPass();
+            }, TURN_TIMER);
+        };
+
         const doBotTurn = async () => {
             if (gameOver) return;
             
@@ -571,7 +645,7 @@ module.exports = {
             const botPlay = getBotPlay(botHand, lastHand);
             
             if (!botPlay) {
-                // Bot passes - add to passed set
+                // Bot passes - add to passed set (locked until round reset)
                 passedPlayers.add(currentPlayer.id);
                 
                 // Check if only one active player left (they win the round)
@@ -579,14 +653,20 @@ module.exports = {
                     const roundWinnerIdx = lastPlayerIdx;
                     startNewRound();
                     currentPlayerIdx = roundWinnerIdx;
+                    
+                    try {
+                        await updateGameState(interaction, `${currentPlayer.name} passed! 🔄 **New round!** ${players[roundWinnerIdx].name} won the round!`);
+                    } catch (e) {
+                        console.error('Bot pass error:', e);
+                    }
                 } else {
                     currentPlayerIdx = getNextPlayerIdx(currentPlayerIdx);
-                }
-                
-                try {
-                    await updateGameState(interaction, `${currentPlayer.name} passed!`);
-                } catch (e) {
-                    console.error('Bot pass error:', e);
+                    
+                    try {
+                        await updateGameState(interaction, `${currentPlayer.name} passed!`);
+                    } catch (e) {
+                        console.error('Bot pass error:', e);
+                    }
                 }
                 
                 // Continue with next bot or wait for player (with safety check)
@@ -634,6 +714,9 @@ module.exports = {
             if (currentPlayerIdx >= 0 && currentPlayerIdx < players.length &&
                 players[currentPlayerIdx].isBot) {
                 await doBotTurn();
+            } else if (players[currentPlayerIdx].isPlayer && !gameOver) {
+                // Next player is human - start their timer
+                startTurnTimer();
             }
         };
 
@@ -652,6 +735,9 @@ module.exports = {
         // If bot goes first, start bot turns
         if (players[currentPlayerIdx].isBot) {
             await doBotTurn();
+        } else {
+            // Player goes first - start the turn timer
+            startTurnTimer();
         }
 
         const reply = await interaction.fetchReply();
@@ -710,7 +796,10 @@ module.exports = {
                     return i.reply({ content: "You can't pass on a new round!", ephemeral: true });
                 }
                 
-                // Add player to passed set
+                // Clear the turn timer since player acted
+                clearTurnTimer();
+                
+                // Add player to passed set (locked until round reset)
                 passedPlayers.add(challenger.id);
                 
                 // Check if only one active player left (they win the round)
@@ -718,18 +807,21 @@ module.exports = {
                     const roundWinnerIdx = lastPlayerIdx;
                     startNewRound();
                     currentPlayerIdx = roundWinnerIdx;
+                    
+                    await i.deferUpdate();
+                    await updateGameState(interaction, `You passed! 🔄 **New round!** ${players[roundWinnerIdx].name} won the round and plays next!`);
                 } else {
                     currentPlayerIdx = getNextPlayerIdx(currentPlayerIdx);
+                    await i.deferUpdate();
+                    await updateGameState(interaction, 'You passed! (Locked until round reset)');
                 }
-                
-                await i.deferUpdate();
-                
-                await updateGameState(interaction, 'You passed!');
                 
                 // Safety check before accessing players array
                 if (currentPlayerIdx >= 0 && currentPlayerIdx < players.length &&
                     players[currentPlayerIdx].isBot && !gameOver) {
                     await doBotTurn();
+                } else if (players[currentPlayerIdx].isPlayer && !gameOver) {
+                    startTurnTimer();
                 }
                 return;
             }
@@ -749,6 +841,9 @@ module.exports = {
                     return i.reply({ content: `Your ${playedHand.type} doesn't beat the last play!`, ephemeral: true });
                 }
                 
+                // Clear the turn timer since player acted
+                clearTurnTimer();
+                
                 // Remove cards from hand (use unique ID to prevent duplicates)
                 for (const card of selectedCards) {
                     const idx = hands[challenger.id].findIndex(c => c.id === card.id);
@@ -765,6 +860,7 @@ module.exports = {
                 if (hands[challenger.id].length === 0) {
                     gameOver = true;
                     winner = players[currentPlayerIdx];
+                    clearTurnTimer(); // Clear timer on game end
                     
                     // Award winnings
                     const totalReward = WIN_REWARD + totalPot;
@@ -783,11 +879,16 @@ module.exports = {
                 if (currentPlayerIdx >= 0 && currentPlayerIdx < players.length &&
                     players[currentPlayerIdx].isBot) {
                     await doBotTurn();
+                } else if (players[currentPlayerIdx].isPlayer && !gameOver) {
+                    startTurnTimer();
                 }
             }
         });
 
         collector.on('end', async (collected, reason) => {
+            // Clear timer when collector ends
+            clearTurnTimer();
+            
             if (reason === 'time') {
                 gameOver = true;
                 // Refund bet on timeout
