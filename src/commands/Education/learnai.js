@@ -87,7 +87,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setTitle(`🤖 Learn AI: ${data.title}`)
-                .setColor('Aqua')
+                .setColor('#00FFFF')
                 .addFields(
                     { name: '📖 Definition', value: data.definition },
                     { name: '🔍 Sub-techniques', value: data.sub_techniques.join('\n') || 'N/A', inline: true },

@@ -169,7 +169,7 @@ module.exports = {
 
                 const dodgeEmbed = new EmbedBuilder()
                     .setTitle(`⚔️ Battle: ${attackerPet.petName} vs ${defenderPet.petName}`)
-                    .setColor('Blue')
+                    .setColor('#0000FF')
                     .setDescription(
                         `**${attackerPet.petName}** attacks!\n\n` +
                         skillMessages.join('\n') +

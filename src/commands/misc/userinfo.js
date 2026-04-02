@@ -18,7 +18,7 @@ module.exports = {
         const icon = user.displayAvatarURL();
         const tag = user.tag; 
         const embed = new EmbedBuilder()
-        .setColor('Random')
+        .setColor(Math.floor(Math.random() * 16777215))
         .setAuthor({name: tag, iconURL: icon})
         .setThumbnail(icon)
         .addFields(

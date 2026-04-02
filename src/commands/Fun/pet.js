@@ -279,7 +279,7 @@ module.exports = {
         if (targets.length > 10) {
             const footerEmbed = new EmbedBuilder()
                 .setDescription(`*...and ${targets.length - 10} more pets not shown.*`)
-                .setColor('Grey');
+                .setColor('#808080');
             embeds.push(footerEmbed);
         }
 

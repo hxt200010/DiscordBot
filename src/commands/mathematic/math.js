@@ -114,7 +114,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('➕ Addition')
-                        .setColor('Green')
+                        .setColor('#00FF00')
                         .addFields(
                             { name: 'Expression', value: `\`${a} + ${b}\``, inline: true },
                             { name: 'Result', value: `\`${result}\``, inline: true }
@@ -128,7 +128,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('➖ Subtraction')
-                        .setColor('Blue')
+                        .setColor('#0000FF')
                         .addFields(
                             { name: 'Expression', value: `\`${a} - ${b}\``, inline: true },
                             { name: 'Result', value: `\`${result}\``, inline: true }
@@ -142,7 +142,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('✖️ Multiplication')
-                        .setColor('Purple')
+                        .setColor('#800080')
                         .addFields(
                             { name: 'Expression', value: `\`${a} × ${b}\``, inline: true },
                             { name: 'Result', value: `\`${result}\``, inline: true }
@@ -160,7 +160,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('➗ Division')
-                        .setColor('Orange')
+                        .setColor('#FFA500')
                         .addFields(
                             { name: 'Expression', value: `\`${a} ÷ ${b}\``, inline: true },
                             { name: 'Result', value: `\`${result}\``, inline: true }
@@ -177,7 +177,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('√ Square Root')
-                        .setColor('Aqua')
+                        .setColor('#00FFFF')
                         .addFields(
                             { name: 'Expression', value: `\`√${num}\``, inline: true },
                             { name: 'Result', value: `\`${result}\``, inline: true }
@@ -190,7 +190,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('📐 Sine')
-                        .setColor('Gold')
+                        .setColor('#FFD700')
                         .addFields(
                             { name: 'Angle (°)', value: `\`${angle}°\``, inline: true },
                             { name: 'Result', value: `\`${result.toFixed(6)}\``, inline: true }
@@ -203,7 +203,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('📐 Cosine')
-                        .setColor('Gold')
+                        .setColor('#FFD700')
                         .addFields(
                             { name: 'Angle (°)', value: `\`${angle}°\``, inline: true },
                             { name: 'Result', value: `\`${result.toFixed(6)}\``, inline: true }
@@ -216,7 +216,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('📐 Tangent')
-                        .setColor('Gold')
+                        .setColor('#FFD700')
                         .addFields(
                             { name: 'Angle (°)', value: `\`${angle}°\``, inline: true },
                             { name: 'Result', value: `\`${result.toFixed(6)}\``, inline: true }
@@ -234,7 +234,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('📊 Logarithm')
-                        .setColor('DarkBlue')
+                        .setColor('#00008B')
                         .addFields(
                             { name: 'Expression', value: `\`log${base === 10 ? '' : '_' + base}(${value})\``, inline: true },
                             { name: 'Result', value: `\`${result.toFixed(6)}\``, inline: true }
@@ -249,7 +249,7 @@ module.exports = {
                         
                         embed = new EmbedBuilder()
                             .setTitle('🧮 Calculator')
-                            .setColor('Green')
+                            .setColor('#00FF00')
                             .addFields(
                                 { name: 'Expression', value: `\`${expression}\``, inline: false },
                                 { name: 'Result', value: `\`${result}\``, inline: false }
@@ -278,7 +278,7 @@ module.exports = {
                         
                         embed = new EmbedBuilder()
                             .setTitle('∫ Definite Integral')
-                            .setColor('Purple')
+                            .setColor('#800080')
                             .addFields(
                                 { name: 'Function', value: `\`f(x) = ${func}\``, inline: false },
                                 { name: 'Limits', value: `\`[${lower}, ${upper}]\``, inline: true },

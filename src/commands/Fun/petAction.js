@@ -354,7 +354,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle(`Pet Action: ${action.charAt(0).toUpperCase() + action.slice(1)}`)
-            .setColor('Gold')
+            .setColor('#FFD700')
             .setDescription(results.join('\n') || "No changes.");
 
         interaction.editReply({ embeds: [embed] });

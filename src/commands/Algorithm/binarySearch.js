@@ -64,7 +64,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setTitle('Binary Search Result')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields([
                     {
                         name: 'Input Numbers',

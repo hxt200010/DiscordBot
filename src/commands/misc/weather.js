@@ -30,7 +30,7 @@ module.exports = {
                  const timezone = tzlookup(apiData.coord.lat, apiData.coord.lon);
                 const currentWeatherTime = moment.unix(apiData.dt).tz(timezone).format('HH:mm:ss,  MM/DD/YYYY');
                 const embed = new EmbedBuilder()
-                    .setColor('Random')
+                    .setColor(Math.floor(Math.random() * 16777215))
                     .setThumbnail(`http://openweathermap.org/img/w/${apiData.weather[0].icon}.png`)
                     .setTitle(`Temperature: ${apiData.main.temp}°C`)
                     .addFields(

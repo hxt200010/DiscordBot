@@ -121,7 +121,7 @@ module.exports = {
 
                 const convertEmbed = new EmbedBuilder()
                     .setTitle('Shards Converted!')
-                    .setColor('Purple')
+                    .setColor('#800080')
                     .setDescription(`You converted **${shards} Chaos Emerald Shard(s)** into emeralds!\n\nTotal Emeralds: **${currentEmeralds + shards}/7**`);
 
                 await i.editReply({ embeds: [convertEmbed], components: [] });
@@ -142,7 +142,7 @@ module.exports = {
 
                 const superEmbed = new EmbedBuilder()
                     .setTitle('⚡ SUPER FORM UNLOCKED! ⚡')
-                    .setColor('Gold')
+                    .setColor('#FFD700')
                     .setDescription(
                         '**THE POWER OF CHAOS IS YOURS!**\n\n' +
                         'You have unlocked the legendary Super Form!\n\n' +

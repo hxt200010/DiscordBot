@@ -113,7 +113,7 @@ Do not include any markdown formatting like \`\`\`json. Just the raw JSON string
 
             const embed = new EmbedBuilder()
                 .setTitle(`${data.emoji || '📚'} ${data.title}`)
-                .setColor('Purple')
+                .setColor('#800080')
                 .setDescription(explanation)
                 .addFields(
                     { name: '📂 Field', value: data.field || 'General Knowledge', inline: true },

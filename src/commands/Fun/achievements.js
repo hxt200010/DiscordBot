@@ -67,7 +67,7 @@ module.exports = {
         // Build embed
         const embed = new EmbedBuilder()
             .setTitle(`Achievements - ${interaction.user.username}`)
-            .setColor('Gold')
+            .setColor('#FFD700')
             .setDescription(`**${unlocked.length}/${allAchievements.length}** Achievements Unlocked`);
 
         // Show unlocked achievements

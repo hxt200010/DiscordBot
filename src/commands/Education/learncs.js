@@ -127,7 +127,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setTitle(`📚 Learn CS: ${data.title}`)
-                .setColor('Blue')
+                .setColor('#0000FF')
                 .addFields(
                     { name: '📂 Category', value: data.category || 'General CS', inline: true },
                     { name: '📊 Level', value: depth.charAt(0).toUpperCase() + depth.slice(1), inline: true },

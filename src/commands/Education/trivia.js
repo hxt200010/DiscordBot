@@ -64,7 +64,7 @@ module.exports = {
 
       const embed = new EmbedBuilder()
         .setTitle(`🎯 Trivia Quiz: ${chosenCategory.name}`)
-        .setColor('Random')
+        .setColor(Math.floor(Math.random() * 16777215))
         .setFooter({ text: `You earned ${reward} coins for playing trivia!` });
 
       for (let i = 0; i < questions.length; i++) {

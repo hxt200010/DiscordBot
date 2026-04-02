@@ -20,7 +20,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('Tangent Calculation')
-            .setColor('Random')
+            .setColor(Math.floor(Math.random() * 16777215))
             .addFields([
                 { name: 'Angle (Degrees)', value: `\`\`${angle}\`\``, inline: true },
                 { name: 'Result', value: `\`\`${result.toFixed(3)}\`\``, inline: true },

@@ -63,7 +63,7 @@ module.exports = {
             const timeTakens = (seconds * 1000) + (nanoseconds / 1e6); 
             const embed = new EmbedBuilder()
             .setTitle('Remove Duplicate in an Array')
-            .setColor('Random')
+            .setColor(Math.floor(Math.random() * 16777215))
             .setThumbnail(client.user.displayAvatarURL())
             .addFields([
                 {

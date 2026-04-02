@@ -236,7 +236,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔢 Sort Ascending')
-                        .setColor('Green')
+                        .setColor('#00FF00')
                         .addFields(
                             { name: 'Input', value: `\`${input}\``, inline: false },
                             { name: 'Sorted', value: `\`${sorted.join(', ')}\``, inline: false },
@@ -253,7 +253,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔢 Sort Descending')
-                        .setColor('Blue')
+                        .setColor('#0000FF')
                         .addFields(
                             { name: 'Input', value: `\`${input}\``, inline: false },
                             { name: 'Sorted', value: `\`${sorted.join(', ')}\``, inline: false },
@@ -270,7 +270,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔝 Find Biggest')
-                        .setColor('Gold')
+                        .setColor('#FFD700')
                         .addFields(
                             { name: 'Input', value: `\`${numbers.join(', ')}\``, inline: false },
                             { name: 'Biggest', value: `\`${biggest}\``, inline: true },
@@ -287,7 +287,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔻 Find Smallest')
-                        .setColor('Purple')
+                        .setColor('#800080')
                         .addFields(
                             { name: 'Input', value: `\`${numbers.join(', ')}\``, inline: false },
                             { name: 'Smallest', value: `\`${smallest}\``, inline: true },
@@ -361,7 +361,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🌲 Depth-First Search')
-                        .setColor('DarkGreen')
+                        .setColor('#006400')
                         .addFields(
                             { name: 'Vertices', value: `\`${vertices.join(', ')}\``, inline: false },
                             { name: 'Start', value: `\`${startVertex}\``, inline: true },
@@ -380,7 +380,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🏛️ Roman to Integer')
-                        .setColor('Gold')
+                        .setColor('#FFD700')
                         .addFields(
                             { name: 'Roman', value: `\`${numeral}\``, inline: true },
                             { name: 'Integer', value: `\`${result}\``, inline: true },
@@ -400,7 +400,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('📈 Best Time to Buy/Sell Stock')
-                        .setColor('Green')
+                        .setColor('#00FF00')
                         .addFields(
                             { name: 'Prices', value: `\`${prices.join(', ')}\``, inline: false },
                             { name: 'Max Profit', value: `\`$${profit}\``, inline: true },
@@ -425,7 +425,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🧹 Remove Duplicates')
-                        .setColor('Orange')
+                        .setColor('#FFA500')
                         .addFields(
                             { name: 'Original', value: `\`${original.join(', ')}\``, inline: false },
                             { name: 'After Removal', value: `\`${result.join(', ')}\``, inline: false },
@@ -448,7 +448,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🗑️ Remove Element')
-                        .setColor('Red')
+                        .setColor('#FF0000')
                         .addFields(
                             { name: 'Original', value: `\`${original.join(', ')}\``, inline: false },
                             { name: 'Target', value: `\`${target}\``, inline: true },
@@ -470,7 +470,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔢 Smallest Missing Positive')
-                        .setColor('Purple')
+                        .setColor('#800080')
                         .addFields(
                             { name: 'Array', value: `\`[${nums.join(', ')}]\``, inline: false },
                             { name: 'Result', value: `Smallest missing: **${result}**`, inline: true },

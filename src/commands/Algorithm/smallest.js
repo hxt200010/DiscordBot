@@ -33,7 +33,7 @@ module.exports = {
 
            const embed = new EmbedBuilder()
                 .setTitle('Finding the smallest number in the array')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields([
                     {
                         name: `Input numbers`, 

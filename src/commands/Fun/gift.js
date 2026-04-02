@@ -101,7 +101,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('Gift Sent!')
-            .setColor('Green')
+            .setColor('#00FF00')
             .setDescription(
                 `You gifted **${quantity}x ${itemName}** to ${targetUser}!`
             )

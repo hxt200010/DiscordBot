@@ -64,7 +64,7 @@ module.exports = {
             // Create an embed to display the result
             const embed = new EmbedBuilder()
                 .setTitle('🔢 Smallest Missing Positive Integer')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields(
                     { 
                         name: '📋 Problem Description', 

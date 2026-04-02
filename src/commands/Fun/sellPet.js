@@ -102,7 +102,7 @@ module.exports = {
         const confirmEmbed = new EmbedBuilder()
             .setTitle('⚠️ Confirm Sale')
             .setDescription(`Are you sure you want to sell **${soldPet.petName}**?\n\n💰 **Refund Amount:** $${refundAmount}\n⚠️ **This action cannot be undone.**`)
-            .setColor('Red');
+            .setColor('#FF0000');
 
         const confirmButton = new ButtonBuilder()
             .setCustomId('confirm_sell')
@@ -147,7 +147,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle('👋 Goodbye!')
                     .setDescription(`You have sold **${soldPet.petName}**.\n\n💰 **Refund:** $${refundAmount} (50% of original value)\nWe hope they find a good home!`)
-                    .setColor('Red');
+                    .setColor('#FF0000');
 
                 await i.update({
                     embeds: [embed],

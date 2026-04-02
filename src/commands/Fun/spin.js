@@ -42,7 +42,7 @@ module.exports = {
                 const minutes = Math.floor((remainingMs % (60 * 60 * 1000)) / (60 * 1000));
 
                 const embed = new EmbedBuilder()
-                    .setColor('Red')
+                    .setColor('#FF0000')
                     .setTitle('🎡 Daily Wheel')
                     .setDescription(`You've already spun the wheel today!\n\n⏰ **Come back in:** ${hours}h ${minutes}m`)
                     .setFooter({ text: 'The wheel resets every 24 hours' });

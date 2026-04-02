@@ -97,7 +97,7 @@ Make the questions realistic and helpful for someone preparing for this specific
             const startEmbed = new EmbedBuilder()
                 .setTitle('💼 Job Interview Session Starting')
                 .setDescription(`**Role Analysis Complete!**\n\nI've analyzed the job requirements and prepared ${times} interview question${times > 1 ? 's' : ''} to help you prepare.\n\n⏱️ You have **150 seconds** to answer each question.\n💰 Earn **${rewardPerQuestion} coins** for each correct answer!`)
-                .setColor('Blue')
+                .setColor('#0000FF')
                 .setFooter({ text: 'Good luck with your interview preparation!' });
 
             await interaction.editReply({ embeds: [startEmbed] });
@@ -127,7 +127,7 @@ Make the questions realistic and helpful for someone preparing for this specific
                 const questionEmbed = new EmbedBuilder()
                     .setTitle(`💼 Job Interview - Question ${i + 1}/${times}`)
                     .setDescription(description)
-                    .setColor('Blue')
+                    .setColor('#0000FF')
                     .setFooter({ text: `Reward: ${rewardPerQuestion} coins per correct answer | Time: 300s` });
 
                 // Use short letter labels for buttons
@@ -171,14 +171,14 @@ Make the questions realistic and helpful for someone preparing for this specific
                         const successEmbed = new EmbedBuilder()
                             .setTitle('✅ Excellent Answer!')
                             .setDescription(`You earned **${rewardPerQuestion} coins**!\n\n**Why this is correct:**\n${questionData.explanation || 'This answer best demonstrates the skills and knowledge required for this role.'}`)
-                            .setColor('Green');
+                            .setColor('#00FF00');
 
                         await confirmation.update({ embeds: [questionEmbed, successEmbed], components: [] });
                     } else {
                         const failEmbed = new EmbedBuilder()
                             .setTitle('❌ Not Quite Right')
                             .setDescription(`The best answer was: **${correctAnswer}**\n\n**Explanation:**\n${questionData.explanation || 'This answer best demonstrates the skills and knowledge required for this role.'}`)
-                            .setColor('Red');
+                            .setColor('#FF0000');
 
                         await confirmation.update({ embeds: [questionEmbed, failEmbed], components: [] });
                     }
@@ -189,7 +189,7 @@ Make the questions realistic and helpful for someone preparing for this specific
                     const timeoutEmbed = new EmbedBuilder()
                         .setTitle('⏰ Time Out!')
                         .setDescription(`You ran out of time. The best answer was: **${questionData.options[questionData.correctIndex]}**\n\n**Explanation:**\n${questionData.explanation || 'This answer best demonstrates the skills and knowledge required for this role.'}`)
-                        .setColor('Orange');
+                        .setColor('#FFA500');
 
                     await msg.edit({ embeds: [questionEmbed, timeoutEmbed], components: [] });
                 }

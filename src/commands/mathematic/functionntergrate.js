@@ -58,7 +58,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setTitle('Definite Integral Result')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields([
                     {
                         name: 'Function',

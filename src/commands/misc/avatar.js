@@ -22,7 +22,7 @@ module.exports = {
             const user = interaction.options.getUser('user') || interaction.user;
             const avatarURL = user.displayAvatarURL({ format: 'png', size: 4096, dynamic: true });
             const embed = new EmbedBuilder()
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .setImage(avatarURL)
                 .setTitle(`${user.tag}'s Avatar`);
             interaction.reply({ embeds: [embed] });

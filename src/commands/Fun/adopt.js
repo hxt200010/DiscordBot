@@ -48,7 +48,7 @@ module.exports = {
         const confirmEmbed = new EmbedBuilder()
             .setTitle('🐾 Confirm Adoption')
             .setDescription(`Are you sure you want to adopt **${petName}** the ${character}?\n\n💰 **Cost:** ${price === 0 ? 'Free' : `$${price}`}`)
-            .setColor('Yellow');
+            .setColor('#FFFF00');
 
         const confirmButton = new ButtonBuilder()
             .setCustomId('confirm_adopt')
@@ -139,7 +139,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle('🎉 Adoption Successful!')
                     .setDescription(`You have adopted **${petName}** the ${character}!`)
-                    .setColor('Green')
+                    .setColor('#00FF00')
                     .addFields(
                         { name: 'Cost', value: price === 0 ? 'Free' : `$${price}`, inline: true },
                         { name: 'Total Pets', value: `${updatedUserPets.length}`, inline: true }

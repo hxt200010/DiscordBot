@@ -95,7 +95,7 @@ module.exports = {
         // Build embed
         const embed = new EmbedBuilder()
             .setTitle('Daily Bounties')
-            .setColor('Gold')
+            .setColor('#FFD700')
             .setDescription('Complete challenges to earn bonus coins!\nBounties reset daily at midnight.')
             .setTimestamp();
 
@@ -178,7 +178,7 @@ module.exports = {
 
             const claimEmbed = new EmbedBuilder()
                 .setTitle('Bounties Claimed!')
-                .setColor('Green')
+                .setColor('#00FF00')
                 .setDescription(`You earned **${totalReward.toLocaleString()} coins** from bounties!`)
                 .setTimestamp();
 

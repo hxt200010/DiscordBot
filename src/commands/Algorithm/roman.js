@@ -84,7 +84,7 @@ module.exports = {
             const timeTakenMs = (seconds * 1000) + (nanoseconds / 1e6); // Convert to milliseconds
             const embed = new EmbedBuilder()
                 .setTitle('Roman To Integer Result')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields([
                     {
                         name: 'Symbol', 

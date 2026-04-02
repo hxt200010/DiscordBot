@@ -55,7 +55,7 @@ module.exports = {
             const embed = new EmbedBuilder()
                 .setTitle(`📊 ${question}`)
                 .setDescription(`**Type:** ${type}\n**Ends:** <t:${expiresTimestamp}:R> (<t:${expiresTimestamp}:f>)`)
-                .setColor('Gold')
+                .setColor('#FFD700')
                 .setThumbnail(client.user.displayAvatarURL())
                 .setFooter({ text: 'Poll will be deleted automatically after 5 days.' });
 

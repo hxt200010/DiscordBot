@@ -105,7 +105,7 @@ module.exports = {
                 });
 
                 embed = new EmbedBuilder()
-                    .setColor('Green')
+                    .setColor('#00FF00')
                     .setTitle('🏋️ Training Complete!')
                     .setDescription(
                         `**${pet.petName}** completed training with the weights!\n\n` +
@@ -156,7 +156,7 @@ module.exports = {
                 });
 
                 embed = new EmbedBuilder()
-                    .setColor('Gold')
+                    .setColor('#FFD700')
                     .setTitle('💉 Ultimate Serum Injected!')
                     .setDescription(
                         `**${pet.petName}** has been enhanced!\n\n` +

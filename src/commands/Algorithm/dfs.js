@@ -114,7 +114,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setTitle('Depth-First Search Result')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .setThumbnail(client.user.displayAvatarURL())
                 .addFields([
                     {

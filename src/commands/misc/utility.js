@@ -62,7 +62,7 @@ module.exports = {
                     const user = interaction.options.getUser('user') || interaction.user;
                     const avatarURL = user.displayAvatarURL({ format: 'png', size: 4096, dynamic: true });
                     const embed = new EmbedBuilder()
-                        .setColor('Random')
+                        .setColor(Math.floor(Math.random() * 16777215))
                         .setImage(avatarURL)
                         .setTitle(`${user.tag}'s Avatar`)
                         .setURL(avatarURL);
@@ -83,7 +83,7 @@ module.exports = {
                     const user = interaction.options.getUser('user') || interaction.user;
                     const member = await interaction.guild.members.fetch(user.id);
                     const embed = new EmbedBuilder()
-                        .setColor('Random')
+                        .setColor(Math.floor(Math.random() * 16777215))
                         .setAuthor({ name: user.tag, iconURL: user.displayAvatarURL() })
                         .setThumbnail(user.displayAvatarURL())
                         .addFields(

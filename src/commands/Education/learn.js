@@ -99,7 +99,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle(`📚 Learn ${language} - Question ${i + 1}/${times}`)
                     .setDescription(`${questionData.question}\n\n\`\`\`${language.toLowerCase()}\n${questionData.code}\n\`\`\``)
-                    .setColor('Blue')
+                    .setColor('#0000FF')
                     .setFooter({ text: `Difficulty: ${difficulty} | Reward: ${reward} coins` });
 
                 const buttons = questionData.options.map((opt, index) =>

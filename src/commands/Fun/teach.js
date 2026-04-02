@@ -79,7 +79,7 @@ module.exports = {
                 { name: '🎲 Pet Skill Scroll', value: 'Learn a random skill', inline: true },
                 { name: '✨ Legendary Skill Scroll', value: 'Choose any skill', inline: true }
             )
-            .setColor('Blue');
+            .setColor('#0000FF');
 
         const row = new ActionRowBuilder().addComponents(
             new StringSelectMenuBuilder()
@@ -140,7 +140,7 @@ async function useRandomScroll(interaction, userId, pet, isUpdate = false) {
             // Pet knows all skills!
             await EconomySystem.addItem(userId, { name: 'Pet Skill Scroll', type: 'skill', tier: 'medium', price: 7500 });
             const embed = new EmbedBuilder()
-                .setColor('Gold')
+                .setColor('#FFD700')
                 .setTitle('🎓 Master of All!')
                 .setDescription(`**${pet.petName}** already knows ALL available skills!\n\nYour scroll has been refunded.`);
 
@@ -157,7 +157,7 @@ async function useRandomScroll(interaction, userId, pet, isUpdate = false) {
     });
 
     const embed = new EmbedBuilder()
-        .setColor('Green')
+        .setColor('#00FF00')
         .setTitle('📜 Skill Learned!')
         .setDescription(
             `**${pet.petName}** learned a new skill!\n\n` +
@@ -187,7 +187,7 @@ async function useChoiceScroll(interaction, userId, pet, isUpdate = false) {
 
     if (availableSkills.length === 0) {
         const embed = new EmbedBuilder()
-            .setColor('Gold')
+            .setColor('#FFD700')
             .setTitle('🎓 Master of All!')
             .setDescription(`**${pet.petName}** already knows ALL available skills!`);
 
@@ -199,7 +199,7 @@ async function useChoiceScroll(interaction, userId, pet, isUpdate = false) {
     const embed = new EmbedBuilder()
         .setTitle('✨ Choose a Skill')
         .setDescription(`Select a skill to teach **${pet.petName}**:`)
-        .setColor('Purple');
+        .setColor('#800080');
 
     const options = availableSkills.slice(0, 25).map(skill => ({
         label: skill.name,
@@ -241,7 +241,7 @@ async function useChoiceScroll(interaction, userId, pet, isUpdate = false) {
         });
 
         const resultEmbed = new EmbedBuilder()
-            .setColor('Purple')
+            .setColor('#800080')
             .setTitle('✨ Skill Mastered!')
             .setDescription(
                 `**${pet.petName}** learned:\n\n` +

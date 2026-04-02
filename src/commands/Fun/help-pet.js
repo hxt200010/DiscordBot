@@ -61,7 +61,7 @@ module.exports = {
 function createOverviewEmbed() {
     return new EmbedBuilder()
         .setTitle('Pet System Guide')
-        .setColor('Blue')
+        .setColor('#0000FF')
         .setDescription(
             'Welcome to the Pet System! Adopt Sonic characters, train them, and battle!\n\n' +
             'Use `/help-pet section:<name>` for detailed info on each topic.'
@@ -85,7 +85,7 @@ function createOverviewEmbed() {
 function createCommandsEmbed() {
     return new EmbedBuilder()
         .setTitle('Pet Commands')
-        .setColor('Green')
+        .setColor('#00FF00')
         .addFields(
             {
                 name: 'Basic Commands', value:
@@ -129,7 +129,7 @@ function createCommandsEmbed() {
 function createStatsEmbed() {
     return new EmbedBuilder()
         .setTitle('Pet Stats Explained')
-        .setColor('Yellow')
+        .setColor('#FFFF00')
         .addFields(
             { name: 'Health (HP)', value: 'Pet\'s life. Reaches 0 = pet faints. Heal with Health Pack or rest.', inline: true },
             { name: 'Hunger', value: 'Decreases over time. Feed with Pet Food or Chili Dog.', inline: true },
@@ -152,7 +152,7 @@ function createStatsEmbed() {
 function createCombatEmbed() {
     return new EmbedBuilder()
         .setTitle('Combat Mechanics')
-        .setColor('Red')
+        .setColor('#FF0000')
         .addFields(
             {
                 name: 'Damage Formula', value:
@@ -192,7 +192,7 @@ function createSkillsEmbed() {
 
     return new EmbedBuilder()
         .setTitle('Pet Skills')
-        .setColor('Purple')
+        .setColor('#800080')
         .setDescription(
             'Skills are learned from Skill Scrolls. Each pet can learn multiple skills.'
         )
@@ -220,7 +220,7 @@ function createSkillsEmbed() {
 function createShopEmbed() {
     return new EmbedBuilder()
         .setTitle('🛒 Pet Shop Items & How to Use Them')
-        .setColor('Orange')
+        .setColor('#FFA500')
         .addFields(
             {
                 name: '🍖 Food & Healing', value:

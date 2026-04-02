@@ -48,7 +48,7 @@ module.exports = {
             const timeTaken = (seconds * 1000) + (nanoseconds / 1e6); 
             const embed = new EmbedBuilder()
             .setTitle('Best time to buy and sell stock version 1')
-            .setColor('Random')
+            .setColor(Math.floor(Math.random() * 16777215))
             .setThumbnail(client.user.displayAvatarURL())
             .addFields([
                 {

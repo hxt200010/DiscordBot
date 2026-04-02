@@ -160,14 +160,14 @@ module.exports = {
                         const successEmbed = new EmbedBuilder()
                             .setTitle('✅ Correct!')
                             .setDescription(`You earned ${reward} coins.\n\n${feedbackDescription}`)
-                            .setColor('Green');
+                            .setColor('#00FF00');
 
                         await confirmation.update({ embeds: [questionEmbed, successEmbed], components: [] });
                     } else {
                         const failEmbed = new EmbedBuilder()
                             .setTitle('❌ Incorrect')
                             .setDescription(`The correct answer was: **${correctAnswer}**\n\n${feedbackDescription}`)
-                            .setColor('Red');
+                            .setColor('#FF0000');
 
                         await confirmation.update({ embeds: [questionEmbed, failEmbed], components: [] });
                     }
@@ -178,7 +178,7 @@ module.exports = {
                     const timeoutEmbed = new EmbedBuilder()
                         .setTitle('⏰ Time Out!')
                         .setDescription(`You ran out of time. The correct answer was: **${questionData.options[questionData.correctIndex]}**`)
-                        .setColor('Orange');
+                        .setColor('#FFA500');
                     
                     await msg.edit({ embeds: [questionEmbed, timeoutEmbed], components: [] });
                 }
@@ -213,7 +213,7 @@ module.exports = {
             const summaryEmbed = new EmbedBuilder()
                 .setTitle('🎓 Interview Session Complete')
                 .setDescription(`You earned a total of **${coinsEarned} coins**.\n\nA detailed review of your session is attached below.`)
-                .setColor('Gold');
+                .setColor('#FFD700');
 
             const buffer = Buffer.from(reviewContent, 'utf-8');
             const attachment = new AttachmentBuilder(buffer, { name: 'interview_review.txt' });

@@ -67,7 +67,7 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setTitle('📚 Common Data Structures & Algorithms')
                     .setDescription(content)
-                    .setColor('Green')
+                    .setColor('#00FF00')
                     .setFooter({ text: 'Use /datastructure option:<name> for detailed learning.' });
 
                 await interaction.editReply({ embeds: [embed] });
@@ -117,7 +117,7 @@ module.exports = {
 
                 const embed = new EmbedBuilder()
                     .setTitle(`📖 Learn: ${option}`)
-                    .setColor('Blue')
+                    .setColor('#0000FF')
                     .addFields(
                         { name: 'Definition', value: formatField(data.definition) },
                         { name: 'Example', value: `\`\`\`${language.toLowerCase()}\n${formatField(data.example)}\n\`\`\`` },
@@ -163,7 +163,7 @@ module.exports = {
                         const finalSolutionEmbed = new EmbedBuilder()
                             .setTitle(`✅ Solution: ${option}`)
                             .setDescription(`${solutionText}\n\n**Reward:** You earned ${reward} coins!`)
-                            .setColor('Gold');
+                            .setColor('#FFD700');
 
                         await confirmation.update({ embeds: [embed, finalSolutionEmbed], components: [] });
                     }

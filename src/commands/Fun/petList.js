@@ -24,7 +24,7 @@ module.exports = {
                     { name: 'Type', value: `\`${pet.value}\``, inline: true },
                     { name: 'Stats', value: `⚔️ AP: ${pet.stats.attack} | 🛡️ DP: ${pet.stats.defense} | ❤️ HP: ${pet.stats.health}`, inline: true }
                 )
-                .setColor('Blue');
+                .setColor('#0000FF');
 
             // Find image
             const extensions = ['.png', '.jpg', '.jpeg'];
@@ -62,7 +62,7 @@ module.exports = {
                     { name: '🔓 How to Obtain', value: `Evolve **${baseName}** to **Level ${pet.evolutionLevel}**`, inline: true },
                     { name: '✨ Innate Skill', value: pet.innateSkill || 'None', inline: true }
                 )
-                .setColor('Gold');
+                .setColor('#FFD700');
 
             // Find image
             const extensions = ['.png', '.jpg', '.jpeg'];

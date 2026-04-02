@@ -6,7 +6,7 @@ module.exports = {
     callback: async (client, interaction) => {
         const embed = new EmbedBuilder()
             .setTitle('🦔 Sonic Bot Command List')
-            .setColor('Blue')
+            .setColor('#0000FF')
             .setThumbnail(client.user.displayAvatarURL())
             .setTimestamp(Date.now())
             .setAuthor({

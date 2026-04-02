@@ -135,7 +135,7 @@ module.exports = {
         }
 
         const embed = new EmbedBuilder()
-            .setColor('Green')
+            .setColor('#00FF00')
             .setTitle('✨ Accessory Equipped!')
             .setDescription(
                 `**${pet.petName}** is now wearing **${accessoryInInventory.name}**!${statMessage}`

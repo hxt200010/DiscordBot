@@ -43,7 +43,7 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setTitle('Sorting Numbers in descending Order')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields([
                     {
                         name: 'Input numbers',

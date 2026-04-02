@@ -65,7 +65,7 @@ module.exports = {
              
             const embed = new EmbedBuilder()
                 .setTitle('Exponential Search Result')
-                .setColor('Random')
+                .setColor(Math.floor(Math.random() * 16777215))
                 .addFields([
                     {
                         name: 'Array',

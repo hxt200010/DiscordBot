@@ -149,7 +149,7 @@ async function handleQuiz(interaction, quizData, titleSuffix) {
     const embed = new EmbedBuilder()
         .setTitle(`🧠 Work: ${titleSuffix}`)
         .setDescription(quizData.question)
-        .setColor('Blue')
+        .setColor('#0000FF')
         .setFooter({ text: 'You have 30 seconds to answer!' });
 
     const buttons = quizData.options.map((opt, index) => {

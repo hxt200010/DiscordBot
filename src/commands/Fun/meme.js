@@ -20,7 +20,7 @@ module.exports = {
             const author = data.data.username;
 
             const embed = new EmbedBuilder()
-                .setColor("Random")
+                .setColor(Math.floor(Math.random() * 16777215))
                 .setTitle(title || 'Random Meme')
                 .setImage(`${image}`)
                 .setURL(`${image}`)
