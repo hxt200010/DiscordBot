@@ -1,11 +1,10 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 const economySystem = require('../../utils/EconomySystem');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: 'datastructure',
@@ -57,12 +56,12 @@ module.exports = {
                 Format the output as a clean list.
                 Keep the total length under 2000 characters.`;
 
-                const completion = await openai.createChatCompletion({
+                const completion = await openai.chat.completions.create({
                     model: 'gpt-4o-mini',
                     messages: [{ role: 'user', content: prompt }],
                 });
 
-                const content = completion.data.choices[0].message.content;
+                const content = completion.choices[0].message.content;
 
                 const embed = new EmbedBuilder()
                     .setTitle('📚 Common Data Structures & Algorithms')
@@ -88,12 +87,12 @@ module.exports = {
                 Ensure the explanations are detailed but concise enough to fit in a Discord embed.
                 Do not include markdown formatting like \`\`\`json in the wrapper, just the raw JSON string.`;
 
-                const completion = await openai.createChatCompletion({
+                const completion = await openai.chat.completions.create({
                     model: 'gpt-4o-mini',
                     messages: [{ role: 'user', content: prompt }],
                 });
 
-                let responseContent = completion.data.choices[0].message.content;
+                let responseContent = completion.choices[0].message.content;
                 // Clean up if the model adds markdown
                 responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
 

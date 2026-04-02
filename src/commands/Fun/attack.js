@@ -327,7 +327,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle(`⚔️ Battle: ${attackerPet.petName} vs ${defenderPet.petName}`)
-            .setColor(defenderPet.isDead ? 'Red' : 'Orange')
+            .setColor(defenderPet.isDead ? '#FF0000' : '#FFA500')
             .setDescription(
                 `**${attackerPet.petName}** attacked with **${AP} AP**!\n` +
                 `**${defenderPet.petName}** defended with **${DP} DP**.\n\n` +

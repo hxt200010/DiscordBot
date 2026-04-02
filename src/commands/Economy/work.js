@@ -1,12 +1,11 @@
 const { ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType } = require('discord.js');
-const { Configuration, OpenAIApi } = require("openai");
+const { OpenAI } = require('openai');
 const EconomySystem = require('../../utils/EconomySystem');
 
 // OpenAI Setup
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const COOLDOWNS = new Set();
 const COOLDOWN_SECONDS = 4;
@@ -49,13 +48,13 @@ module.exports = {
                 "correctIndex": 0
             }`;
 
-            const completion = await openai.createChatCompletion({
+            const completion = await openai.chat.completions.create({
                 model: "gpt-4o-mini",
                 messages: [{ role: "user", content: prompt }],
                 temperature: 0.7,
             });
 
-            const responseText = completion.data.choices[0].message.content;
+            const responseText = completion.choices[0].message.content;
 
             const jsonMatch = responseText.match(/\{[\s\S]*\}/);
             if (!jsonMatch) throw new Error("Could not parse OpenAI response");

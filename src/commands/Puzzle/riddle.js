@@ -1,11 +1,10 @@
 const { Client, Interaction, EmbedBuilder } = require('discord.js');
 const economySystem = require('../../utils/EconomySystem');
-const { Configuration, OpenAIApi } = require("openai");
+const { OpenAI } = require('openai');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const activeGames = new Map();
 
@@ -20,7 +19,7 @@ const fallbackRiddles = [
 async function generateRiddle() {
     try {
         const randomSeed = Math.floor(Math.random() * 1000000);
-        const result = await openai.createChatCompletion({
+        const result = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 {
@@ -36,7 +35,7 @@ async function generateRiddle() {
             temperature: 1.0
         });
 
-        const content = result.data.choices[0].message.content.trim();
+        const content = result.choices[0].message.content.trim();
         // Try to parse JSON, handle both with and without code blocks
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
@@ -54,7 +53,7 @@ async function generateRiddle() {
 
 async function getAIHint(riddle, previousGuesses) {
     try {
-        const result = await openai.createChatCompletion({
+        const result = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 {
@@ -70,7 +69,7 @@ async function getAIHint(riddle, previousGuesses) {
             temperature: 0.8
         });
 
-        return result.data.choices[0].message.content.trim();
+        return result.choices[0].message.content.trim();
     } catch (error) {
         console.error('OpenAI Hint Error:', error);
         return "🤔 Think about what the riddle describes literally and metaphorically!";
@@ -79,7 +78,7 @@ async function getAIHint(riddle, previousGuesses) {
 
 async function checkAnswer(userAnswer, correctAnswer, riddleQuestion) {
     try {
-        const result = await openai.createChatCompletion({
+        const result = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 {
@@ -95,7 +94,7 @@ async function checkAnswer(userAnswer, correctAnswer, riddleQuestion) {
             temperature: 0.3
         });
 
-        const response = result.data.choices[0].message.content.trim().toLowerCase();
+        const response = result.choices[0].message.content.trim().toLowerCase();
         return response === 'true';
     } catch (error) {
         console.error('OpenAI Answer Check Error:', error);

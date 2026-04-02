@@ -1,11 +1,10 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, AttachmentBuilder } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 const economySystem = require('../../utils/EconomySystem');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: 'interview',
@@ -81,12 +80,12 @@ module.exports = {
             ]
             Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
-            const completion = await openai.createChatCompletion({
+            const completion = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: [{ role: 'user', content: prompt }],
             });
 
-            let responseContent = completion.data.choices[0].message.content;
+            let responseContent = completion.choices[0].message.content;
             responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
 
             let questions = [];
@@ -113,7 +112,7 @@ module.exports = {
                 const questionEmbed = new EmbedBuilder()
                     .setTitle(`💼 Interview: ${option} - Question ${i + 1}/${times}`)
                     .setDescription(description)
-                    .setColor(difficulty === 'hard' ? 'Red' : difficulty === 'medium' ? 'Yellow' : 'Green')
+                    .setColor(difficulty === 'hard' ? '#FF0000' : difficulty === 'medium' ? '#FFFF00' : '#00FF00')
                     .setFooter({ text: `Difficulty: ${difficulty} | Reward: ${reward} coins | Time: 150s` });
 
                 const buttons = questionData.options.map((opt, index) =>

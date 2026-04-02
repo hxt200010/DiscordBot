@@ -312,7 +312,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔍 Binary Search')
-                        .setColor(found >= 0 ? 'Green' : 'Red')
+                        .setColor(found >= 0 ? '#00FF00' : '#FF0000')
                         .addFields(
                             { name: 'Array', value: `\`${numbers.join(', ')}\``, inline: false },
                             { name: 'Target', value: `\`${target}\``, inline: true },
@@ -339,7 +339,7 @@ module.exports = {
                     
                     embed = new EmbedBuilder()
                         .setTitle('🔍 Exponential Search')
-                        .setColor(found >= 0 ? 'Green' : 'Red')
+                        .setColor(found >= 0 ? '#00FF00' : '#FF0000')
                         .addFields(
                             { name: 'Array', value: `\`${numbers.join(', ')}\``, inline: false },
                             { name: 'Target', value: `\`${target}\``, inline: true },

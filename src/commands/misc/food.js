@@ -1,13 +1,12 @@
 const { EmbedBuilder, ApplicationCommandOptionType } = require('discord.js');
 const axios = require('axios');
 require('dotenv/config'); 
-const { Configuration, OpenAIApi } = require("openai");
+const { OpenAI } = require('openai');
 
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY
 });
-const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: "calories",
@@ -51,7 +50,7 @@ Respond ONLY in this strict JSON format:
 If the prompt is unclear, return an empty array.
             `;
 
-            const result = await openai.createChatCompletion({
+            const result = await openai.chat.completions.create({
                 model: "gpt-4o-mini",
                 messages: [
                     { role: "system", content: systemInstruction },
@@ -60,7 +59,7 @@ If the prompt is unclear, return an empty array.
                 temperature: 0.1,
             });
 
-            const aiMessage = result.data.choices[0].message.content;
+            const aiMessage = result.choices[0].message.content;
 
             let nutrition;
             try {

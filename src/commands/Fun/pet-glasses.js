@@ -92,7 +92,7 @@ module.exports = {
         });
 
         const embed = new EmbedBuilder()
-            .setColor(showGlasses ? 'Blue' : 'Grey')
+            .setColor(showGlasses ? '#0000FF' : '#808080')
             .setTitle(showGlasses ? 'Sunglasses On!' : 'Sunglasses Off')
             .setDescription(
                 showGlasses

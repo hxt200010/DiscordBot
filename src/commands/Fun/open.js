@@ -160,7 +160,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle(hasMassive ? '🎰🎰🎰 JACKPOT!!! 🎰🎰🎰' : '🎁 Mystery Box Opened!')
-            .setColor(hasLegendary ? 'Gold' : (hasMassive ? 'Gold' : 'Purple'))
+            .setColor(hasLegendary ? '#FFD700' : (hasMassive ? '#FFD700' : '#800080'))
             .setDescription(description)
             .addFields({ name: '💳 New Balance', value: `$${newBalance.toLocaleString()}`, inline: true })
             .setFooter({ text: 'Buy more Mystery Boxes from /shop!' })

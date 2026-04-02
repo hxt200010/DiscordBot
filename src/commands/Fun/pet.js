@@ -82,7 +82,7 @@ async function generatePetEmbed(pet, userId, interaction) {
     }
 
     const embed = new EmbedBuilder()
-        .setColor(pet.isDead ? 'Black' : '#0099ff')
+        .setColor(pet.isDead ? '#000000' : '#0099ff')
         .setTitle(`${pet.isDead ? '💀' : '🐾'} ${pet.petName}'s Status`)
         .setDescription(`**Type:** ${pet.type.charAt(0).toUpperCase() + pet.type.slice(1)}\n**XP:** ${pet.xp.toFixed(1)}/${pet.level * 20}${workMessage}`)
         .addFields(

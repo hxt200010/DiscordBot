@@ -1,11 +1,10 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 const economySystem = require('../../utils/EconomySystem');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // Computer Science topic categories
 const CS_CATEGORIES = [
@@ -102,13 +101,13 @@ module.exports = {
             Keep the response concise to fit Discord embeds (under 1500 characters total).
             Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
-            const completion = await openai.createChatCompletion({
+            const completion = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: [{ role: 'user', content: prompt }],
                 max_tokens: 800
             });
 
-            let responseContent = completion.data.choices[0].message.content;
+            let responseContent = completion.choices[0].message.content;
             responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
 
             let data;

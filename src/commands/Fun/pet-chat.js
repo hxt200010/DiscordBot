@@ -1,14 +1,13 @@
 const { ApplicationCommandOptionType, EmbedBuilder } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 const PetSystem = require('../../utils/PetSystem');
 const User = require('../../models/User');
 const { getPersonality, buildSystemPrompt, formatConversationHistory } = require('../../utils/PetPersonalities');
 
 // OpenAI Setup
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 // Cooldown to prevent spam
 const cooldowns = new Map();
@@ -124,7 +123,7 @@ module.exports = {
             ];
 
             // Call OpenAI
-            const result = await openai.createChatCompletion({
+            const result = await openai.chat.completions.create({
                 model: 'gpt-4o-mini',
                 messages: messages,
                 max_tokens: 200,
@@ -133,7 +132,7 @@ module.exports = {
                 frequency_penalty: 0.3
             });
 
-            const petResponse = result.data.choices[0].message.content.trim();
+            const petResponse = result.choices[0].message.content.trim();
 
             // Update conversation history (keep last 5 exchanges = 10 messages)
             chatHistory.push(

@@ -38,7 +38,7 @@ module.exports = {
 
         const embed = new EmbedBuilder()
             .setTitle('Chaos Emerald Collection')
-            .setColor(hasSuperForm ? 'Gold' : 'DarkPurple')
+            .setColor(hasSuperForm ? '#FFD700' : '#301934')
             .setDescription(
                 hasSuperForm
                     ? '**SUPER FORM UNLOCKED!**\nYou have mastered the power of Chaos!'

@@ -1,10 +1,9 @@
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 const guildConfig = require('../utils/GuildConfig');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY
 });
-const openai = new OpenAIApi(configuration);
 
 module.exports = async (client, message) => {
     if (message.author.bot) return;
@@ -37,13 +36,13 @@ module.exports = async (client, message) => {
             content: message.content,
         });
 
-        const result = await openai.createChatCompletion({
+        const result = await openai.chat.completions.create({
             model: 'gpt-4o-mini',
             messages: conversationLog,
             max_tokens: 500  // Limit response length
         });
 
-        let response = result.data.choices[0].message.content;
+        let response = result.choices[0].message.content;
 
         // Discord has a 2000 character limit
         if (response.length > 1990) {

@@ -1,12 +1,11 @@
 const { EmbedBuilder } = require('discord.js');
 const economy = require('../../utils/EconomySystem');
-const { Configuration, OpenAIApi } = require("openai");
+const { OpenAI } = require('openai');
 
 // OpenAI Setup
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 const activeGames = new Map();
 
@@ -33,7 +32,7 @@ async function generatePhrase(difficulty = 'medium') {
         const wordCount = difficulty === 'easy' ? '5-8' : difficulty === 'hard' ? '15-20' : '10-12';
         const randomSeed = Math.floor(Math.random() * 1000000);
         
-        const result = await openai.createChatCompletion({
+        const result = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 {
@@ -55,7 +54,7 @@ Return ONLY the phrase, nothing else. Random seed: ${randomSeed}`
             temperature: 1.0
         });
 
-        const phrase = result.data.choices[0].message.content.trim();
+        const phrase = result.choices[0].message.content.trim();
         // Remove any quotes that OpenAI might add
         return phrase.replace(/^["']|["']$/g, '');
     } catch (error) {

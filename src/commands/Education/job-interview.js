@@ -1,11 +1,10 @@
 const { Client, Interaction, ApplicationCommandOptionType, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, AttachmentBuilder } = require('discord.js');
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 const economySystem = require('../../utils/EconomySystem');
 
-const configuration = new Configuration({
+const openai = new OpenAI({
     apiKey: process.env.API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 
 module.exports = {
     name: 'job-interview',
@@ -74,12 +73,12 @@ Provide the output in strict JSON format as an array of objects with the followi
 
 Make the questions realistic and helpful for someone preparing for this specific job. Do not include any markdown formatting like \`\`\`json. Just the raw JSON string.`;
 
-            const completion = await openai.createChatCompletion({
+            const completion = await openai.chat.completions.create({
                 model: 'gpt-5-mini',
                 messages: [{ role: 'user', content: prompt }],
             });
 
-            let responseContent = completion.data.choices[0].message.content;
+            let responseContent = completion.choices[0].message.content;
             responseContent = responseContent.replace(/```json/g, '').replace(/```/g, '').trim();
 
             let questions = [];
@@ -260,7 +259,7 @@ Make the questions realistic and helpful for someone preparing for this specific
             const summaryEmbed = new EmbedBuilder()
                 .setTitle('🎓 Interview Session Complete!')
                 .setDescription(`**Score:** ${correctCount}/${times} (${percentage}%)\n**Coins Earned:** ${coinsEarned}\n\n${performanceMsg}\n\nA detailed review of your session is attached below.`)
-                .setColor(percentage >= 60 ? 'Green' : percentage >= 40 ? 'Yellow' : 'Red');
+                .setColor(percentage >= 60 ? '#00FF00' : percentage >= 40 ? '#FFFF00' : '#FF0000');
 
             const buffer = Buffer.from(reviewContent, 'utf-8');
             const attachment = new AttachmentBuilder(buffer, { name: 'job_interview_review.txt' });
